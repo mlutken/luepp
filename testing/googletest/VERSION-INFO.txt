@@ -1,0 +1,4 @@
+Extract from master branch on Github on march 8th 2018
+The HEAD of the git@github.com:google/googletest.git repo 
+taken is 9bda90b7e5e08c4c37a832d0cea218aed6af6470 
+

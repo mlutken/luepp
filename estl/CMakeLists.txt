@@ -1,0 +1,5 @@
+add_subdirectory(memory)
+add_subdirectory(containers)
+add_subdirectory(fsm)
+add_subdirectory(concurrent)
+add_subdirectory(executables)

@@ -1,0 +1,16 @@
+digraph {
+    START
+    offline
+    scanning
+    joining
+    online [peripheries=2]
+
+    START -> offline
+    offline -> scanning [label="scan"]
+    offline -> offline [label="failed scan"]
+    scanning -> joining [label="detected"]
+    scanning -> offline [label="failed join"]
+    joining -> online [label="handshake"]
+    joining -> offline [label="failed handshake"]
+    online -> offline [label="timeout"]
+}

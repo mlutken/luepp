@@ -1,0 +1,17 @@
+digraph  {
+	off;
+	on;
+	paused;
+	playing;
+
+	node [shape = circle];
+
+	off -> on  [label="power_toggle__on"];
+	on -> off  [label="power_toggle__off"];
+	on -> playing  [label="play_pressed__play"];
+	playing -> off  [label="power_toggle__off"];
+	playing -> paused  [label="play_pressed__pause"];
+	paused -> off  [label="power_toggle__off"];
+	paused -> playing  [label="play_pressed__play"];
+}
+

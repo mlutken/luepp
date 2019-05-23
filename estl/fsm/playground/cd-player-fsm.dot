@@ -1,0 +1,38 @@
+digraph {
+    off
+    start_close
+    wait_for_closed
+    closed
+    start_open
+    wait_for_open
+    open
+    loaded
+    playing
+    paused
+    error_closing
+    error_opening
+
+    off -> start_close [label="power toggle (on)"]
+    start_close -> wait_for_closed
+    wait_for_closed -> error_closing [label="bay close timeout"]
+    wait_for_closed -> closed [label="bay closed"]
+    closed -> off [label="power toggle (off)"]
+    closed -> start_open [label="eject (open)"]
+    closed -> loaded [label="disc detected"]
+    start_open -> wait_for_open
+    wait_for_open -> error_opening [label="bay open timeout"]
+    wait_for_open -> open [label="bay open"]
+    open -> off [label="power toggle (off)"]
+    open -> start_close [label="eject (close)"]
+    loaded -> off [label="power toggle (off)"]
+    loaded -> start_open [label="eject (open)"]
+    loaded -> playing [label="play (start)"]
+    playing -> off [label="power toggle (off)"]
+    playing -> start_open [label="eject (open)"]
+    playing -> paused [label="play (pause)"]
+    paused -> off [label="power toggle (off)"]
+    paused -> start_open [label="eject (open)"]
+    paused -> playing [label="play (start)"]
+    error_closing -> start_close [label="eject (close)"]
+    error_opening -> start_open [label="eject (open)"]
+}
