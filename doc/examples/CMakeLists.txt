@@ -1,0 +1,4 @@
+add_subdirectory(my_base_module)
+add_subdirectory(my_dependant_module)
+add_subdirectory(my_syslog)
+
