@@ -116,14 +116,14 @@ public:
     {
         // --- Transitions from off ---
         sm.transitions_from(state_type::off)
-                .switch_to(state_type::start_close).when(&cd_fsm_def::power_toggle_on)
+                .switch_to(state_type::start_close).when(&cd_fsm_def::power_toggle)
                 .otherwise_loop();
 
         // --- Transitions from start_close ---
         sm.transitions_from(state_type::start_close)
-                .switch_to(state_type::wait_for_closed).when("always switch", [this](const auto& inputs) {
+                .switch_to(state_type::wait_for_closed).when("always go to wait_for_closed", [this](const auto& inputs) {
                     time_timeout_ = inputs.time + std::chrono::seconds(eject_timeout_seconds);
-                    return state_type::wait_for_closed;
+                    return true;
                 });
 
         // --- Transitions from wait_for_closed ---
@@ -134,8 +134,8 @@ public:
 
         // --- Transitions from closed ---
         sm.transitions_from(state_type::closed)
-                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle_off)
-                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_open)
+                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle)
+                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_pressed)
                 .switch_to(state_type::loaded).when(&cd_fsm_def::disc_detected)
                 .otherwise_loop();
 
@@ -147,193 +147,97 @@ public:
         // --- Transitions from wait_for_open ---
         sm.transitions_from(state_type::wait_for_open)
                 .switch_to(state_type::error_opening).when(&cd_fsm_def::bay_open_timeout)
-                .switch_to(state_type::open).when(&cd_fsm_def::bay_open)
+                .switch_to(state_type::open).when(&cd_fsm_def::bay_is_open)
                 .otherwise_loop();
 
         // --- Transitions from open ---
         sm.transitions_from(state_type::open)
-                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle_off)
-                .switch_to(state_type::start_close).when(&cd_fsm_def::eject_close)
+                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle)
+                .switch_to(state_type::start_close).when(&cd_fsm_def::eject_pressed)
                 .otherwise_loop();
 
         // --- Transitions from loaded ---
         sm.transitions_from(state_type::loaded)
-                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle_off)
-                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_open)
-                .switch_to(state_type::playing).when(&cd_fsm_def::play_start)
+                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle)
+                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_pressed)
+                .switch_to(state_type::playing).when(&cd_fsm_def::play_btn_pressed)
                 .otherwise_loop();
 
         // --- Transitions from playing ---
         sm.transitions_from(state_type::playing)
-                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle_off)
-                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_open)
-                .switch_to(state_type::paused).when(&cd_fsm_def::play_pause)
+                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle)
+                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_pressed)
+                .switch_to(state_type::paused).when(&cd_fsm_def::play_btn_pressed)
                 .otherwise_loop();
 
         // --- Transitions from paused ---
         sm.transitions_from(state_type::paused)
-                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle_off)
-                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_open)
-                .switch_to(state_type::playing).when(&cd_fsm_def::play_start)
+                .switch_to(state_type::off).when(&cd_fsm_def::power_toggle)
+                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_pressed)
+                .switch_to(state_type::playing).when(&cd_fsm_def::play_btn_pressed)
                 .otherwise_loop();
 
         // --- Transitions from error_closing ---
         sm.transitions_from(state_type::error_closing)
-                .switch_to(state_type::start_close).when(&cd_fsm_def::eject_close)
+                .switch_to(state_type::start_close).when(&cd_fsm_def::eject_pressed)
                 .otherwise_loop();
 
         // --- Transitions from error_opening ---
         sm.transitions_from(state_type::error_opening)
-                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_open)
+                .switch_to(state_type::start_open).when(&cd_fsm_def::eject_pressed)
                 .otherwise_loop();
     }
 
-    // ----------------------------
-    // --- Transitions from off ---
-    // ----------------------------
-    state_type power_toggle_on(const inputs_type& inputs)
+    // ---------------------------
+    // --- Condition functions ---
+    // ---------------------------
+    bool power_toggle(const inputs_type& inputs)
     {
         reset_timeout();
-        if (inputs.power_toggle == power_toggle_sig::active) {
-            return state_type::start_close;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.power_toggle == power_toggle_sig::active;
     }
 
-    // ----------------------------------------
-    // --- Transitions from wait_for_closed ---
-    // ----------------------------------------
-    state_type bay_close_timeout(const inputs_type& inputs)
+    bool bay_close_timeout(const inputs_type& inputs)
     {
-        if (reached_timeout(inputs.time)) {
-            return state_type::error_closing;
-        }
-        return state_type::_NOT_HANDLED_;
+        return reached_timeout(inputs.time);
     }
 
-    state_type cd_bay_is_closed(const inputs_type& inputs)
+    bool cd_bay_is_closed(const inputs_type& inputs)
     {
-        if (inputs.bay_closed == bay_closed_sig::closed) {
-            return state_type::closed;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.bay_closed == bay_closed_sig::closed;
     }
 
-    // -------------------------------
-    // --- Transitions from closed ---
-    // -------------------------------
-    state_type power_toggle_off(const inputs_type& inputs)
+    bool eject_pressed(const inputs_type& inputs)
     {
         reset_timeout();
-        if (inputs.power_toggle == power_toggle_sig::active) {
-            return state_type::off;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.eject == eject_sig::active;
     }
 
-    state_type eject_open(const inputs_type& inputs)
+    bool disc_detected(const inputs_type& inputs)
     {
-        reset_timeout();
-        if (inputs.eject == eject_sig::active) {
-            return state_type::start_open;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.has_disc == has_disc_sig::active;
     }
 
-    state_type disc_detected(const inputs_type& inputs)
-    {
-        if (inputs.has_disc == has_disc_sig::active) {
-            return state_type::loaded;
-        }
-        return state_type::_NOT_HANDLED_;
-    }
-
-    // -----------------------------------
-    // --- Transitions from start_open ---
-    // -----------------------------------
-    state_type always_goto_wait_for_open(const inputs_type& inputs)
+    bool always_goto_wait_for_open(const inputs_type& inputs)
     {
         time_timeout_ = inputs.time + std::chrono::seconds(eject_timeout_seconds);
-        return state_type::wait_for_open;
+        return true;
     }
 
-    // --------------------------------------
-    // --- Transitions from wait_for_open ---
-    // --------------------------------------
-    state_type bay_open_timeout(const inputs_type& inputs)
+    bool bay_open_timeout(const inputs_type& inputs)
     {
-        if (reached_timeout(inputs.time)) {
-            return state_type::error_opening;
-        }
-        return state_type::_NOT_HANDLED_;
+        return reached_timeout(inputs.time);
     }
 
-    state_type bay_open(const inputs_type& inputs)
+    bool bay_is_open(const inputs_type& inputs)
     {
-        if (inputs.bay_closed == bay_closed_sig::open) {
-            return state_type::open;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.bay_closed == bay_closed_sig::open;
     }
 
-    // -----------------------------
-    // --- Transitions from open ---
-    // -----------------------------
-    // state_type power_toggle_off(const inputs_type& inputs)
-
-    state_type eject_close(const inputs_type& inputs)
+    bool play_btn_pressed(const inputs_type& inputs)
     {
-        reset_timeout();
-        if (inputs.eject == eject_sig::active) {
-            return state_type::start_close;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.play_pause == play_pause_sig::active;
     }
-
-    // -------------------------------
-    // --- Transitions from loaded ---
-    // -------------------------------
-    //state_type power toggle_off(const inputs_type& inputs)
-    //state_type eject_open(const inputs_type& inputs)
-
-    state_type play_start(const inputs_type& inputs)
-    {
-        if (inputs.play_pause == play_pause_sig::active) {
-            return state_type::playing;
-        }
-        return state_type::_NOT_HANDLED_;
-    }
-
-    // --------------------------------
-    // --- Transitions from playing ---
-    // --------------------------------
-    //state_type power_toggle_off(const inputs_type& inputs)
-    //state_type eject_open(const inputs_type& inputs)
-
-    state_type play_pause(const inputs_type& inputs)
-    {
-        if (inputs.play_pause == play_pause_sig::active) {
-            return state_type::paused;
-        }
-        return state_type::_NOT_HANDLED_;
-    }
-
-    // -------------------------------
-    // --- Transitions from paused ---
-    // -------------------------------
-    //state_type power_toggle_off(const inputs_type& inputs)
-    //state_type eject_open(const inputs_type& inputs)
-    //state_type play_start(const inputs_type& inputs)
-
-    // --------------------------------------
-    // --- Transitions from error_closing ---
-    // --------------------------------------
-    //state_type eject_close(const inputs_type& inputs)
-    // --------------------------------------
-    // --- Transitions from error_opening ---
-    // --------------------------------------
-    //state_type eject_open(const inputs_type& inputs)
-
 
     // ------------------------------
     // --- State action functions ---

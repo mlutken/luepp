@@ -30,18 +30,43 @@ public:
     using switch_state_fun      = std::function<state_type (const inputs_type&) >;
     using actions_fun           = std::function<void (const inputs_type&, outputs_type&) >;
     using sm_actions_memfun     = void (state_machine_type::*)(const inputs_type&, outputs_type&);
-    using sm_condition_memfun   = state_type (state_machine_type::*)(const inputs_type&);
 
+    using sm_condition_fun     = std::function<bool (const inputs_type&) >;
+    using sm_condition_memfun  = bool (state_machine_type::*)(const inputs_type&);
+
+    class condition {
+    public:
+        explicit condition(const sm_condition_fun& condition_fun, const state_type& switch_to_state)
+            : condition_fun_m(condition_fun), switch_to_state_m(switch_to_state)
+        {
+        }
+
+        bool operator()(const inputs_type& inputs)
+        {
+            if (condition_fun_m) {
+                return condition_fun_m(inputs);
+            }
+
+            return false;
+        }
+        state_type switch_to_state() const { return switch_to_state_m; }
+
+    private:
+        sm_condition_fun    condition_fun_m;
+        state_type          switch_to_state_m = state_type::_NOT_HANDLED_;
+    };
+    
     class state_conditions {
     public:
         state_conditions() = default;
         state_type operator()(const inputs_type& inputs)
         {
             // --- Logical OR of the conditions ---
-            for (auto condition : conditions_m) {
-                const auto state = condition(inputs);
-                if (state != state_type::_NOT_HANDLED_){
-                    return state;
+            if (!conditions_m.empty()) {
+                for (auto condition : conditions_m) {
+                    if (condition(inputs)){
+                        return condition.switch_to_state();
+                    }
                 }
             }
             return state_type::_END_;
@@ -49,18 +74,9 @@ public:
 
         bool has_conditions() const     {   return !conditions_m.empty();    }
 
-        state_conditions& switch_to(state_type /*to*/)
+        state_conditions& switch_to(state_type to)
         {
-            return *this;
-        }
-
-        state_conditions& when(const std::string& /*condition_name*/,
-                               const sm_condition_memfun& member_fun_condition)
-        {
-            using namespace std::placeholders;  // for _1, _2, _3...
-
-            auto condition = std::bind(member_fun_condition, state_machine_m, _1);
-            conditions_m.push_back(condition);
+            current_switch_to_state_m = to;
             return *this;
         }
 
@@ -68,24 +84,25 @@ public:
         {
             using namespace std::placeholders;  // for _1, _2, _3...
 
-            auto condition = std::bind(member_fun_condition, state_machine_m, _1);
-            conditions_m.push_back(condition);
+            auto cond = std::bind(member_fun_condition, state_machine_m, _1);
+            conditions_m.emplace_back(cond, current_switch_to_state_m);
             return *this;
         }
 
         state_conditions& when(const std::string& /*condition_name*/,
-                               const switch_state_fun& condition)
+                               const sm_condition_fun& cond)
         {
-
-            conditions_m.push_back(condition);
+            conditions_m.emplace_back(cond, current_switch_to_state_m);
             return *this;
         }
 
-        state_conditions& otherwise_loop() {
-            const auto condition = [=](const auto& /*inputs*/) {
-                return from_state_m;
+        state_conditions& otherwise_loop()
+        {
+            const auto cond = [=](const auto& /*inputs*/) -> bool {
+                return true;
             };
-            conditions_m.push_back(condition);
+            conditions_m.emplace_back(cond, from_state_m);
+
             return *this;
         }
 
@@ -94,9 +111,10 @@ public:
         void fromStateSet(state_type from_state)    { from_state_m = from_state;}
         void stateMachineSet(state_machine_type* sm){ state_machine_m = sm;}
     private:
-        std::vector<switch_state_fun>   conditions_m;
+        std::vector<condition>          conditions_m;
         state_machine_type*             state_machine_m = nullptr;
         state_type                      from_state_m;
+        state_type                      current_switch_to_state_m;
     };
 
     struct test_entry {

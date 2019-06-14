@@ -63,64 +63,39 @@ public:
     {
         // --- Transitions from off ---
         sm.transitions_from(state_type::off)
-                .switch_to(state_type::on).when(&cdplayer::power_toggle__on)
+                .switch_to(state_type::on).when(&cdplayer::power_toggle)
                 .otherwise_loop();
 
         // --- Transitions from on ---
         sm.transitions_from(state_type::on)
-                .switch_to(state_type::off).when(&cdplayer::power_toggle__off)
-                .switch_to(state_type::playing).when(&cdplayer::play_pressed__play)
+                .switch_to(state_type::off).when(&cdplayer::power_toggle)
+                .switch_to(state_type::playing).when(&cdplayer::play_pressed)
                 .otherwise_loop();
 
         // --- Transitions from playing ---
         sm.transitions_from(state_type::playing)
-                .switch_to(state_type::off).when(&cdplayer::power_toggle__off)
-                .switch_to(state_type::paused).when(&cdplayer::play_pressed__pause)
+                .switch_to(state_type::off).when(&cdplayer::power_toggle)
+                .switch_to(state_type::paused).when(&cdplayer::play_pressed)
                 .otherwise_loop();
 
         // --- Transitions from paused ---
         sm.transitions_from(state_type::paused)
-                .switch_to(state_type::off).when(&cdplayer::power_toggle__off)
-                .switch_to(state_type::playing).when(&cdplayer::play_pressed__play)
+                .switch_to(state_type::off).when(&cdplayer::power_toggle)
+                .switch_to(state_type::playing).when(&cdplayer::play_pressed)
                 .otherwise_loop();
     }
 
-    // -----------------------------
-    // --- Transitions functions ---
-    // -----------------------------
-
-    // --- Transitions from off ---
-    state_type power_toggle__on(const inputs_type& inputs)
+    // ---------------------------
+    // --- Condition functions ---
+    // ---------------------------
+    bool power_toggle(const inputs_type& inputs)
     {
-        if (inputs.action == input_action::power_btn_pressed) {
-            return state_type::on;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.action == input_action::power_btn_pressed;
     }
 
-    // --- Transitions from on, play, pause ---
-    state_type power_toggle__off(const inputs_type& inputs)
+    bool play_pressed(const inputs_type& inputs)
     {
-        if (inputs.action == input_action::power_btn_pressed) {
-            return state_type::off;
-        }
-        return state_type::_NOT_HANDLED_;
-    }
-
-    state_type play_pressed__play(const inputs_type& inputs)
-    {
-        if (inputs.action == input_action::playpause_btn_pressed) {
-            return state_type::playing;
-        }
-        return state_type::_NOT_HANDLED_;
-    }
-
-    state_type play_pressed__pause(const inputs_type& inputs)
-    {
-        if (inputs.action == input_action::playpause_btn_pressed) {
-            return state_type::paused;
-        }
-        return state_type::_NOT_HANDLED_;
+        return inputs.action == input_action::playpause_btn_pressed;
     }
 
     // ------------------------------
