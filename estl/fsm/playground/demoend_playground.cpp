@@ -8,7 +8,7 @@ using namespace std;
 // ---------------------
 // --- Input signals ---
 // ---------------------
-enum class input_action : unsigned {
+enum class input_event : unsigned {
     no_btn_presed,
     power_btn_pressed,
     playpause_btn_pressed
@@ -37,8 +37,8 @@ public:
     // REQUIRED: You must define an inputs_type struct!
     struct inputs_type {
         inputs_type() = default;
-        inputs_type(input_action act) : action(act) {}
-        input_action action = input_action::no_btn_presed;
+        inputs_type(input_event act) : event(act) {}
+        input_event event = input_event::no_btn_presed;
     };
 
     // REQUIRED: You must define an outputs_type struct!
@@ -90,12 +90,12 @@ public:
     // ---------------------------
     bool power_toggle(const inputs_type& inputs)
     {
-        return inputs.action == input_action::power_btn_pressed;
+        return inputs.event == input_event::power_btn_pressed;
     }
 
     bool play_pressed(const inputs_type& inputs)
     {
-        return inputs.action == input_action::playpause_btn_pressed;
+        return inputs.event == input_event::playpause_btn_pressed;
     }
 
     // ------------------------------
@@ -139,25 +139,25 @@ static const test_vec_type tv1 = {
     },
     {
         state_type::off, state_type::on,
-        input_action::power_btn_pressed,
+        input_event::power_btn_pressed,
         "Switching on."
     }
     ,
     {
         state_type::on, state_type::playing,
-        input_action::playpause_btn_pressed,
+        input_event::playpause_btn_pressed,
         "Start playing."
     }
     ,
     {
         state_type::playing, state_type::paused,
-        input_action::playpause_btn_pressed,
+        input_event::playpause_btn_pressed,
         "Pause in playing."
     }
     ,
     {
         state_type::paused, state_type::playing,
-        input_action::playpause_btn_pressed,
+        input_event::playpause_btn_pressed,
         "Resume playing."
     }
 };
@@ -165,12 +165,12 @@ static const test_vec_type tv1 = {
 static const test_vec_type tvec1 = {
     {
         state_type::off, state_type::on,
-        input_action::power_btn_pressed,
+        input_event::power_btn_pressed,
         "Switching on."
     },
     {
         state_type::on, state_type::playing,
-        input_action::playpause_btn_pressed,
+        input_event::playpause_btn_pressed,
         "Start playing."
     }
 };
