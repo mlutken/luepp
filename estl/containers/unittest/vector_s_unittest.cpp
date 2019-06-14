@@ -272,10 +272,10 @@ TEST_F(VectorSUnitTest, iterator_loop)
     {
         vec_t v{1u,2u,3u,4u};
         size_t count = 0;
-        for (unsigned long & it : v) {
+        for (auto& elem : v) {
             ++count;
-            EXPECT_EQ(count, it);
-            it =count + 1u;
+            EXPECT_EQ(count, elem);
+            elem = count + 1u;
         }
         EXPECT_EQ(4u, count);
         EXPECT_EQ(2u, v[0]);
@@ -286,11 +286,11 @@ TEST_F(VectorSUnitTest, iterator_loop)
 
     // const
     {
-        vec_t v{1u,2u,3u,4u};
+        const vec_t v{1u,2u,3u,4u};
         size_t count = 0;
-        for (unsigned long it : v) {
+        for (const auto& elem : v) {
             ++count;
-            EXPECT_EQ(count, it);
+            EXPECT_EQ(count, elem);
         }
         EXPECT_EQ(4u, count);
     }
