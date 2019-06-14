@@ -1,6 +1,6 @@
 #include <iostream>
+#include <sstream>
 #include <chrono>
-#include <boost/format.hpp>
 #include <fsm/state_machine.hpp>
 
 // CD Player Statemachine example:
@@ -98,11 +98,13 @@ public:
         open_close_sig  bay_motor           = open_close_sig::none;
 
         std::string debug_str() const {
-            const auto f = boost::format("OUTPUTS:\npwr_light: '%1%'\ndisc_loaded_light: '%2%'\n"
-                                         "playing_light: '%3%'\nbay_motor: '%4%'")
-                    % static_cast<int>(pwr_light) % static_cast<int>(disc_loaded_light)
-                    % static_cast<int>(playing_light) % static_cast<int>(bay_motor);
-            return f.str();
+            std::stringstream ss;
+            ss << "OUTPUTS:\npwr_light: '" << static_cast<int>(pwr_light)
+                    << " disc_loaded_light: '\n"  << static_cast<int>(disc_loaded_light)
+                    << " playing_light: '" << static_cast<int>(playing_light)
+                    << " bay_motor: '" << static_cast<int>(bay_motor)
+                    ;
+            return ss.str();
         }
     };
 
