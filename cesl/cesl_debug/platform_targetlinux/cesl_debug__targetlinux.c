@@ -1,9 +1,8 @@
-#include "../ca_debug.h"
+#include "../cesl_debug.h"
 #include <stdarg.h>
 #include <stdio.h>
 
-/** TODO: Not tested on target platform yet! */
-int ca_dprintf(const char *fmt, ...)
+int cesl_dprintf(const char *fmt, ...)
 {
     int             len;
     va_list         args;
