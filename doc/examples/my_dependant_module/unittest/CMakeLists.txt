@@ -1,4 +1,4 @@
-add_unit_test(my_dependant_module "my_dependant_module;ca_compiler")
+add_unit_test(my_dependant_module "my_dependant_module;cesl_compiler")
 
 # Adding extra target sources, might be needed when mocking out
 # functions from a library.

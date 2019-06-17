@@ -7,7 +7,7 @@
 #define EXAMPLES_MY_DEPENDANT_MODULE_H
 
 // For extern_C macro
-#include <ca_compiler/ca_extern_c.h>
+#include <cesl_compiler/cesl_extern_c.h>
 
  /**
   * @brief my_funky_calculation A funky useless calculation for demo only.

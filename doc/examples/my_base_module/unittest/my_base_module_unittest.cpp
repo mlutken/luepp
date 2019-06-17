@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <ca_gmock/ca_gmock_free_func.h>
+#include <cesl_gmock/cesl_gmock_free_func.h>
 
 #include "../my_base_module.h"
 

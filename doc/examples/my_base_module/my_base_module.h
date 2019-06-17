@@ -7,7 +7,7 @@
 #define EXAMPLES_MY_BASE_MODULE_H
 
 // For extern_C macro
-#include <ca_compiler/ca_extern_c.h>
+#include <cesl_compiler/cesl_extern_c.h>
 
 /**
  * @brief int_multiply  Multiply two integers

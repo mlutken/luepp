@@ -1,4 +1,4 @@
-add_unit_test(my_syslog "my_syslog;ca_compiler")
+add_unit_test(my_syslog "my_syslog;cesl_compiler")
 
 # Adding extra target sources, might be needed when mocking out
 # functions from a library.

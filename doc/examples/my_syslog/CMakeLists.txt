@@ -12,7 +12,7 @@ target_sources(${library_name}
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-target_link_libraries(${library_name} ca_strings ca_compiler ca_gmock m)
+target_link_libraries(${library_name} cesl_strings cesl_compiler cesl_gmock m)
 target_include_directories(${library_name} INTERFACE ${PARENT_DIR})
 
 add_subdirectories_standard()
