@@ -21,10 +21,8 @@ string(REPLACE " " ";" CXX_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${CXX_COMP
 
 # --- Set default platform values ---
 if (NOT DEFINED PLATFORM_NAME)
-    set(PLATFORM native)   # Backwards compatibility ?
-    set(PLATFORM_TYPE hostpc)  # PC: Windows, Linux, Mac etc.
+    #set(PLATFORM_TYPE hostwindows)
     set(PLATFORM_NAME hostlinux)
-    set(PLATFORM_LONG_NAME hostlinux_native)
 endif()
 
 message ("PLATFORM_NAME     : '${PLATFORM_NAME}'")

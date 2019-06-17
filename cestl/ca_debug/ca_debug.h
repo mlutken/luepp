@@ -1,18 +1,18 @@
 /**@file
- * ca_debug Debugging functions
+ * cesl_debug Debugging functions
  */
-#ifndef CA_STD_CA_DEBUG_H
-#define CA_STD_CA_DEBUG_H
-#include <ca_compiler/ca_extern_c.h>
+#ifndef CESL_DEBUG_CESL_DEBUG_H
+#define CESL_DEBUG_CESL_DEBUG_H
+#include <cesl_compiler/cesl_extern_c.h>
 #include <assert.h>
 
 #ifdef PRODUCTION_RELEASE
 // TODO: Perhaps support a way to get this assert message to a tracelog in production mode
-#   define ca_assert(expression, message)
-#   define ca_dprintf(fmt, ...)
+#   define cesl_assert(expression, message)
+#   define cesl_dprintf(fmt, ...)
 #else
-#   define ca_assert(expression, message) assert((expression)&&(message))
-    extern_C int ca_dprintf(const char *fmt, ...);
+#   define cesl_assert(expression, message) assert((expression)&&(message))
+    extern_C int cesl_dprintf(const char *fmt, ...);
 #endif
 
-#endif // CA_STD_CA_DEBUG_H
+#endif // CESL_DEBUG_CESL_DEBUG_H

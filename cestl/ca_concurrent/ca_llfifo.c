@@ -1,5 +1,5 @@
-#include "ca_llfifo.h"
-#include <ca_compiler/ca_atomic.h>
+#include "cesl_llfifo.h"
+#include <cesl_compiler/cesl_atomic.h>
 #include <string.h>
 #include<stdint.h>
 
@@ -23,25 +23,25 @@ char* llfifo_get_ptr_to_index (llfifo_t* self, size_t index)
 /** Get read_index atomically */
 static inline size_t llfifo_read_index (llfifo_t* self)
 {
-    return ca_atomic_load(&(self->read_index_));
+    return cesl_atomic_load(&(self->read_index_));
 }
 
 /** Get write_index atomically */
 static inline size_t llfifo_write_index (llfifo_t* self)
 {
-    return ca_atomic_load(&(self->write_index_));
+    return cesl_atomic_load(&(self->write_index_));
 }
 
 /** Set read_index atomically */
 static inline void llfifo_read_index_set (llfifo_t* self, size_t read_index )
 {
-    ca_atomic_store(&(self->read_index_), read_index);
+    cesl_atomic_store(&(self->read_index_), read_index);
 }
 
 /** Set write_index atomically */
 static inline void llfifo_write_index_set (llfifo_t* self, size_t write_index )
 {
-    ca_atomic_store(&(self->write_index_), write_index);
+    cesl_atomic_store(&(self->write_index_), write_index);
 }
 
 // ---------------------

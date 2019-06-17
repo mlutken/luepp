@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
-#include <ca_concurrent/ca_llfifo.h>
+#include <cesl_concurrent/cesl_llfifo.h>
 
 constexpr int my_fifo_elem_max_size = 1024;
 constexpr int my_fifo_elems_max_count = 4;
@@ -20,7 +20,7 @@ static char* test_llfifo_front_strcpy(char* dst_str)
     return strncpy(dst_str, llfifo_front(&my_fifo_g), my_fifo_elem_max_size);
 }
 
-TEST(ca_llfifo_unittest, create)
+TEST(cesl_llfifo_unittest, create)
 {
     const auto res = llfifo_create(&my_fifo_g, my_fifo_elem_max_size, my_fifo_elems_max_count, (char*)my_fifo_buffer_g);
     EXPECT_EQ(1, res);
@@ -29,7 +29,7 @@ TEST(ca_llfifo_unittest, create)
     EXPECT_EQ(1, llfifo_empty(&my_fifo_g));
 }
 
-TEST(ca_llfifo_unittest, push_single_element)
+TEST(cesl_llfifo_unittest, push_single_element)
 {
     llfifo_create(&my_fifo_g, my_fifo_elem_max_size, my_fifo_elems_max_count, (char*)my_fifo_buffer_g);
     auto ok = test_llfifo_push("first");
@@ -40,7 +40,7 @@ TEST(ca_llfifo_unittest, push_single_element)
     EXPECT_EQ(std::string("first"), llfifo_front(&my_fifo_g));
 }
 
-TEST(ca_llfifo_unittest, push_to_full)
+TEST(cesl_llfifo_unittest, push_to_full)
 {
     llfifo_create(&my_fifo_g, my_fifo_elem_max_size, my_fifo_elems_max_count, (char*)my_fifo_buffer_g);
     test_llfifo_push("first");
@@ -58,7 +58,7 @@ TEST(ca_llfifo_unittest, push_to_full)
     EXPECT_EQ(std::string("first") ,llfifo_front(&my_fifo_g));
 }
 
-TEST(ca_llfifo_unittest, push_beyond_full)
+TEST(cesl_llfifo_unittest, push_beyond_full)
 {
     llfifo_create(&my_fifo_g, my_fifo_elem_max_size, my_fifo_elems_max_count, (char*)my_fifo_buffer_g);
     test_llfifo_push("first");
@@ -78,7 +78,7 @@ TEST(ca_llfifo_unittest, push_beyond_full)
     EXPECT_EQ(std::string("first"), llfifo_front(&my_fifo_g));
 }
 
-TEST(ca_llfifo_unittest, pop_single_element)
+TEST(cesl_llfifo_unittest, pop_single_element)
 {
     llfifo_create(&my_fifo_g, my_fifo_elem_max_size, my_fifo_elems_max_count, (char*)my_fifo_buffer_g);
     test_llfifo_push("first");
@@ -93,7 +93,7 @@ TEST(ca_llfifo_unittest, pop_single_element)
     EXPECT_EQ(1, llfifo_empty(&my_fifo_g));
 }
 
-TEST(ca_llfifo_unittest, pop_all_from_full)
+TEST(cesl_llfifo_unittest, pop_all_from_full)
 {
     llfifo_create(&my_fifo_g, my_fifo_elem_max_size, my_fifo_elems_max_count, (char*)my_fifo_buffer_g);
     test_llfifo_push("first");
@@ -126,7 +126,7 @@ TEST(ca_llfifo_unittest, pop_all_from_full)
     EXPECT_EQ(1, llfifo_empty(&my_fifo_g));
 }
 
-TEST(ca_llfifo_unittest, pop_beyond_empty)
+TEST(cesl_llfifo_unittest, pop_beyond_empty)
 {
     llfifo_create(&my_fifo_g, my_fifo_elem_max_size, my_fifo_elems_max_count, (char*)my_fifo_buffer_g);
     test_llfifo_push("first");

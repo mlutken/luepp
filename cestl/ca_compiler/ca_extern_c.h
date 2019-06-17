@@ -1,8 +1,8 @@
 /**@file
  * Extern C macro.
  */
-#ifndef CA_COMPILER_CA_EXTERN_C_H
-#define CA_COMPILER_CA_EXTERN_C_H
+#ifndef CESL_COMPILER_EXTERN_C_H
+#define CESL_COMPILER_EXTERN_C_H
 
 #ifndef extern_C
 #   ifdef __cplusplus
@@ -12,4 +12,4 @@
 #   endif
 #endif
 
-#endif // CA_COMPILER_CA_EXTERN_C_H
+#endif // CESL_COMPILER_EXTERN_C_H

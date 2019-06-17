@@ -2,9 +2,9 @@
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
-#include <ca_strings/ca_format.h>
+#include <cesl_strings/cesl_format.h>
 
-TEST(ca_number_to_string_unittest, ca_int64_to_str)
+TEST(cesl_number_to_string_unittest, cesl_int64_to_str)
 {
     EXPECT_EQ(1, 1);
 }

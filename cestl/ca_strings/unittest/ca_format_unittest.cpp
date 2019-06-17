@@ -2,17 +2,17 @@
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
-#include <ca_strings/ca_format.h>
+#include <cesl_strings/cesl_format.h>
 
 using namespace std;
 
-TEST(ca_format_unittest, buffer_full_integer)
+TEST(cesl_format_unittest, buffer_full_integer)
 {
     static const unsigned buf_max = 20;
     char format_buf[buf_max];
 
-    ca_format_t fmt;
-    ca_format_t* f = ca_format_create(&fmt, buf_max, format_buf);
+    cesl_format_t fmt;
+    cesl_format_t* f = cesl_format_create(&fmt, buf_max, format_buf);
     f->rst(f)->i32(f, -12345678);
     EXPECT_EQ(9, f->cur_pos);
     EXPECT_EQ(string("-12345678"), f->buf);
