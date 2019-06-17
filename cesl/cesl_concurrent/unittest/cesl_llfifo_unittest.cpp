@@ -15,10 +15,10 @@ static int test_llfifo_push(const char* str)
     return llfifo_push(&my_fifo_g, str, strlen(str));
 }
 
-static char* test_llfifo_front_strcpy(char* dst_str)
-{
-    return strncpy(dst_str, llfifo_front(&my_fifo_g), my_fifo_elem_max_size);
-}
+// static char* test_llfifo_front_strcpy(char* dst_str)
+// {
+//     return strncpy(dst_str, llfifo_front(&my_fifo_g), my_fifo_elem_max_size);
+// }
 
 TEST(cesl_llfifo_unittest, create)
 {

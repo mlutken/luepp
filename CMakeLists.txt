@@ -21,7 +21,8 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 ENDIF ()
 
 
-set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
+#set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
+set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Werror")
 set(C_COMPILE_FLAGS "-Wall -Wextra")
 set(CXX_COMPILE_FLAGS "-Wall -Wextra")
 string(REPLACE " " ";" C_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${C_COMPILE_FLAGS}")
@@ -50,6 +51,7 @@ add_compile_options(
 )
 
 # --- Add subdirectories ---
+add_subdirectory(cesl)
 add_subdirectory(estl)
 
 # --- Add example files ---

@@ -1,1 +1,1 @@
-add_playground_c_exe(ca_llfifo "ca_concurrent;ca_debug")
+add_playground_c_exe(cesl_llfifo "cesl_concurrent;cesl_debug")

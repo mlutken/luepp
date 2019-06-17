@@ -1,12 +1,12 @@
-set (lib_name ca_compiler)
+set (lib_name cesl_compiler)
 
 add_library(${lib_name} INTERFACE)
 
 target_sources(${lib_name}
     INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/ca_align_macros.h
-    ${CMAKE_CURRENT_LIST_DIR}/ca_atomic.h
-    ${CMAKE_CURRENT_LIST_DIR}/ca_extern_c.h
+    ${CMAKE_CURRENT_LIST_DIR}/cesl_align_macros.h
+    ${CMAKE_CURRENT_LIST_DIR}/cesl_atomic.h
+    ${CMAKE_CURRENT_LIST_DIR}/cesl_extern_c.h
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)

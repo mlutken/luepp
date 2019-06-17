@@ -1,1 +1,1 @@
-add_playground_c_exe( ca_dprintf "ca_debug")
+add_playground_c_exe( cesl_dprintf "cesl_debug")

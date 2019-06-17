@@ -1,1 +1,1 @@
-add_unit_test (ca_llfifo ca_concurrent)
+add_unit_test (cesl_llfifo cesl_concurrent)
