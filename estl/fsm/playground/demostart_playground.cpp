@@ -36,6 +36,7 @@ public:
 
     // REQUIRED: You must define an inputs_type struct!
     struct inputs_type {
+        using input_event_type = input_event;
         inputs_type() = default;
         inputs_type(input_event act) : event(act) {}
         input_event event = input_event::no_btn_presed;

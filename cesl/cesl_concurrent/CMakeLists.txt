@@ -5,8 +5,10 @@ add_library(${lib_name} STATIC "")
 target_sources(${lib_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/cesl_llfifo.h
+    ${CMAKE_CURRENT_LIST_DIR}/cesl_mpsc_llfifo.h
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/cesl_llfifo.c
+    ${CMAKE_CURRENT_LIST_DIR}/cesl_mpsc_llfifo.c
 )
 
 target_link_libraries(${lib_name} cesl_compiler)
