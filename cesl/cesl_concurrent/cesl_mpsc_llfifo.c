@@ -14,10 +14,16 @@ size_t cesl_mpsc_llfifo_inc_index (cesl_mpsc_llfifo_t* self, size_t index)
     return (index +1) & (self->elems_max_count_ - 1);
 }
 
+/** Get pointer (inside fifo_buffer) to the atomic write flag for the element*/
+char* cesl_mpsc_llfifo_get_ptr_to_write_index_flag (cesl_mpsc_llfifo_t* self, size_t index)
+{
+    return self->fifo_buffer_ + (index * self->elem_max_size_);
+}
+
 /** Get pointer (inside fifo_buffer) to the index requested */
 char* cesl_mpsc_llfifo_get_ptr_to_index (cesl_mpsc_llfifo_t* self, size_t index)
 {
-    return self->fifo_buffer_ + (index * self->elem_max_size_);
+    return self->fifo_buffer_ + (index * self->elem_max_size_) + cesl_sizeof_atomic_flag;
 }
 
 /** Get read_index atomically */
