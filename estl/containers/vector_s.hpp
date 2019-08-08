@@ -1,13 +1,12 @@
 #ifndef ESTL_VECTOR_S_HPP
 #define ESTL_VECTOR_S_HPP
 
-#include <stddef.h>
+#include <cstdint>
+#include <utility>
 #include <iterator>
 #include <stdexcept>
 #include <algorithm>
 
-// TODO:Temporary/development includes
-#include <iostream>
 
 namespace estl {
 
@@ -482,9 +481,9 @@ private:
     // we don't want to spend time doing as the container conceptually is empty
     // after construction, unless we are using one of the  initializing constructors.
     // So: We simply want to reserve the memory at first.
-    size_type   size_ = 0u;
-    uint8_t     data_[CAPACITY*sizeof(value_type)];
-    pointer     data_ptr_ = reinterpret_cast<pointer>(&data_[0]);
+    size_type       size_ = 0u;
+    std::uint8_t    data_[CAPACITY*sizeof(value_type)]; // TODO: Use std::byte when we require C++17
+    pointer         data_ptr_ = reinterpret_cast<pointer>(&data_[0]);
 };
 
 // ------------------------
