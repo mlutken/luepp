@@ -5,6 +5,7 @@ add_library(${library_name} STATIC "")
 target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/vector_s.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/sort_map_s.hpp
     ${CMAKE_CURRENT_LIST_DIR}/const_sequence.hpp
     ${CMAKE_CURRENT_LIST_DIR}/mutable_sequence.hpp
     ${CMAKE_CURRENT_LIST_DIR}/expandable_sequence.hpp
