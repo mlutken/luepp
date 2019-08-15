@@ -1,10 +1,8 @@
 #ifndef ESTL_SORT_MAP_S_HPP
 #define ESTL_SORT_MAP_S_HPP
-#include <stddef.h>
-#include <iterator>
-#include <stdexcept>
-#include <algorithm>
-#include <iostream>
+
+#include "vector_s.hpp"
+
 namespace estl {
 
 template <typename Key, typename T, size_t CAPACITY, class Compare = std::less<Key> >
