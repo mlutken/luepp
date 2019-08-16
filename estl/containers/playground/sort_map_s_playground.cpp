@@ -50,9 +50,28 @@ using namespace std;
 
 
 
+
+
 int main()
 {
     cout << "--- sort_map_s playground ---\n";
+    estl::vector_s<std::string, 12> v;
+    estl::vector_s<std::pair<std::string, std::string>, 12> vp;
+//    std::vector<std::string> v;
+
+
+    std::string s1("sds"s);
+    v.push_back("sds"s);
+    v.push_back("sds2"s);
+    v.push_back("sds3"s);
+
+//    auto p1 = make_pair("1", "2");
+//    vp.push_back({"fg","frgfd"});
+
+    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    MyMap m;
+
+    m.insert({"food"s, "mad"s});
 
     return 0;
 }
