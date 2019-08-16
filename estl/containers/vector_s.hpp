@@ -371,7 +371,8 @@ public:
         if (new_size > capacity()) {
             throw std::range_error{"cas::vector_s push_back beyond capacity."};
         }
-        (*this)[size()] = value;
+        const pointer insert_ptr = data_ptr_ + size();
+        new (insert_ptr) value_type{value};
         size_ = new_size;
     }
 
@@ -381,7 +382,8 @@ public:
         if (new_size > capacity()) {
             throw std::range_error{"cas::vector_s push_back beyond capacity."};
         }
-        (*this)[size()] = std::move(value);
+        const pointer insert_ptr = data_ptr_ + size();
+        new (insert_ptr) value_type{std::move(value)};
         size_ = new_size;
     }
 
