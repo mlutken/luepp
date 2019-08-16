@@ -71,7 +71,11 @@ int main()
     using MyMap = estl::sort_map_s<std::string, std::string, 30>;
     MyMap m;
 
-    m.insert({"food"s, "mad"s});
+//    m.insert({"food"s, "mad"s});
+    m["goat"] = "ged";
+
+    cout << "m['goat'] => " << m["goat"] << "\n";
+
 
     return 0;
 }

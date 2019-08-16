@@ -17,6 +17,10 @@ namespace estl {
 template <typename Key, typename T, size_t CAPACITY, class Compare = std::less<Key> >
 struct sort_map_s
 {
+private:
+    using node_t = std::pair<Key, T>;
+    using data_t = estl::vector_s<node_t, CAPACITY>;
+public:
     using value_type                = std::pair<const Key, T>;
     using size_type                 = size_t;
     using difference_type           = ptrdiff_t;
@@ -25,14 +29,11 @@ struct sort_map_s
     using pointer                   = value_type*;
     using const_pointer             = const value_type*;
 
-    using iterator                  = value_type*;
-    using const_iterator            = const value_type*;
+    using iterator                  = typename data_t::iterator;
+    using const_iterator            = typename data_t::const_iterator;
     using reverse_iterator          = std::reverse_iterator<iterator>;
     using const_reverse_iterator    = const std::reverse_iterator<const_iterator>;
 
-private:
-    using node_t = std::pair<Key, T>;
-    using data_t = estl::vector_s<node_t, CAPACITY>;
 
     // ------------------------------
     // -- Constructors/Assignment ---
@@ -44,14 +45,15 @@ public:
 //        std::cout << "sort_map_s default constructor this: " << this <<  std::endl;
 //    };
 
-//    T& operator[]( const Key& key )
-//    {
-//        do_insert_raw({key,})
-//    }
-
-    void insert(const value_type& value)
+    T& operator[]( const Key& key )
     {
-        do_insert_raw(value);
+        auto it = do_insert_raw({key,T{}});
+        return it->second;
+    }
+
+    iterator insert(const value_type& value)
+    {
+        return do_insert_raw(value);
 
     }
 
@@ -59,10 +61,10 @@ public:
 private:
     // ---Helper functions --
     //std::pair<iterator,bool> do_insert(const value_type& )
-    void do_insert_raw(const value_type& value)
+    iterator do_insert_raw(const value_type& value)
     {
         data_.push_back(value);
-
+        return data_.end() -1;
     }
 
 
