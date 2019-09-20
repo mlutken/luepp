@@ -37,6 +37,6 @@ extern_C size_t llfifo_size         (llfifo_t* self);
 extern_C int    llfifo_push         (llfifo_t* self, const char* elm_ptr, size_t elem_size);
 extern_C int    llfifo_start_push   (llfifo_t* self, size_t* write_index);
 extern_C int    llfifo_end_push     (llfifo_t* self, size_t write_index);
-extern_C int    llfifo_pop      (llfifo_t* self);
+extern_C int    llfifo_pop          (llfifo_t* self);
 
 #endif //CESL_CONCURRENT_LLFIFO_H
