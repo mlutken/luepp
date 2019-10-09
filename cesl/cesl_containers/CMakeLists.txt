@@ -4,10 +4,8 @@ add_library(${lib_name} STATIC "")
 
 target_sources(${lib_name}
     PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/cesl_pool.h
     ${CMAKE_CURRENT_LIST_DIR}/cesl_vector_s.h
     PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/cesl_pool.c
     ${CMAKE_CURRENT_LIST_DIR}/cesl_vector_s.c
 )
 

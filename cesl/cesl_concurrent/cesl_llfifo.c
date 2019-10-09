@@ -91,7 +91,21 @@ size_t llfifo_size(llfifo_t* self)
     return sz >= 0 ? (size_t)sz : (size_t)(- sz -1);
 }
 
+// TODO: Change this to not take the size parameter
 int llfifo_push (llfifo_t* self, const char* elm_ptr, size_t elem_size )
+{
+    size_t next_write_index = llfifo_inc_index(self, llfifo_write_index(self));
+    if ( next_write_index != llfifo_read_index(self) ) {
+        elem_size = elem_size == 0 ? self->elem_max_size_ : elem_size;
+        char* dst_ptr = llfifo_get_ptr_to_index(self, llfifo_write_index(self));
+        memcpy (dst_ptr, elm_ptr, elem_size);
+        llfifo_write_index_set(self, next_write_index);
+        return 1;
+    }
+    return 0;
+}
+
+int llfifo_push_size (llfifo_t* self, const char* elm_ptr, size_t elem_size )
 {
     size_t next_write_index = llfifo_inc_index(self, llfifo_write_index(self));
     if ( next_write_index != llfifo_read_index(self) ) {

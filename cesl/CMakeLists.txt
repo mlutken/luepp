@@ -1,4 +1,5 @@
 add_subdirectory(cesl_compiler)
 add_subdirectory(cesl_debug)
 add_subdirectory(cesl_strings)
+add_subdirectory(cesl_containers)
 add_subdirectory(cesl_concurrent)
