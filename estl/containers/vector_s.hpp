@@ -39,7 +39,8 @@ public:
         }
         for (auto i = count; i > 0; ) {
             --i;
-            (*this)[i] = value;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(value);
         }
         size_ = count;
     }
@@ -51,7 +52,8 @@ public:
         }
         for (auto i = count; i > 0; ) {
             --i;
-            (*this)[i] = T{};
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) T{};
         }
         size_ = count;
     }
@@ -62,9 +64,20 @@ public:
         const auto diff = check_range(first, last);
         size_type i = 0u;
         for (auto it = first; it != last; ++it, ++i) {
-            (*this)[i] = *it;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(*it);
         }
         size_ = diff;
+    }
+
+    vector_s(const vector_s& other)
+    {
+        for (auto i = other.size(); i > 0; ) {
+            --i;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(other[i]);
+        }
+        size_ = other.size();
     }
 
     template<size_t CAPACITY_OTHER>
@@ -72,12 +85,32 @@ public:
     {
         for (auto i = other.size(); i > 0; ) {
             --i;
-            (*this)[i] = other[i];
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(other[i]);
         }
         size_ = other.size();
     }
 
-//    vector_s( vector_s&& other ) noexcept; // Not relevant here, I think!
+    template<size_t CAPACITY_OTHER>
+    vector_s(vector_s<T, CAPACITY_OTHER>&& other)
+    {
+        for (auto i = other.size(); i > 0; ) {
+            --i;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(std::move(other[i]));
+        }
+        size_ = other.size();
+    }
+
+    vector_s( vector_s&& other ) noexcept
+    {
+        for (auto i = other.size(); i > 0; ) {
+            --i;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(std::move(other[i]));
+        }
+        size_ = other.size();
+    }
 
     // NOTE: Seems the use of initializer_list forces the copy constructor to be called
     //      https://stackoverflow.com/questions/13148772/in-place-vector-construction-from-initialization-list-for-class-with-constructo
@@ -92,7 +125,8 @@ public:
         const auto diff = check_range(it, end);
         size_type i = 0u;
         for (; it != end; ++it, ++i) {
-            (*this)[i] = std::move(*it);
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(*it); // TODO: Is it OK to move here! Elements are already copied into initializer_list?
         }
         size_ = diff;
     }
@@ -119,6 +153,61 @@ public:
     static nature of this vector: swap needs to copy all elements and not
     just swap pointers as std::vector::swap() can do.
     */
+    vector_s& operator=(vector_s&& other)
+    {
+        // NOTE: The reinterpret cast is needed as the pointer types can potentially
+        //       be different if the capacities of the vectors are different.
+        //       As we merely need to check the pointer adresses it's ok with
+        //       with this "crude" cast here!
+        if (reinterpret_cast<void*>(this) != reinterpret_cast<const void*>(&other)) // prevent self-assignment
+        {
+            for (auto i = other.size(); i > 0; ) {
+                --i;
+                const pointer insert_ptr = data_ptr_ + i;
+                new (insert_ptr) value_type(std::move(other[i]));
+            }
+            size_ = other.size();
+        }
+        return *this;
+    }
+
+    vector_s& operator=(const vector_s& other)
+    {
+        // NOTE: The reinterpret cast is needed as the pointer types can potentially
+        //       be different if the capacities of the vectors are different.
+        //       As we merely need to check the pointer adresses it's ok with
+        //       with this "crude" cast here!
+        if (reinterpret_cast<void*>(this) != reinterpret_cast<const void*>(&other)) // prevent self-assignment
+        {
+            for (auto i = other.size(); i > 0; ) {
+                --i;
+                const pointer insert_ptr = data_ptr_ + i;
+                new (insert_ptr) value_type(other[i]);
+            }
+            size_ = other.size();
+        }
+        return *this;
+    }
+
+    template<size_t CAPACITY_OTHER>
+    vector_s& operator=(vector_s<T, CAPACITY_OTHER>&& other)
+    {
+        // NOTE: The reinterpret cast is needed as the pointer types can potentially
+        //       be different if the capacities of the vectors are different.
+        //       As we merely need to check the pointer adresses it's ok with
+        //       with this "crude" cast here!
+        if (reinterpret_cast<void*>(this) != reinterpret_cast<const void*>(&other)) // prevent self-assignment
+        {
+            for (auto i = other.size(); i > 0; ) {
+                --i;
+                const pointer insert_ptr = data_ptr_ + i;
+                new (insert_ptr) value_type(std::move(other[i]));
+            }
+            size_ = other.size();
+        }
+        return *this;
+    }
+
     template<size_t CAPACITY_OTHER>
     vector_s& operator=(const vector_s<T, CAPACITY_OTHER>& other)
     {
@@ -130,11 +219,11 @@ public:
         {
             for (auto i = other.size(); i > 0; ) {
                 --i;
-                (*this)[i] = other[i];
+                const pointer insert_ptr = data_ptr_ + i;
+                new (insert_ptr) value_type(other[i]);
             }
             size_ = other.size();
         }
-
         return *this;
     }
 
@@ -145,7 +234,8 @@ public:
         const auto diff = check_range(it, end);
         size_type i = 0u;
         for (; it != end; ++it, ++i) {
-            (*this)[i] = *it;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(*it); // TODO: Is it OK to move here! Elements are already copied into initializer_list?
         }
         size_ = diff;
         return *this;
@@ -158,7 +248,8 @@ public:
         }
         for (auto i = count; i > 0; ) {
             --i;
-            (*this)[i] = value;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(value);
         }
         size_ = count;
     }
@@ -169,7 +260,8 @@ public:
         const auto diff = check_range(first, last);
         size_type i = 0u;
         for (auto it = first; it != last; ++it, ++i) {
-            (*this)[i] = *it;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(*it);
         }
         size_ = diff;
     }
@@ -181,7 +273,8 @@ public:
         const auto diff = check_range(it, end);
         size_type i = 0u;
         for (; it != end; ++it, ++i) {
-            (*this)[i] = *it;
+            const pointer insert_ptr = data_ptr_ + i;
+            new (insert_ptr) value_type(*it);    // TODO: Is it OK to move here! Elements are already copied into initializer_list?
         }
         size_ = diff;
     }
@@ -265,8 +358,11 @@ public:
         }
 
         iterator ipos = const_cast<iterator>(pos);
-        shift_right(ipos, end(), 1u);
-        *ipos = value;
+        shift_right(ipos, end(), 1u); // Allocates new elements
+        const pointer insert_ptr = static_cast<pointer>(ipos);
+        new (insert_ptr) value_type(value);
+        // *ipos = value; // TODO: This seems ok too since the extra elements are already "allocated" by shift_right
+
         size_ = new_size;
         return ipos;
     }
@@ -279,8 +375,12 @@ public:
         }
 
         iterator ipos = const_cast<iterator>(pos);
-        shift_right(ipos, end(), 1u);
-        *ipos = std::move(value);
+        shift_right(ipos, end(), 1u);// Allocates new elements
+
+        const pointer insert_ptr = static_cast<pointer>(ipos);
+        new (insert_ptr) value_type(std::move(value));
+        // *ipos = std::move(value); // TODO: This seems ok too since the extra elements are already "allocated" by shift_right
+
         size_ = new_size;
         return ipos;
     }
@@ -297,7 +397,9 @@ public:
         shift_right(ipos, end(), count);
         const auto it_end = ipos + count;
         for (auto it = ipos; it != it_end; ++it) {
-            *it = value;
+            const pointer insert_ptr = static_cast<pointer>(it);
+            new (insert_ptr) value_type(value);
+            //*it = value; // TODO: This seems ok too since the extra elements are already "allocated" by shift_right
         }
         size_ = new_size;
         return ipos;
@@ -320,7 +422,9 @@ public:
         iterator ipos = ipos_start;
         shift_right(ipos, end(), count);
         for (auto it = first; it != last; ++it, ++ipos) {
-            *ipos = *it;
+            const pointer insert_ptr = static_cast<pointer>(ipos);
+            new (insert_ptr) value_type(*it);
+            // *ipos = *it; // TODO: This seems ok too since the extra elements are already "allocated" by shift_right
         }
         size_ = new_size;
         return ipos_start;
@@ -455,6 +559,13 @@ private:
         if (diff_signed < 0) {
             return;
         }
+
+        // Make room for elements
+        for (size_type i = 0; i < n; ++i) {
+            const pointer insert_ptr = last + i;
+            new (insert_ptr) value_type{}; // Default contruct the extra elements needed. Could perhaps construct when first needed instead!
+        }
+
         for (auto it = last; it != first;) {
             --it;
             *(it+n) = std::move(*it);
