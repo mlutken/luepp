@@ -71,10 +71,25 @@ int main()
     using MyMap = estl::sort_map_s<std::string, std::string, 30>;
     MyMap m;
 
-//    m.insert({"food"s, "mad"s});
+    //m.insert({"food"s, "mad"s});
     m["goat"] = "ged";
 
+    cout << "m.size()" << m.size() << "\n";
     cout << "m['goat'] => " << m["goat"] << "\n";
+
+
+//    std::vector<std::string> strings = {"hello", "nihao", "byebye", "yo"};
+    estl::vector_s<std::string, 20> strings = {"hello", "nihao", "byebye", "yo"};
+
+    // cars.sort(std::less<std::string>()); // compiles fine and produce a sorted list
+
+//    std::sort(strings.begin(), strings.end(), std::less<std::string>() );
+
+    for (auto it = strings.begin(); it != strings.end(); ++it) {
+        std::cout << *it << " - ";
+    }
+
+    std::cout << std::endl;
 
 
     return 0;

@@ -57,15 +57,28 @@ inline bool operator== (const Rect& lhs, const Rect& rhs) {
 
 TEST_F(SortMapSUnitTest, default_constructor)
 {
-    EXPECT_EQ(2, 2);
-
-//     sort_map_s<int, 10> v;
-//     EXPECT_TRUE(v.empty());
-//     EXPECT_EQ(static_cast<size_t>(0u), v.size());
-//     EXPECT_EQ(10u, v.capacity());
-//     EXPECT_EQ(10u, v.max_size());
+    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    MyMap m;
+    EXPECT_EQ(0u, m.size());
 }
 
+TEST_F(SortMapSUnitTest, basic_operations)
+{
+    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    MyMap m;
+
+    m["key1"] = "val1";
+    EXPECT_EQ(1u, m.size());
+    EXPECT_EQ("val1", m.begin()->second);
+    EXPECT_EQ("val1", m["key1"]);
+
+    m["key2"] = "val2";
+    EXPECT_EQ(2u, m.size());
+    EXPECT_EQ("val2", m.begin()->second);
+    EXPECT_EQ("val2", m["key2"]);
+    EXPECT_EQ("val1", m["key1"]);
+
+}
 
 int main(int argc, char **argv)
 {

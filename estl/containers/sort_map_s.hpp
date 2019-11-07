@@ -14,12 +14,12 @@ namespace estl {
  */
 
 
-template <typename Key, typename T, size_t CAPACITY, class Compare = std::less<Key> >
+template <typename Key, typename T, size_t CAPACITY, class Compare = std::less<Key>, size_t LINEAR_SEARCH_LIMIT = 10 >
 struct sort_map_s
 {
 private:
     using node_t = std::pair<Key, T>;
-    using data_t = estl::vector_s<node_t, CAPACITY>;
+    using vector_t = estl::vector_s<node_t, CAPACITY>;
 public:
     using value_type                = std::pair<const Key, T>;
     using size_type                 = size_t;
@@ -29,8 +29,8 @@ public:
     using pointer                   = value_type*;
     using const_pointer             = const value_type*;
 
-    using iterator                  = typename data_t::iterator;
-    using const_iterator            = typename data_t::const_iterator;
+    using iterator                  = typename vector_t::iterator;
+    using const_iterator            = typename vector_t::const_iterator;
     using reverse_iterator          = std::reverse_iterator<iterator>;
     using const_reverse_iterator    = const std::reverse_iterator<const_iterator>;
 
@@ -45,9 +45,53 @@ public:
 //        std::cout << "sort_map_s default constructor this: " << this <<  std::endl;
 //    };
 
+    // -----------------
+    // --- Iterators ---
+    // -----------------
+    iterator                begin()     noexcept { return data_vec_.begin(); }
+    const_iterator          begin()     const noexcept { return data_vec_.begin(); }
+    const_iterator          cbegin()    const noexcept { return data_vec_.cbegin(); }
+
+    iterator                end()       noexcept { return data_vec_.end(); }
+    const_iterator          end()       const noexcept { return data_vec_.end(); }
+    const_iterator          cend()      const noexcept { return data_vec_.cend(); }
+
+    reverse_iterator        rbegin()    noexcept { return data_vec_.rbegin(); }
+    const_reverse_iterator  rbegin()    const noexcept { return data_vec_.rbegin(); }
+    const_reverse_iterator  crbegin()   const noexcept { return data_vec_.crbegin(); }
+
+    reverse_iterator        rend()      noexcept { return data_vec_.rend(); }
+    const_reverse_iterator  rend()      const noexcept { return data_vec_.rend(); }
+    const_reverse_iterator  crend()     const noexcept { return data_vec_.crend(); }
+
+    // ----------------
+    // --- Capacity ---
+    // ----------------
+    bool          empty       () const noexcept {   return size() == 0; }
+    size_type     size        () const noexcept {   return data_vec_.size(); }
+    size_type     max_size    () const noexcept {   return data_vec_.max_size(); }
+    size_type     capacity    () const noexcept {   return data_vec_.capacity(); }
+
+    // -----------------
+    // --- Modifiers ---
+    // -----------------
+    void clear() noexcept
+    {
+        data_vec_.clear();
+    }
+
+    // --------------
+    // --- Access ---
+    // --------------
     T& operator[]( const Key& key )
     {
-        auto it = do_insert_raw({key,T{}});
+        if (key_is_last_element(key)) {
+            return data_vec_.back().second;
+        }
+        auto it = do_find(key);
+        if (it == end()) {
+            it = do_insert_raw({key,T{}});
+        }
         return it->second;
     }
 
@@ -60,17 +104,25 @@ public:
 
 private:
     // ---Helper functions --
-    //std::pair<iterator,bool> do_insert(const value_type& )
+//   std::pair<iterator,bool> do_insert(const value_type& )
     iterator do_insert_raw(const value_type& value)
     {
-        data_.push_back(value);
-        return data_.end() -1;
+        is_sorted_ = false;
+        data_vec_.push_back(value);
+        return data_vec_.end() -1;
     }
 
 
     iterator do_find(const Key& key)
     {
-        return do_find_bisect(key);
+        if (size() < LINEAR_SEARCH_LIMIT) {
+            return do_find_linear(key);
+        }
+        if (!is_sorted_) {
+            sort();
+        }
+//        return do_find_bisect(key);
+        return end();
     }
 
 //    template<class ForwardIt, class T, class Compare=std::less<>>
@@ -89,16 +141,27 @@ private:
 //        first = std::lower_bound(first, last, value, compare_);
 //        return first != last && !comp(value, *first) ? first : last;
 
-        const auto end = data_.end();
-        const auto it = std::lower_bound(data_.begin(), end, key, compare_);
-        return it != end && !compare_(key, *it) ? it : end;
+        const auto it_end = end();
+        const auto it = std::lower_bound(data_vec_.begin(), it_end, key, compare_);
+        return it != it_end && !compare_(key, *it) ? it : it_end;
+    }
+
+    iterator do_find_linear(const Key& key)
+    {
+        const auto it_end = end();
+        for (auto it = begin(); it != it_end; ++it) {
+            if (it->first == key) {
+                return it;
+            }
+        }
+        return it_end;
     }
 
     void insertion_sort()
     {
-        const auto end = data_.end();
-        const auto begin = data_.begin();
-        for (auto it = data_.begin(); it != end; ++it)
+        const auto end = data_vec_.end();
+        const auto begin = data_vec_.begin();
+        for (auto it = data_vec_.begin(); it != end; ++it)
         {
             auto const insertion_point = std::upper_bound(begin, it, *it , compare_);
             // Shifting the unsorted part
@@ -108,13 +171,22 @@ private:
 
     void sort()
     {
-        std::sort(data_.begin(), data_.end(), compare_);
+//        std::sort(data_vec_.begin(), data_vec_.end(), std::less<std::string>());
         number_elements_added_since_last_sort_ = 0;
         is_sorted_ = true; // TODO: Do we need this when we have the above counter ?
     }
 
+    /** Simple helper to test whether the key refers to the last inserted
+        element. */
+    bool key_is_last_element(const Key& key)
+    {
+        if (empty()) { return false; }
+        return data_vec_.back().first == key;
+    }
+
+
     // --- Member data --
-    data_t      data_;
+    vector_t    data_vec_;
     Compare     compare_;
     size_type   number_elements_added_since_last_sort_ = 0U;
     bool        is_sorted_ = true;
