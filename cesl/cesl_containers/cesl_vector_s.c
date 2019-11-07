@@ -10,7 +10,7 @@
 /** Get pointer (inside fifo_buffer) to the index requested */
 char* cesl_vector_s_get_ptr_to_index (cesl_vector_s_t* self, size_t index)
 {
-    return self->fifo_buffer_ + (index * self->elem_max_size_);
+    return self->buffer_ + (index * self->elem_max_size_);
 }
 
 /** Move elements */
@@ -40,7 +40,7 @@ int cesl_vector_s_create(cesl_vector_s_t* self, size_t elem_max_size, size_t ele
     self->elem_max_size_ = elem_max_size;
     self->elems_max_count_ = elems_max_count;
     self->elems_count_ = 0;
-    self->fifo_buffer_ = fifo_buffer;
+    self->buffer_ = fifo_buffer;
     return 1;
 }
 

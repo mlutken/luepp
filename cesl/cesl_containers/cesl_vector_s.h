@@ -13,7 +13,7 @@
 // -----------------
 
 typedef struct {
-    char*                           fifo_buffer_;
+    char*                           buffer_;
     size_t                          elem_max_size_;
     size_t                          elems_max_count_;
     size_t                          elems_count_;
