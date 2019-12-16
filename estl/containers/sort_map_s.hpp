@@ -2,6 +2,7 @@
 #define ESTL_SORT_MAP_S_HPP
 
 #include <algorithm>
+#include <functional>
 #include "vector_s.hpp"
 
 namespace estl {
@@ -39,11 +40,25 @@ public:
     // -- Constructors/Assignment ---
     // ------------------------------
 public:
-    sort_map_s() = default;
+    sort_map_s()
+        : comperator_(Compare())
+    {}
 
-//    sort_map_s() {
-//        std::cout << "sort_map_s default constructor this: " << this <<  std::endl;
-//    };
+    // ----------------------
+    // --- Element access ---
+    // ----------------------
+    T& operator[]( const Key& key )
+    {
+        if (key_is_last_element(key)) {
+            return data_vec_.back().second;
+        }
+        auto it = do_find(key);
+        if (it == end()) {
+            it = do_insert_raw({key,T{}});
+        }
+        return it->second;
+    }
+
 
     // -----------------
     // --- Iterators ---
@@ -80,31 +95,42 @@ public:
         data_vec_.clear();
     }
 
-    // --------------
-    // --- Access ---
-    // --------------
-    T& operator[]( const Key& key )
-    {
-        if (key_is_last_element(key)) {
-            return data_vec_.back().second;
-        }
-        auto it = do_find(key);
-        if (it == end()) {
-            it = do_insert_raw({key,T{}});
-        }
-        return it->second;
-    }
-
     iterator insert(const value_type& value)
     {
         return do_insert_raw(value);
+    }
 
+    // --------------
+    // --- Lookup ---
+    // --------------
+
+    iterator find( const Key& key ) {
+        return do_find(key);
+    }
+
+    const_iterator find( const Key& key ) const
+    {
+        return static_cast<const_iterator>(do_find(key));
+    }
+
+    bool contains( const Key& key ) const
+    {
+        return find(key) != end();
     }
 
 
 private:
+    struct comperator
+    {
+        comperator(Compare compare) : compare_(compare){}
+        bool operator()(const value_type& lhs, const value_type& rhs) {
+            return compare_(lhs.first, rhs.first);
+        }
+        Compare compare_;
+    };
+
+
     // ---Helper functions --
-//   std::pair<iterator,bool> do_insert(const value_type& )
     iterator do_insert_raw(const value_type& value)
     {
         is_sorted_ = false;
@@ -121,29 +147,17 @@ private:
         if (!is_sorted_) {
             sort();
         }
-//        return do_find_bisect(key);
-        return end();
+        return do_find_bisect(key);
     }
-
-//    template<class ForwardIt, class T, class Compare=std::less<>>
-//    ForwardIt binary_find(ForwardIt first, ForwardIt last, const T& value, Compare comp={})
-//    {
-//        // Note: BOTH type T and the type after ForwardIt is dereferenced
-//        // must be implicitly convertible to BOTH Type1 and Type2, used in Compare.
-//        // This is stricter than lower_bound requirement (see above)
-
-//        const auto it = std::lower_bound(data_.begin(), data_.end(), value, compare_);
-//        return first != last && !comp(value, *first) ? first : last;
-//    }
 
     iterator do_find_bisect(const Key& key)
     {
-//        first = std::lower_bound(first, last, value, compare_);
-//        return first != last && !comp(value, *first) ? first : last;
+        //std::cerr << "do_find_bisect(" << key << ")\n";
+        const value_type elem (key,T{});
 
         const auto it_end = end();
-        const auto it = std::lower_bound(data_vec_.begin(), it_end, key, compare_);
-        return it != it_end && !compare_(key, *it) ? it : it_end;
+        const auto it = std::lower_bound(data_vec_.begin(), it_end, elem, comperator_);
+        return !(it == it_end) && !comperator_(elem, *it) ? it : it_end;
     }
 
     iterator do_find_linear(const Key& key)
@@ -163,7 +177,7 @@ private:
         const auto begin = data_vec_.begin();
         for (auto it = data_vec_.begin(); it != end; ++it)
         {
-            auto const insertion_point = std::upper_bound(begin, it, *it , compare_);
+            auto const insertion_point = std::upper_bound(begin, it, *it, comperator_);
             // Shifting the unsorted part
             std::rotate(insertion_point, it, it+1);
         }
@@ -171,9 +185,8 @@ private:
 
     void sort()
     {
-//        std::sort(data_vec_.begin(), data_vec_.end(), std::less<std::string>());
-        number_elements_added_since_last_sort_ = 0;
-        is_sorted_ = true; // TODO: Do we need this when we have the above counter ?
+        std::sort(data_vec_.begin(), data_vec_.end(), comperator_);
+        is_sorted_ = true;
     }
 
     /** Simple helper to test whether the key refers to the last inserted
@@ -187,8 +200,7 @@ private:
 
     // --- Member data --
     vector_t    data_vec_;
-    Compare     compare_;
-    size_type   number_elements_added_since_last_sort_ = 0U;
+    comperator  comperator_;
     bool        is_sorted_ = true;
 
 };

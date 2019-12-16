@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <string>
 #include <containers/sort_map_s.hpp>
 
 struct MyClass {
@@ -54,42 +55,32 @@ using namespace std;
 
 int main()
 {
-    cout << "--- sort_map_s playground ---\n";
-    estl::vector_s<std::string, 12> v;
-    estl::vector_s<std::pair<std::string, std::string>, 12> vp;
-//    std::vector<std::string> v;
-
-
-    std::string s1("sds"s);
-    v.push_back("sds"s);
-    v.push_back("sds2"s);
-    v.push_back("sds3"s);
-
-//    auto p1 = make_pair("1", "2");
-//    vp.push_back({"fg","frgfd"});
 
     using MyMap = estl::sort_map_s<std::string, std::string, 30>;
     MyMap m;
 
     //m.insert({"food"s, "mad"s});
     m["goat"] = "ged";
+    m["horse"] = "hest";
 
     cout << "m.size()" << m.size() << "\n";
     cout << "m['goat'] => " << m["goat"] << "\n";
+    cout << "m['horse'] => " << m["horse"] << "\n";
 
 
 //    std::vector<std::string> strings = {"hello", "nihao", "byebye", "yo"};
-    estl::vector_s<std::string, 20> strings = {"hello", "nihao", "byebye", "yo"};
+//    estl::vector_s<std::string, 20> strings = {"hello", "nihao", "byebye", "yo"};
 
     // cars.sort(std::less<std::string>()); // compiles fine and produce a sorted list
 
 //    std::sort(strings.begin(), strings.end(), std::less<std::string>() );
 
-    for (auto it = strings.begin(); it != strings.end(); ++it) {
-        std::cout << *it << " - ";
+    std::cerr << "Printing Map\n";
+    for (auto it = m.begin(); it != m.end(); ++it) {
+        std::cerr << (*it).first << " => " << (*it).second << "\n";
     }
 
-    std::cout << std::endl;
+    std::cerr << "\n";
 
 
     return 0;
