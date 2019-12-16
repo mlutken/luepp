@@ -15,7 +15,6 @@ class vector_s
 {
 public:
     using value_type = T;
-    //using allocator_type = void; // TODO: Can we do something clever with this?
     using size_type                 = size_t;
     using difference_type           = ptrdiff_t;
     using reference                 = value_type&;
