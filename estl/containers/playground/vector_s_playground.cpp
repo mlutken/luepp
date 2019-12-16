@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <string>
+#include <algorithm>
 #include <containers/vector_s.hpp>
 #include <containers/myarray.hpp>
 
@@ -46,12 +48,46 @@ inline std::ostream& operator<<(std::ostream& os, const MyClass& mc)
     return os;
 }
 
+template <class CONTAINER>
+void debug_print(const CONTAINER& container)
+{
+    for(const auto& elem : container) {
+        std::cerr << elem << ", ";
+    }
+    std::cerr << "\n";
+}
+
 
 using namespace std;
-
+using namespace estl;
 
 
 int main()
+{
+    cout << "--- vector_s playground ---\n";
+
+    using myvec_t = estl::vector_s<int, 50>;
+    using stringvec_t = estl::vector_s<std::string, 50>;
+//    using stringvec_t = std::vector<std::string>;
+
+    myvec_t v{7,3,5,1,20,9,8};
+
+    debug_print(v);
+    std::sort(v.begin(), v.end(), std::greater<int>());
+    debug_print(v);
+
+    stringvec_t vs{"07","03","05","01","20","09","08"};
+
+    debug_print(vs);
+    std::sort(vs.begin(), vs.end(), std::greater<std::string>());
+    debug_print(vs);
+
+
+
+    return 0;
+}
+
+int main_old()
 {
     cout << "--- vector_s playground ---\n";
 
@@ -101,6 +137,10 @@ int main()
         cout << "--- In scope: Scope exit ---" << endl;
     }
     cout << "--- after scope ---" << endl;
+
+
+
+
 
 //    MyClass mc1 = 10;
 //    MyClass mc2;
