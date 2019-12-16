@@ -6,9 +6,6 @@ target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/vector_s.hpp
     ${CMAKE_CURRENT_LIST_DIR}/sort_map_s.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/const_sequence.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/mutable_sequence.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/expandable_sequence.hpp
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)

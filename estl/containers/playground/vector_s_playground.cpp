@@ -4,7 +4,6 @@
 #include <string>
 #include <algorithm>
 #include <containers/vector_s.hpp>
-#include <containers/myarray.hpp>
 
 struct MyClass {
     MyClass () {
