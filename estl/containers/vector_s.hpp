@@ -451,6 +451,7 @@ public:
 
     iterator erase (const_iterator pos)
     {
+        destroy(pos);
         iterator ipos = const_cast<iterator>(pos);
         shift_left(ipos+1, end(), 1u);
         --size_;
@@ -459,6 +460,7 @@ public:
 
     iterator erase (const_iterator first, const_iterator last)
     {
+		destroy(first, last);
         const auto diff = check_range(first, last);
         const iterator ifirst = const_cast<iterator>(first);
         const iterator ilast = const_cast<iterator>(last);
@@ -526,8 +528,23 @@ public:
     // --- Helper functions ---
     // ------------------------
 private:
+    void destroy(const_iterator begin, const_iterator end)
+    {
+        for (auto it = begin; it != end; ++it) {
+            destroy(it);
+        }
+    }
+
+    void destroy(const_iterator pos)
+    {
+        iterator ipos = const_cast<iterator>(pos);
+        pointer ptr = static_cast<pointer>(ipos);
+        ptr->~T();
+    }
+
     /** Destroy all elements. */
-    void destroy_elements() {
+    void destroy_elements()
+    {
         for (size_type i = size(); i > 0; ) {
             --i;
             pointer p = &(*this)[i];
