@@ -22,6 +22,7 @@ private:
     using node_t = std::pair<Key, T>;
     using vector_t = estl::vector_s<node_t, CAPACITY>;
 public:
+    using key_type                  = Key;
     using value_type                = std::pair<const Key, T>;
     using size_type                 = size_t;
     using difference_type           = ptrdiff_t;
@@ -43,6 +44,26 @@ public:
     sort_map_s()
         : comperator_(Compare())
     {}
+
+    explicit sort_map_s(const Compare& comperator)
+        : comperator_(comperator)
+    {}
+
+    explicit sort_map_s(const std::initializer_list<value_type>& init)
+        : comperator_(Compare())
+    {
+        for (auto elem : init) {
+            data_vec_.push_back(elem);
+        }
+    }
+
+    sort_map_s(const std::initializer_list<value_type>& init, const Compare& comperator)
+        : comperator_(comperator)
+    {
+        for (auto elem : init) {
+            data_vec_.push_back(elem);
+        }
+    }
 
     // ----------------------
     // --- Element access ---
@@ -98,6 +119,32 @@ public:
     iterator insert(const value_type& value)
     {
         return do_insert_raw(value);
+    }
+
+    iterator erase( iterator pos )
+    {
+        destroy(pos);
+        is_sorted_ = false;
+        return pos;
+    }
+
+    iterator erase( const_iterator first, const_iterator last )
+    {
+        for (auto it = first; it != last; ++it) {
+            destroy(it);
+        }
+        is_sorted_ = false;
+        return first;
+    }
+
+    size_type erase( const key_type& key )
+    {
+        const auto pos = find(key);
+        if (pos != end()) {
+            erase(pos);
+            return 1;
+        }
+        return 0;
     }
 
     // --------------
@@ -197,11 +244,15 @@ private:
         return data_vec_.back().first == key;
     }
 
+    void destroy(const_iterator pos)
+    {
+        data_vec_.erase(pos);
+    }
 
     // --- Member data --
     vector_t    data_vec_;
     comperator  comperator_;
-    bool        is_sorted_ = true;
+    bool        is_sorted_ = false;
 
 };
 
