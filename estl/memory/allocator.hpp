@@ -5,6 +5,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <algorithm>
+#include <memory>
 
 // TODO:Temporary/development includes
 #include <iostream>
