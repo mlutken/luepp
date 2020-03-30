@@ -59,6 +59,8 @@ int main()
     using MyMap = estl::sort_map_s<std::string, std::string, 30>;
     MyMap m;
 
+    auto s = m["not-preset"];
+
     //m.insert({"food"s, "mad"s});
     m["goat"] = "ged";
     m["horse"] = "hest";
@@ -85,3 +87,28 @@ int main()
 
     return 0;
 }
+
+/*
+    struct node_t {
+        node_t() = default;
+        node_t(const node_t& other) = default;
+        node_t(node_t&& other) : first(std::move(other.first)), second(std::move(other.second)) {}
+        node_t& operator= (const node_t& other)
+        {
+            first = other.first;
+            second= other.second;
+            return *this;
+        }
+        node_t& operator= (node_t&& other)
+        {
+            first = std::move(other.first);
+            second= std::move(other.second);
+            return *this;
+        }
+        node_t(Key&& k, T&& v) : first(std::move(k)), second(std::move(v)) {}
+        node_t(const Key& k, const T& v) : first(k), second(v) {}
+        Key first;
+        T second;
+    };
+
+*/
