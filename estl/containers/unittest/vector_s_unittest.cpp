@@ -143,6 +143,28 @@ TEST_F(VectorSUnitTest, copy_constructor)
 
 }
 
+TEST_F(VectorSUnitTest, push_back)
+{
+    vector_s<unsigned, 6> v{};
+    EXPECT_EQ(0u, v.size());
+
+    // Insert 3 elements from start
+    v.push_back(0u); // rvalue reference (the (T&& value) overload)
+    v.push_back(1u); // rvalue reference (the (T&& value) overload)
+    v.push_back(2u); // rvalue reference (the (T&& value) overload)
+    EXPECT_EQ(0u, v[0]);
+    EXPECT_EQ(1u, v[1]);
+    EXPECT_EQ(2u, v[2]);
+    EXPECT_EQ(3u, v.size());
+
+    const unsigned v10 = 10u;
+    v.push_back(v10); // Normal (const T& value) overload
+    EXPECT_EQ(10u, v[3]);
+    EXPECT_EQ(4u, v.size());
+}
+
+#if (CXX_STANDARD != 98)
+
 TEST_F(VectorSUnitTest, assignment)
 {
     std::vector<int> v_raw_src{0,1,2,3,4};
@@ -811,25 +833,6 @@ TEST_F(VectorSUnitTest, erase_range_of_elements)
     EXPECT_EQ(5u, v[2]);
 }
 
-TEST_F(VectorSUnitTest, push_back)
-{
-    vector_s<unsigned, 6> v{};
-    EXPECT_EQ(0u, v.size());
-
-    // Insert 3 elements from start
-    v.push_back(0u); // rvalue reference (the (T&& value) overload)
-    v.push_back(1u); // rvalue reference (the (T&& value) overload)
-    v.push_back(2u); // rvalue reference (the (T&& value) overload)
-    EXPECT_EQ(0u, v[0]);
-    EXPECT_EQ(1u, v[1]);
-    EXPECT_EQ(2u, v[2]);
-    EXPECT_EQ(3u, v.size());
-
-    const unsigned v10 = 10u;
-    v.push_back(v10); // Normal (const T& value) overload
-    EXPECT_EQ(10u, v[3]);
-    EXPECT_EQ(4u, v.size());
-}
 
 
 TEST_F(VectorSUnitTest, emplace_back)
@@ -882,6 +885,7 @@ TEST_F(VectorSUnitTest, swap)
     EXPECT_EQ(v2, original_v1);
 }
 
+#endif // (CXX_STANDARD != 98)
 
 
 int main(int argc, char **argv)

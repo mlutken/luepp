@@ -218,6 +218,7 @@ TEST_F(SortMapSUnitTest, erase)
 
 }
 
+#if (CXX_STANDARD != 98)
 
 TEST_F(SortMapSUnitTest, initializer_construct)
 {
@@ -251,10 +252,9 @@ TEST_F(SortMapSUnitTest, initializer_construct)
     EXPECT_EQ("val_100", m["key_100"]);
     EXPECT_EQ("val_110", m["key_110"]);
     EXPECT_EQ("val_090", m["key_090"]);
-
-
 }
 
+#endif // (CXX_STANDARD != 98)
 
 int main(int argc, char **argv)
 {
