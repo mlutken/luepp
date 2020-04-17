@@ -1,1 +1,1 @@
-add_playground_cpp_exe(atomic "memory")
+add_playground_cpp_exe(atomic "atomic;memory")

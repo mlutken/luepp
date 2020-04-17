@@ -1,1 +1,1 @@
-add_unit_test(atomic "")
+add_unit_test(atomic "atomic")

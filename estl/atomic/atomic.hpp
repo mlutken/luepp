@@ -1,64 +1,19 @@
-/**@file
- * C++11 atomic operation for use when yout don't have C++11
+/** @file
+ * C++11 atomic operation for use when you don't have C++11
  * standard library available.
  */
 #ifndef ESTL_ATOMIC_H
 #define ESTL_ATOMIC_H
+#include <nestle_default_config.h>
 #include <stdbool.h>
 
 namespace estl {
 
-template <class T>
-class atomic
-{
-public:
-    constexpr atomic() noexcept = default;
-    constexpr atomic(T desired)
-    {
-    }
-
-    atomic(const atomic&) = delete;
-
-    T operator=( T desired ) noexcept;
-    T operator=( T desired ) volatile noexcept;
-
-    atomic& operator=(const atomic&) = delete;
-    atomic& operator=(const atomic&) volatile = delete;
-
-//    inline long InterlockedIncrement(long* p)
-//    {
-//        return __atomic_add_fetch(p, 1, __ATOMIC_SEQ_CST);
-//    }
-
-    // Pre increment
-    T operator++() noexcept             { return static_cast<T>(__atomic_add_fetch(&value_, 1, __ATOMIC_SEQ_CST)); }
-    T operator++() volatile noexcept    { return static_cast<T>(__atomic_add_fetch(&value_, 1, __ATOMIC_SEQ_CST)); }
-    // Post increment
-    T operator++(int) noexcept          { return static_cast<T>(__atomic_fetch_add(&value_, 1, __ATOMIC_SEQ_CST)); }
-    T operator++(int) volatile noexcept { return static_cast<T>(__atomic_fetch_add(&value_, 1, __ATOMIC_SEQ_CST)); }
-
-    // Pre decrement
-    T operator--() noexcept             { return static_cast<T>(__atomic_sub_fetch(&value_, 1, __ATOMIC_SEQ_CST)); }
-    T operator--() volatile noexcept    { return static_cast<T>(__atomic_sub_fetch(&value_, 1, __ATOMIC_SEQ_CST)); }
-    // Post decrement
-    T operator--(int) noexcept          { return static_cast<T>(__atomic_fetch_sub(&value_, 1, __ATOMIC_SEQ_CST)); }
-    T operator--(int) volatile noexcept { return static_cast<T>(__atomic_fetch_sub(&value_, 1, __ATOMIC_SEQ_CST)); }
-
-    T operator+=( T arg ) noexcept;
-    T operator+=( T arg ) volatile noexcept;
-        
-
-private:
-    T value_;
-};
-
 
 
 #if defined(__clang__)
-
 #elif defined(__GNUG__)
-
-
+#include "atomic__gcc.hpp"
 #elif defined(_MSC_VER)
 
 #endif

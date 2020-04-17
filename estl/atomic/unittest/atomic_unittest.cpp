@@ -4,6 +4,7 @@
 
 #include "../atomic.hpp"
 #include <vector>
+#include <iostream>
 
 using namespace testing;
 using namespace estl;
@@ -36,13 +37,13 @@ void AtomicUnitTest::TearDown()
 
 TEST_F(AtomicUnitTest, default_constructor)
 {
-    EXPECT_EQ(2, 2);
+    using atomic_int = atomic<int>;
+    atomic_int a(2);
+    EXPECT_EQ(2, a);
 
-//     shared_ptr<int, 10> v;
-//     EXPECT_TRUE(v.empty());
-//     EXPECT_EQ(static_cast<size_t>(0u), v.size());
-//     EXPECT_EQ(10u, v.capacity());
-//     EXPECT_EQ(10u, v.max_size());
+    a = 3;
+    EXPECT_EQ(3, a);
+
 }
 
 
