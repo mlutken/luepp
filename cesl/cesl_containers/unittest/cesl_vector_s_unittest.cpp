@@ -4,8 +4,8 @@
 #include <gtest/gtest.h>
 #include <cesl_containers/cesl_vector_s.h>
 
-constexpr int my_vector_elem_max_size = 1024;
-constexpr int my_vector_elems_max_count = 4;
+const int my_vector_elem_max_size = 1024;
+const int my_vector_elems_max_count = 4;
 
 static char my_vector_buffer_g[my_vector_elems_max_count][my_vector_elem_max_size];
 static cesl_vector_s_t my_vector_g;
