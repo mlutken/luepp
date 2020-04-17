@@ -1,3 +1,5 @@
+public:
+
 vector_s( vector_s&& other ) noexcept
 {
     for (auto i = other.size(); i > 0; ) {
@@ -101,7 +103,8 @@ iterator emplace( const_iterator pos, Args&&... args )
 {
     const auto new_size = size() + 1u;
     if (new_size > capacity()) {
-        throw std::range_error{"cas::vector_s emplace beyond capacity."};
+        ESTL_THROW (std::range_error, "cas::vector_s emplace beyond capacity.");
+        return end();
     }
 
     iterator ipos = const_cast<iterator>(pos);
@@ -128,7 +131,7 @@ reference emplace_back(Args&&... args)
 {
     const auto new_size = size() + 1;
     if (new_size > capacity()) {
-        throw std::range_error{"cas::vector_s emplace_back beyond capacity."};
+        ESTL_THROW (std::range_error, "cas::vector_s emplace_back beyond capacity.");
     }
 
     const pointer insert_ptr = data_ptr_ + size();
@@ -141,7 +144,8 @@ iterator insert(const_iterator pos, const T&& value)
 {
     const auto new_size = size() + 1u;
     if (new_size > capacity()) {
-        throw std::range_error("cas::vector_s inserting beyond capacity.");
+        ESTL_THROW (std::range_error, "cas::vector_s inserting beyond capacity.");
+        return end();
     }
 
     iterator ipos = const_cast<iterator>(pos);
@@ -154,4 +158,5 @@ iterator insert(const_iterator pos, const T&& value)
     size_ = new_size;
     return ipos;
 }
+private:
 

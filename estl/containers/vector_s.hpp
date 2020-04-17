@@ -27,9 +27,6 @@ public:
     typedef std::reverse_iterator<iterator>             reverse_iterator;
     typedef const std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-#if (CXX_STANDARD != 98)
-#   include "vector_s__cpp11.hpp"
-#endif
     // ------------------------------
     // -- Constructors/Assignment ---
     // ------------------------------
@@ -37,7 +34,7 @@ public:
     vector_s(size_type count, const T& value)
     {
         if (count > capacity()) {
-            throw std::range_error("cas::vector_s constructing beyond capacity.");
+            ESTL_THROW(std::range_error, "cas::vector_s constructing beyond capacity.");
         }
         for (size_t i = count; i > 0; ) {
             --i;
@@ -50,7 +47,7 @@ public:
     explicit vector_s(size_type count)
     {
         if (count > capacity()) {
-            throw std::range_error("cas::vector_s constructing beyond capacity.");
+            ESTL_THROW(std::range_error, "cas::vector_s constructing beyond capacity.");
         }
         for (size_type i = count; i > 0; ) {
             --i;
@@ -167,7 +164,7 @@ public:
     void assign(size_type count, const T& value)
     {
         if (count > capacity()) {
-            throw std::range_error("cas::vector_s assigning beyond capacity.");
+            ESTL_THROW (std::range_error, "cas::vector_s assigning beyond capacity.");
         }
         for (size_type i = count; i > 0; ) {
             --i;
@@ -200,7 +197,7 @@ public:
     reference at(size_type pos)
     {
         if (pos >= size()) {
-            throw std::out_of_range("cas::vector_s access (vector_s::at()) beyond size.");
+            ESTL_THROW ( std::out_of_range, "cas::vector_s access (vector_s::at()) beyond size.");
         }
         return (*this)[pos];
     }
@@ -208,7 +205,7 @@ public:
     const_reference at(size_type pos) const
     {
         if (pos >= size()) {
-            throw std::out_of_range("cas::vector_s access (const vector_s::at()) beyond size.");
+            ESTL_THROW (std::out_of_range, "cas::vector_s access (const vector_s::at()) beyond size.");
         }
         return (*this)[pos];
     }
@@ -265,7 +262,8 @@ public:
     {
         const size_type new_size = size() + 1u;
         if (new_size > capacity()) {
-            throw std::range_error("cas::vector_s inserting beyond capacity.");
+            ESTL_THROW (std::range_error, "cas::vector_s inserting beyond capacity.");
+            return end();
         }
 
         iterator ipos = const_cast<iterator>(pos);
@@ -282,7 +280,8 @@ public:
     {
         const size_type new_size = size() + count;
         if (new_size > capacity()) {
-            throw std::range_error("cas::vector_s inserting beyond capacity.");
+            ESTL_THROW (std::range_error, "cas::vector_s inserting beyond capacity.");
+            return end();
         }
 
         iterator ipos = const_cast<iterator>(pos);
@@ -302,12 +301,14 @@ public:
     {
         const signed_size_t count_signed = last - first;
         if (count_signed < 0) {
-            throw std::out_of_range("cas::vector_s range constructing/assigning from inverted range.");
+            ESTL_THROW (std::out_of_range, "cas::vector_s range constructing/assigning from inverted range.");
+            return end();
         }
         const size_type count = static_cast<size_type>(count_signed);
         const size_type new_size = size() + count;
         if (new_size > capacity()) {
-            throw std::range_error("cas::vector_s inserting beyond capacity.");
+            ESTL_THROW (std::range_error, "cas::vector_s inserting beyond capacity.");
+            return end();
         }
 
         const iterator ipos_start = const_cast<iterator>(pos);
@@ -346,7 +347,7 @@ public:
     {
         const size_type new_size = size() + 1;
         if (new_size > capacity()) {
-            throw std::range_error("cas::vector_s push_back beyond capacity.");
+            ESTL_THROW (std::range_error, "cas::vector_s push_back beyond capacity.");
         }
         const pointer insert_ptr = data_ptr_ + size();
         new (insert_ptr) value_type{value};
@@ -404,11 +405,13 @@ private:
     {
         const signed_size_t diff_signed = last - first;
         if (diff_signed < 0) {
-            throw std::out_of_range("cas::vector_s range constructing/assigning from inverted range.");
+            ESTL_THROW (std::out_of_range, "cas::vector_s range constructing/assigning from inverted range.");
+            return 0;
         }
         const size_type diff = static_cast<size_type>(diff_signed);
         if (diff > capacity()) {
-            throw std::range_error("cas::vector_s constructing/assigning beyond capacity.");
+            ESTL_THROW (std::range_error, "cas::vector_s constructing/assigning beyond capacity.");
+            return 0;
         }
         return diff;
     }
@@ -459,6 +462,10 @@ private:
     size_type       size_ = 0u;
     char            data_[CAPACITY*sizeof(value_type)]; // TODO: Use std::byte when we require C++17
     pointer         data_ptr_ = reinterpret_cast<pointer>(&data_[0]);
+
+#if (CXX_STANDARD != 98)
+#   include "vector_s__cpp11.hpp"
+#endif
 };
 
 // ------------------------
