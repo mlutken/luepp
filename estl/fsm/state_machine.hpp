@@ -98,7 +98,7 @@ public:
 
         state_conditions& otherwise_loop()
         {
-            const auto cond = [=](const auto& /*inputs*/) -> bool {
+            const auto cond = [=](const inputs_type& /*inputs*/) -> bool {
                 return true;
             };
             conditions_m.emplace_back(cond, from_state_m);
@@ -303,7 +303,7 @@ private:
     /// @see https://en.cppreference.com/w/cpp/algorithm/binary_search
     actions_fun get_action_function(state_type from_state) const
     {
-        constexpr auto compare = [](const auto& lhs, auto state) -> auto {
+        constexpr auto compare = [](const action_entry& lhs, state_type state) -> bool {
             return lhs.state < state;
         };
 

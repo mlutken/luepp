@@ -44,7 +44,8 @@ struct transition
     {
         fix_name(state_from);
         fix_name(state_to);
-        if (size_t pos = label.rfind(':'); pos != std::string::npos) {
+        const size_t pos = label.rfind(':');
+        if (pos != std::string::npos) {
             label = label.substr(pos+1);
         }
     }

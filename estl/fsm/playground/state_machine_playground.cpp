@@ -30,7 +30,7 @@ enum class open_close_sig   : unsigned { none, opening, closing};
 class cd_fsm_def {
 public:
 
-    static constexpr int32_t eject_timeout_seconds = 10;
+    static const int32_t eject_timeout_seconds;
 
 
     using time_point = std::chrono::steady_clock::time_point;
@@ -121,7 +121,7 @@ public:
 
         // --- Transitions from start_close ---
         sm.transitions_from(state_type::start_close)
-                .switch_to(state_type::wait_for_closed).when("always go to wait_for_closed", [this](const auto& inputs) {
+                .switch_to(state_type::wait_for_closed).when("always go to wait_for_closed", [this](const inputs_type& inputs) {
                     time_timeout_ = inputs.time + std::chrono::seconds(eject_timeout_seconds);
                     return true;
                 });
@@ -307,6 +307,7 @@ public:
     time_point      time_timeout_ = {};
 };
 
+const int32_t cd_fsm_def::eject_timeout_seconds = 10;
 
 
 using SM = estl::state_machine<cd_fsm_def>;
