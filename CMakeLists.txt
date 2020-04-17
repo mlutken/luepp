@@ -53,6 +53,7 @@ add_compile_options(
 )
 
 # --- Add subdirectories ---
+add_subdirectory(config)
 add_subdirectory(cesl)
 add_subdirectory(estl)
 
