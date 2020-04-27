@@ -36,6 +36,17 @@ function(add_subdirectories_standard)
     endif()
 endfunction()
 
+function(add_subdirectories_standard_98)
+    if (NOT CMAKE_CROSSCOMPILING AND NOT ("${CMAKE_CXX_STANDARD}" STREQUAL "98") AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/unittest)
+        add_subdirectory(unittest)
+    endif()
+    if (NOT CMAKE_CROSSCOMPILING AND NOT ("${CMAKE_CXX_STANDARD}" STREQUAL "98") AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/integrationtest)
+        add_subdirectory(integrationtest)
+    endif()
+    if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/playground)
+        add_subdirectory(playground)
+    endif()
+endfunction()
 
 # -----------------------------
 # --- Add simple executable ---
