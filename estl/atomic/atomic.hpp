@@ -83,6 +83,7 @@ private:
 
 
 #if defined(__clang__)
+    #include "atomic__clang.hpp"
 #elif defined(__GNUG__)
     #include "atomic__gcc.hpp"
 #elif defined(_MSC_VER)
