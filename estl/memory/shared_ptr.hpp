@@ -1,5 +1,6 @@
 #ifndef ESTL_CONST_SEQUENCE_HPP
 #define ESTL_CONST_SEQUENCE_HPP
+#include <nestle_default_config.h>
 
 #include <stddef.h>
 #include <iterator>
@@ -15,18 +16,6 @@ template <class T> class weak_ptr;
 
 template <class T>
 class shared_ptr {
-    private:
-        T* ptr;
-        unsigned* count; //
-
-        /* special case, null pointer (nil-code) */
-        static unsigned* nil() { static unsigned nil_counter(1); return &nil_counter; }
-
-        void decref() { if (--(*count) == 0) { delete ptr; delete count; }}
-        void incref() { ++(*count); }
-
-        friend class weak_ptr<T>;
-
     public:
 
         shared_ptr() : ptr(0), count(nil()) { incref(); }
@@ -53,11 +42,24 @@ class shared_ptr {
         const T* operator->() const { return ptr; }
         const T& operator*() const { return *ptr; }
 
-        bool operator==(const shared_ptr<T>& o) const { return ptr == o.ptr; }
-        bool operator!=(const shared_ptr<T>& o) const { return ptr != o.ptr; }
-        bool operator<(const shared_ptr<T>& o) const { return ptr < o.ptr; }
+        explicit    operator bool() const NESTLE_NOEXEPT { return ptr != nullptr; }
+        bool        operator==(const shared_ptr<T>& o) const { return ptr == o.ptr; }
+        bool        operator!=(const shared_ptr<T>& o) const { return ptr != o.ptr; }
+        bool        operator<(const shared_ptr<T>& o) const { return ptr < o.ptr; }
 
-        unsigned refcount() const { return *count; }
+        unsigned use_count() const { return *count; }
+private:
+    T* ptr;
+    unsigned* count; //
+
+    /* special case, null pointer (nil-code) */
+    static unsigned* nil() { static unsigned nil_counter(1); return &nil_counter; }
+
+    void decref() { if (--(*count) == 0) { delete ptr; delete count; }}
+    void incref() { ++(*count); }
+
+    friend class weak_ptr<T>;
+
 };
 
 template <class T>
@@ -87,7 +89,7 @@ class weak_ptr {
         bool operator!=(const shared_ptr<T>& o) const { return ptr != o.ptr; }
         bool operator<(const shared_ptr<T>& o) const { return ptr < o.ptr; }
 
-        unsigned refcount() const { return *count; }
+        unsigned use_count() const { return *count; }
 
 };
 

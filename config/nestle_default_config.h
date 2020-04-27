@@ -25,6 +25,7 @@
 #if (CXX_STANDARD == 98)
     #define NESTLE_NOEXEPT throw()
     #define constexpr
+    #define nullptr NULL
 #else
     #define NESTLE_NOEXEPT noexcept
 #endif
