@@ -8,6 +8,66 @@
 // #include <algorithm>
 
 
+/*
+FreeRTOS Mutex
+
+class Mutex {
+public:
+    Mutex() = default;
+    ~Mutex() { vSemaphoreDelete(xSemaphore); }
+
+    inline bool init();
+    inline void lock();
+    inline void unlock();
+
+private:
+    SemaphoreHandle_t xSemaphore = NULL;
+};
+template <typename T>
+class LockGuard {
+public:
+    LockGuard(T& mutex)
+        : mtx(mutex)
+        { mtx.lock(); }
+
+    ~LockGuard() { mtx.unlock(); }
+
+    // Inhibit copy and move of the LockGuard by ctor or operator=
+    LockGuard(const LockGuard&)              = delete;
+    LockGuard& operator=(const LockGuard&)   = delete;
+    LockGuard(const LockGuard&&)             = delete;
+    LockGuard& operator=(const LockGuard&&)  = delete;
+private:
+    T& mtx;
+};
+
+inline void Mutex::lock()
+{
+    bool valid_mtx = init(); // Init on first lock
+    MODI_ASSERT(valid_mtx, EX_APP_MODULE_DATA_NOT_INITIALIZED, AUDIOROUTER);
+
+    xSemaphoreTake(xSemaphore, portMAX_DELAY);
+}
+
+inline void Mutex::unlock()
+{
+    xSemaphoreGive(xSemaphore);
+}
+
+inline bool Mutex::init()
+{
+    if (NULL != xSemaphore)
+        return true;
+    else
+    {
+        xSemaphore = xSemaphoreCreateMutex();
+        return (NULL != xSemaphore);
+    }
+    return false;
+}
+
+*/
+
 namespace estl {
 /** 
  
