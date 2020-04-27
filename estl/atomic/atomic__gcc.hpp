@@ -1,6 +1,7 @@
 /** C++11 atomic operations for use when you don't have a C++11
  * standard library available.
  * We currently only support integer types. Also we use only __ATOMIC_SEQ_CST mode.
+ * @see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc/_005f_005fatomic-Builtins.html
  */
 template <class T>
 class atomic
@@ -44,8 +45,20 @@ public:
     T operator--(int) NESTLE_NOEXEPT            { return static_cast<T>(__atomic_fetch_sub(&value_, 1, __ATOMIC_SEQ_CST)); }
     T operator--(int) volatile NESTLE_NOEXEPT   { return static_cast<T>(__atomic_fetch_sub(&value_, 1, __ATOMIC_SEQ_CST)); }
 
-    T operator+=( T arg ) NESTLE_NOEXEPT;
-    T operator+=( T arg ) volatile NESTLE_NOEXEPT;
+    T operator+=(T arg) NESTLE_NOEXEPT          {return static_cast<T>(__atomic_fetch_add(&value_, arg, __ATOMIC_SEQ_CST)); }
+    T operator+=(T arg) volatile NESTLE_NOEXEPT {return static_cast<T>(__atomic_fetch_add(&value_, arg, __ATOMIC_SEQ_CST)); }
+
+    T operator-=(T arg) NESTLE_NOEXEPT          {return static_cast<T>(__atomic_fetch_sub(&value_, arg, __ATOMIC_SEQ_CST)); }
+    T operator-=(T arg) volatile NESTLE_NOEXEPT {return static_cast<T>(__atomic_fetch_sub(&value_, arg, __ATOMIC_SEQ_CST)); }
+
+    T operator&=(T arg) NESTLE_NOEXEPT          {return static_cast<T>(__atomic_fetch_and(&value_, arg, __ATOMIC_SEQ_CST)); }
+    T operator&=(T arg) volatile NESTLE_NOEXEPT {return static_cast<T>(__atomic_fetch_and(&value_, arg, __ATOMIC_SEQ_CST)); }
+
+    T operator|=(T arg) NESTLE_NOEXEPT          {return static_cast<T>(__atomic_fetch_or(&value_, arg, __ATOMIC_SEQ_CST)); }
+    T operator|=(T arg) volatile NESTLE_NOEXEPT {return static_cast<T>(__atomic_fetch_or(&value_, arg, __ATOMIC_SEQ_CST)); }
+
+    T operator^=(T arg) NESTLE_NOEXEPT          {return static_cast<T>(__atomic_fetch_xor(&value_, arg, __ATOMIC_SEQ_CST)); }
+    T operator^=(T arg) volatile NESTLE_NOEXEPT {return static_cast<T>(__atomic_fetch_xor(&value_, arg, __ATOMIC_SEQ_CST)); }
 
     bool is_lock_free   () const NESTLE_NOEXEPT            { return __atomic_always_lock_free (sizeof (T), 0); }
     bool is_lock_free   () const volatile NESTLE_NOEXEPT   { return __atomic_always_lock_free (sizeof (T), 0); }
