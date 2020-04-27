@@ -2,9 +2,9 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "../atomic.hpp"
 #include <vector>
 #include <iostream>
+#include <atomic/atomic.hpp>
 
 using namespace testing;
 using namespace estl;

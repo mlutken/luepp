@@ -493,6 +493,6 @@ bool operator!=( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CAP_RHS>& rh
     return !(lhs == rhs);
 }
 
-} // END namespace cas
+} // END namespace estl
 
 #endif // ESTL_VECTOR_S_HPP

@@ -9,6 +9,14 @@
 
 namespace estl {
 
+/** C++11 atomic operations for use when you don't have a C++11
+ * standard library available.
+ * We currently only support integer types. Also we use only __ATOMIC_SEQ_CST mode.
+ * @see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc/_005f_005fatomic-Builtins.html
+ */
+template <class T>
+class atomic
+{
 
 
 #if defined(__clang__)
@@ -19,6 +27,7 @@ namespace estl {
 #endif
 
 
+};
 
 
 } // END namespace estl

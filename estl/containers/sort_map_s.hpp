@@ -243,6 +243,6 @@ private:
 #endif
 };
 
-} // END namespace cas
+} // END namespace estl
 
 #endif // ESTL_SORT_MAP_S_HPP
