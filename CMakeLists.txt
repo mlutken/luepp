@@ -13,16 +13,10 @@ add_definitions(
     -DCXX_STANDARD_LIBRARY=${ESTL_CXX_STANDARD_LIBRARY}
     -DCXX_STANDARD=${CMAKE_CXX_STANDARD}
     -DC_STANDARD=${CMAKE_C_STANDARD}
-    -DPLATFORM_${PLATFORM}
-    -DPLATFORM_NAME_${PLATFORM_NAME}
-    -DPLATFORM_TYPE_${PLATFORM_TYPE}
-    )
+    -DNESTLE_PLATFORM=${NESTLE_PLATFORM}
+    -DNESTLE_PLATFORM_TYPE=${NESTLE_PLATFORM_TYPE}
+)
 
-IF (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    add_definitions(
-        -DLINUX=1
-        )
-ENDIF ()
 
 
 #set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
