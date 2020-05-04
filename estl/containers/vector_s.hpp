@@ -350,7 +350,7 @@ public:
             ESTL_THROW (std::range_error, "cas::vector_s push_back beyond capacity.");
         }
         const pointer insert_ptr = data_ptr_ + size();
-        new (insert_ptr) value_type{value};
+        new (insert_ptr) value_type(value);
         size_ = new_size;
     }
 
