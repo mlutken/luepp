@@ -59,7 +59,7 @@ public:
         }
         iterator it = do_find(key);
         if (it == end()) {
-            it = do_insert_raw({key,T{}});
+            it = do_insert_raw({key,T()});
         }
         return it->second;
     }
@@ -184,7 +184,7 @@ private:
     iterator do_find_bisect (const Key& key)
     {
         //std::cerr << "do_find_bisect(" << key << ")\n";
-        const value_type elem (key,T{});
+        const value_type elem (key,T());
 
         const iterator it_end = end();
         const iterator it = std::lower_bound(data_vec_.begin(), it_end, elem, comperator_);
