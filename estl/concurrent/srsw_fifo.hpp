@@ -11,10 +11,10 @@
 namespace cpaf { namespace concurrent {
 
 template <typename T, class Allocator = std::allocator<T> >
-class srsw_lockless_fifo
+class srsw_fifo
 {
 private:
-    typedef std::vector<T, Allocator >    QueueVec_t;
+    typedef std::vector<T, Allocator >    queue_vec_t;
 public:
     // ------------------------
     // --- PUBLIC: Typedefs ---
@@ -22,13 +22,13 @@ public:
     typedef T                                     value_type;
     typedef std::uint32_t                         size_type;
     typedef Allocator                             allocator_type;
-    typedef typename QueueVec_t::difference_type  difference_type;
-    typedef typename QueueVec_t::reference        reference;
-    typedef typename QueueVec_t::const_reference  const_reference;
-    typedef typename QueueVec_t::pointer          pointer;
-    typedef typename QueueVec_t::const_pointer 	const_pointer;
+    typedef typename queue_vec_t::difference_type difference_type;
+    typedef typename queue_vec_t::reference       reference;
+    typedef typename queue_vec_t::const_reference const_reference;
+    typedef typename queue_vec_t::pointer         pointer;
+    typedef typename queue_vec_t::const_pointer   const_pointer;
 
-    explicit srsw_lockless_fifo ( size_type queueSize )
+    explicit srsw_fifo ( size_type queueSize )
         : m_writeIndex(0)
         , m_queue(queueSize)
         , m_readIndex(0)
@@ -36,7 +36,7 @@ public:
 
     }
 
-    srsw_lockless_fifo ( size_type queueSize, const allocator_type& allocator )
+    srsw_fifo ( size_type queueSize, const allocator_type& allocator )
         : m_writeIndex(0)
         , m_queue(queueSize, allocator)
         , m_readIndex(0)
@@ -114,7 +114,7 @@ private:
 //    _ALIGNED_TYPE(size_type, 64) aligned_size_type_t;
     // TODO: Use C++11 aligning 
     volatile aligned_size_type_t  m_writeIndex;   // Aligning to avoid "false sharing"
-    QueueVec_t                    m_queue;
+    queue_vec_t                    m_queue;
     volatile aligned_size_type_t  m_readIndex;    // Aligning to avoid "false sharing"
 
 };

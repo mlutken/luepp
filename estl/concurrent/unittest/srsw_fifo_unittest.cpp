@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "../srsw_lockless_fifo.hpp"
+#include "../srsw_fifo.hpp"
 
 using namespace testing;
 
-class LocklessFifoUnitTest : public testing::Test
+class SRSWFifoUnitTest : public testing::Test
 {
 public:
-    LocklessFifoUnitTest()  = default;
+    SRSWFifoUnitTest()  = default;
 
-    ~LocklessFifoUnitTest() override = default;
+    ~SRSWFifoUnitTest() override = default;
 
     void SetUp() override
     {
@@ -25,7 +25,7 @@ public:
 // --- PUBLIC functions tests ---
 // ------------------------------
 
-TEST_F(LocklessFifoUnitTest, test_test)
+TEST_F(SRSWFifoUnitTest, test_test)
 {
     EXPECT_EQ(6, 6);
 }
