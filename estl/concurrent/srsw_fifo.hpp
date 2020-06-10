@@ -1,6 +1,8 @@
-#ifndef ESTL_SRSW_LOCKLESS_FIFO_H
-#define ESTL_SRSW_LOCKLESS_FIFO_H
+#ifndef ESTL_SRSW_FIFO_HPP
+#define ESTL_SRSW_FIFO_HPP
 
+#include <nestle_default_config.h>
+#include <atomic/atomic_use.hpp>
 #include <vector>
 #include <cstdint>
 // #include <align_macros.h> TODO: Use C++11 aligning
@@ -8,7 +10,7 @@
 // ----------------------------------------------
 // --- srsw_lockless_fifo.h ---
 // ----------------------------------------------
-namespace cpaf { namespace concurrent {
+namespace estl {
 
 template <typename T, class Allocator = std::allocator<T> >
 class srsw_fifo
@@ -20,7 +22,7 @@ public:
     // --- PUBLIC: Typedefs ---
     // ------------------------
     typedef T                                     value_type;
-    typedef std::uint32_t                         size_type;
+    typedef std::size_t                             size_type;
     typedef Allocator                             allocator_type;
     typedef typename queue_vec_t::difference_type difference_type;
     typedef typename queue_vec_t::reference       reference;
@@ -92,7 +94,7 @@ public:
 
     size_type size() const
     {
-        int sz = m_writeIndex - m_readIndex;
+        auto sz = static_cast<std::int64_t>(m_writeIndex) - static_cast<std::int64_t>(m_readIndex);
         if (sz >= 0) {
             return static_cast<size_type>(sz);
         }
@@ -110,15 +112,15 @@ private:
     // ------------------------
     // PRIVATE: Member data ---
     // ------------------------
-    using aligned_size_type_t = uint32_t;
+    using aligned_size_type_t = std::size_t; // FIXMENM Use C++11 align
 //    _ALIGNED_TYPE(size_type, 64) aligned_size_type_t;
     // TODO: Use C++11 aligning 
     volatile aligned_size_type_t  m_writeIndex;   // Aligning to avoid "false sharing"
-    queue_vec_t                    m_queue;
+    queue_vec_t                   m_queue;
     volatile aligned_size_type_t  m_readIndex;    // Aligning to avoid "false sharing"
 
 };
 
-}} // END namespaces cpaf concurrent
+} // END namespace estl
 
-#endif // ESTL_SRSW_LOCKLESS_FIFO_H
+#endif // ESTL_SRSW_FIFO_HPP
