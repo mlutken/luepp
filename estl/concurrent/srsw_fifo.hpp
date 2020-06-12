@@ -3,14 +3,20 @@
 
 #include <nestle_default_config.h>
 #include <atomic/atomic_use.hpp>
+#include <atomic/atomic.hpp>
 #include <vector>
 #include <cstdint>
-// #include <align_macros.h> TODO: Use C++11 aligning
 
 // ----------------------------------------------
-// --- srsw_lockless_fifo.h ---
+// --- srsw_fifo.h ---
 // ----------------------------------------------
 namespace estl {
+
+/**
+Single reader, single writer lockless fifo.
+Uses atomics for the read and write indices internally.
+@sa estl::srsw_fifo_s which is the same using the static vector_s as "backend"
+*/
 
 template <typename T, class Allocator = std::allocator<T>, size_t ALIGN_SIZE = 128 >
 class srsw_fifo
@@ -21,100 +27,111 @@ public:
     // ------------------------
     // --- PUBLIC: Typedefs ---
     // ------------------------
-    typedef T                                     value_type;
-    typedef std::size_t                           size_type;
-    typedef Allocator                             allocator_type;
-    typedef typename queue_vec_t::difference_type difference_type;
-    typedef typename queue_vec_t::reference       reference;
-    typedef typename queue_vec_t::const_reference const_reference;
-    typedef typename queue_vec_t::pointer         pointer;
-    typedef typename queue_vec_t::const_pointer   const_pointer;
+    typedef T                                       value_type;
+    typedef std::size_t                             size_type;
+    typedef estl_use::atomic<size_type>             atomic_size_type;
+    typedef Allocator                               allocator_type;
+    typedef typename queue_vec_t::difference_type   difference_type;
+    typedef typename queue_vec_t::reference         reference;
+    typedef typename queue_vec_t::const_reference   const_reference;
+    typedef typename queue_vec_t::pointer           pointer;
+    typedef typename queue_vec_t::const_pointer     const_pointer;
 
-    explicit srsw_fifo ( size_type queueSize )
-        : m_writeIndex(0)
+    explicit srsw_fifo (size_type queueSize)
+        : m_write_index(0)
         , m_queue(queueSize)
-        , m_readIndex(0)
+        , m_read_index(0)
     {
-
     }
 
-    srsw_fifo ( size_type queueSize, const allocator_type& allocator )
-        : m_writeIndex(0)
+    srsw_fifo (size_type queueSize, const allocator_type& allocator)
+        : m_write_index(0)
         , m_queue(queueSize, allocator)
-        , m_readIndex(0)
+        , m_read_index(0)
     {
-
     }
 
-    bool  push ( T&& v )
+    bool push (T&& v)
     {
-        size_type nextWriteIndex = incIndex(m_writeIndex);
-        if ( nextWriteIndex != m_readIndex ) {
-            m_queue[m_writeIndex] = std::move(v);
-            m_writeIndex = nextWriteIndex;
+        const size_type write_index = m_write_index;
+        const size_type next_write_index = incIndex(write_index);
+        if ( next_write_index != m_read_index ) {
+            m_queue[write_index] = NESTLE_MOVE(v);
+            m_write_index = next_write_index;
             return true;
         }
         return false;
     }
 
-    bool  push ( const T& v )
+    bool push (const T& v)
     {
-        size_type nextWriteIndex = incIndex(m_writeIndex);
-        if ( nextWriteIndex != m_readIndex ) {
-            m_queue[m_writeIndex] = v;
-            m_writeIndex = nextWriteIndex;
+        const size_type write_index = m_write_index;
+        const size_type next_write_index = incIndex(write_index);
+        if ( next_write_index != m_read_index ) {
+            m_queue[write_index] = v;
+            m_write_index = next_write_index;
             return true;
         }
         return false;
     }
 
 
-    bool  pop ()
+    bool pop ()
     {
         if ( empty () ) return false;
-        m_readIndex = incIndex (m_readIndex);
+        m_read_index = incIndex (m_read_index);
         return true;
     }
 
-    T&  front ()
+    T& front ()
     {
-        return m_queue[m_readIndex];
+        return m_queue[m_read_index];
     }
 
     bool full () const
     {
-        size_type writeCheck = incIndex(m_writeIndex);
-        return (writeCheck == m_readIndex);
+        size_type writeCheck = incIndex(m_write_index);
+        return (writeCheck == m_read_index);
     }
 
     bool empty () const
     {
-        return (m_writeIndex == m_readIndex);
+        return (m_write_index == m_read_index);
     }
 
     size_type size() const
     {
-        auto sz = static_cast<std::int64_t>(m_writeIndex) - static_cast<std::int64_t>(m_readIndex);
+        const size_type read_index = m_read_index;
+        const size_type write_index = m_write_index;
+        std::int64_t sz = static_cast<std::int64_t>(write_index) - static_cast<std::int64_t>(read_index);
         if (sz >= 0) {
             return static_cast<size_type>(sz);
         }
         else {
-            return static_cast<size_type>(-sz -1);
+            return buffer_size() - read_index + write_index;
         }
+    }
+
+    size_type buffer_size() const
+    {
+        return m_queue.size();
     }
 
 private:
     // -----------------------------
     // PRIVATE: Helper functions ---
     // -----------------------------
-    size_type    incIndex ( size_type index ) const { return (index +1) % m_queue.size(); }
+    size_type    incIndex ( size_type index ) const
+    {
+        return (index +1) % buffer_size();
+    }
 
     // ------------------------
     // PRIVATE: Member data ---
     // ------------------------
-    NESTLE_ALIGNAS(ALIGN_SIZE) volatile size_type  m_writeIndex;   // Aligning to avoid "false sharing"
-    queue_vec_t                   m_queue;
-    NESTLE_ALIGNAS(ALIGN_SIZE) volatile size_type  m_readIndex;    // Aligning to avoid "false sharing"
+    NESTLE_ALIGNAS(ALIGN_SIZE) atomic_size_type    m_write_index;   // Aligning to avoid "false sharing"
+    queue_vec_t                                    m_queue;
+    NESTLE_ALIGNAS(ALIGN_SIZE) atomic_size_type    m_read_index;    // Aligning to avoid "false sharing"
 };
 
 } // END namespace estl
