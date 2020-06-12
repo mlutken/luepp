@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <concurrent/srsw_fifo.hpp>
+#include <concurrent/srsw_fifo_s.hpp>
 
 using namespace std;
 
@@ -9,9 +10,11 @@ int main()
 {
     cerr << "--- srsw_fifo playground ---\n";
 
-    using my_fifo = estl::srsw_fifo<int>;
+//    using my_fifo = estl::srsw_fifo<int>;
+    using my_fifo = estl::srsw_fifo_s<int,4>;
 
-    my_fifo f(4);
+//    my_fifo f(4);
+    my_fifo f;
 
     cerr << "Initial f.size(): " << f.size() << "\n";
     f.push(10); // size = 1
@@ -25,11 +28,3 @@ int main()
 
     return 0;
 }
-//int_fifo f(4);
-//f.push(10);
-//f.push(20);
-//f.push(30);
-//f.push(40);
-//f.pop();
-//f.push(40);
-//EXPECT_EQ(3u, f.size());

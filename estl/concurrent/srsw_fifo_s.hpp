@@ -1,27 +1,27 @@
-#ifndef ESTL_SRSW_FIFO_HPP
-#define ESTL_SRSW_FIFO_HPP
+#ifndef ESTL_SRSW_FIFO_S_HPP
+#define ESTL_SRSW_FIFO_S_HPP
 
 #include <nestle_default_config.h>
 #include <atomic/atomic_use.hpp>
-#include <vector>
+#include <containers/vector_s.hpp>
 #include <cstdint>
 
 // ----------------------------------------------
-// --- srsw_fifo.h ---
+// --- srsw_fifo_s.h ---
 // ----------------------------------------------
 namespace estl {
 
 /**
 Single reader, single writer lockless fifo.
 Uses atomics for the read and write indices internally.
-@sa estl::srsw_fifo_s which is the same using the static vector_s as "backend"
+@sa estl::srsw_fifo which is the same using std::vector as "backend"
 */
 
-template <typename T, class Allocator = std::allocator<T>, size_t ALIGN_SIZE = 128 >
-class srsw_fifo
+template <typename T, size_t BUFFER_SIZE, size_t ALIGN_SIZE = 128 >
+class srsw_fifo_s
 {
 private:
-    typedef std::vector<T, Allocator >    queue_vec_t;
+    typedef estl::vector_s<T, BUFFER_SIZE>    queue_vec_t;
 public:
     // ------------------------
     // --- PUBLIC: Typedefs ---
@@ -29,23 +29,14 @@ public:
     typedef T                                       value_type;
     typedef std::size_t                             size_type;
     typedef estl_use::atomic<size_type>             atomic_size_type;
-    typedef Allocator                               allocator_type;
     typedef typename queue_vec_t::difference_type   difference_type;
     typedef typename queue_vec_t::reference         reference;
     typedef typename queue_vec_t::const_reference   const_reference;
     typedef typename queue_vec_t::pointer           pointer;
     typedef typename queue_vec_t::const_pointer     const_pointer;
 
-    explicit srsw_fifo (size_type queueSize)
+    srsw_fifo_s ()
         : m_write_index(0)
-        , m_queue(queueSize)
-        , m_read_index(0)
-    {
-    }
-
-    srsw_fifo (size_type queueSize, const allocator_type& allocator)
-        : m_write_index(0)
-        , m_queue(queueSize, allocator)
         , m_read_index(0)
     {
     }
@@ -113,7 +104,7 @@ public:
 
     size_type buffer_size() const
     {
-        return m_queue.size();
+        return BUFFER_SIZE;
     }
 
 private:
@@ -135,4 +126,4 @@ private:
 
 } // END namespace estl
 
-#endif // ESTL_SRSW_FIFO_HPP
+#endif // ESTL_SRSW_FIFO_S_HPP
