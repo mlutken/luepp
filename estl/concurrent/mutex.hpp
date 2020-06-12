@@ -2,11 +2,41 @@
 #define ESTL_MUTEX_HPP
 #include <nestle_default_config.h>
 #include <cstdint>
-// #include <utility>
-// #include <iterator>
-// #include <stdexcept>
-// #include <algorithm>
 
+#if (CXX_STANDARD_LIBRARY == 98)
+
+// -------------------
+// --- mutex, lock ---
+// -------------------
+
+namespace estl {
+struct defer_lock_t { };
+struct try_to_lock_t { };
+struct adopt_lock_t { };
+
+class mutex
+{
+    constexpr mutex() NESTLE_NOEXEPT;
+
+#if (CXX_STANDARD != 98)
+    mutex(const mutex& ) = delete;
+    //mutex& operator=(const mutex&) = delete;
+#else
+private:
+    mutex(const mutex&);
+    //mutex& operator=(const mutex&);
+public:
+#endif
+
+    void lock();
+    bool try_lock();
+    void unlock();
+//    native_handle_type native_handle();
+};
+
+
+
+#endif // (CXX_STANDARD_LIBRARY == 98)
 
 /*
 FreeRTOS Mutex
@@ -23,10 +53,16 @@ public:
 private:
     SemaphoreHandle_t xSemaphore = NULL;
 };
-template <typename T>
-class LockGuard {
+template <class Mutex>
+class lock_guard {
 public:
-    LockGuard(T& mutex)
+    typedef Mutex           mutex_type;
+
+    explicit lock_guard( mutex_type& m );
+    lock_guard( mutex_type& m, estl::adopt_lock_t t );
+    lock_guard( const lock_guard& ) = delete;
+
+    LockGuard(Mutex& mutex)
         : mtx(mutex)
         { mtx.lock(); }
 

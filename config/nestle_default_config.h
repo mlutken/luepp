@@ -48,5 +48,14 @@ typedef long  signed_size_t;
     #define ESTL_THROW_RANGE_ERROR(message)
 #endif
 
+#ifndef NESTLE_PLATFORM_TYPE
+    #define NESTLE_PLATFORM_TYPE "desktop"
+    // Alternatives embedded
+#endif
+
+#ifndef NESTLE_PLATFORM_NAME
+    #define NESTLE_PLATFORM_NAME "linux"
+    // TODO: Alternatives windows, osx
+#endif
 
 #endif //NESTLE_DEFAULT_CONFIG_H
