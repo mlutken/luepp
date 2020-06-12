@@ -12,7 +12,7 @@
 // ----------------------------------------------
 namespace estl {
 
-template <typename T, class Allocator = std::allocator<T> >
+template <typename T, class Allocator = std::allocator<T>, size_t ALIGN_SIZE = 128 >
 class srsw_fifo
 {
 private:
@@ -22,7 +22,7 @@ public:
     // --- PUBLIC: Typedefs ---
     // ------------------------
     typedef T                                     value_type;
-    typedef std::size_t                             size_type;
+    typedef std::size_t                           size_type;
     typedef Allocator                             allocator_type;
     typedef typename queue_vec_t::difference_type difference_type;
     typedef typename queue_vec_t::reference       reference;
@@ -112,13 +112,9 @@ private:
     // ------------------------
     // PRIVATE: Member data ---
     // ------------------------
-    using aligned_size_type_t = std::size_t; // FIXMENM Use C++11 align
-//    _ALIGNED_TYPE(size_type, 64) aligned_size_type_t;
-    // TODO: Use C++11 aligning 
-    volatile aligned_size_type_t  m_writeIndex;   // Aligning to avoid "false sharing"
+    NESTLE_ALIGNAS(ALIGN_SIZE) volatile size_type  m_writeIndex;   // Aligning to avoid "false sharing"
     queue_vec_t                   m_queue;
-    volatile aligned_size_type_t  m_readIndex;    // Aligning to avoid "false sharing"
-
+    NESTLE_ALIGNAS(ALIGN_SIZE) volatile size_type  m_readIndex;    // Aligning to avoid "false sharing"
 };
 
 } // END namespace estl
