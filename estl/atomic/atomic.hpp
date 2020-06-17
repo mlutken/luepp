@@ -81,7 +81,6 @@ private:
 
 } // END namespace estl
 
-
 #if defined(__clang__)
     #include "atomic__clang.hpp"
 #elif defined(__GNUG__)
