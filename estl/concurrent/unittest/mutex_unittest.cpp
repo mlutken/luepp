@@ -14,15 +14,20 @@ class MutexUnitTest : public testing::Test
 // ------------------------------
 // --- PUBLIC functions tests ---
 // ------------------------------
-//using my_mutex = estl::mutex;
-using my_mutex = std::mutex;
+using my_mutex = estl::mutex;
+//using my_mutex = std::mutex;
 
-TEST_F(MutexUnitTest, test_basic)
+TEST_F(MutexUnitTest, mutex_test_basic)
 {
     my_mutex m;
-    bool ok = m.try_lock();
-    
-    EXPECT_EQ(true, ok);
+    {
+        bool ok = m.try_lock();
+        EXPECT_EQ(true, ok);
+    }
+    {
+        bool ok = m.try_lock();
+        EXPECT_EQ(false, ok);
+    }
 }
 
 int main(int argc, char **argv)
