@@ -3,66 +3,91 @@
 #include <gmock/gmock.h>
 
 #include "../shared_ptr.hpp"
-#include <vector>
+#include <memory>
 
 using namespace testing;
 using namespace estl;
 
 class SharedPtrUnitTest : public testing::Test
 {
-public:
-    SharedPtrUnitTest()  = default;
-
-    ~SharedPtrUnitTest() override = default;
-
-    void SetUp() override
-    {
-    }
-    void TearDown() override;
-
 };
 
-void SharedPtrUnitTest::TearDown()
-{
-}
 
 // ----------------------------------------
 // --- Simple helper test element class ---
 // ----------------------------------------
 
-struct Rect {
-    Rect() = default;
-    Rect(unsigned w, unsigned h)
-        : width_(w),
-          height_(h)
-    {
+class MyClass {
+public:
+    MyClass () {
+    }
+    MyClass (const MyClass& other) : val_(other.val_) {
     }
 
-    unsigned width_ = 0;
-    unsigned height_ = 0;
+    MyClass (MyClass&& other) noexcept : val_(other.val_) {
+        std::cout << "MyClass(MyClass&& other) MOVE CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
+    }
+
+    MyClass& operator= (const MyClass& other) {
+        val_ = other.val_;
+        return *this;
+    }
+
+    MyClass& operator= (MyClass&& other) noexcept {
+        val_ = other.val_;
+        return *this;
+    }
+
+    MyClass (int val) : val_(val) {
+    }
+
+    ~MyClass() {
+    }
+
+
+    int val() const
+    {
+        return val_;
+    }
+    void val(int val)
+    {
+        val_ = val;
+    }
+private:
+    int val_ = -99;
 };
-
-
-inline bool operator== (const Rect& lhs, const Rect& rhs) {
-    return  lhs.width_ == rhs.width_ &&
-            lhs.height_ == rhs.height_;
-}
-
 
 
 // -------------------
 // -- Constructors ---
 // -------------------
+template <class T>
+//using shared_ptr_t = std::shared_ptr<T>;
+using shared_ptr_t = estl::shared_ptr<T>;
 
-TEST_F(SharedPtrUnitTest, default_constructor)
+TEST_F(SharedPtrUnitTest, constructor)
 {
-    EXPECT_EQ(2, 2);
+    shared_ptr_t<MyClass> mc1;
+    EXPECT_EQ(mc1.use_count(), 0);
+}
 
-//     shared_ptr<int, 10> v;
-//     EXPECT_TRUE(v.empty());
-//     EXPECT_EQ(static_cast<size_t>(0u), v.size());
-//     EXPECT_EQ(10u, v.capacity());
-//     EXPECT_EQ(10u, v.max_size());
+
+TEST_F(SharedPtrUnitTest, DISABLED__basic_test)
+{
+    shared_ptr_t<MyClass> mc1;
+    EXPECT_EQ(mc1.use_count(), 0);
+    {
+        shared_ptr_t<MyClass> mc2 = shared_ptr_t<MyClass>(new MyClass());
+        mc2->val(12);
+        mc1 = mc2;
+        EXPECT_EQ(mc1.use_count(), 2);
+        EXPECT_EQ(mc2.use_count(), 2);
+    }
+    EXPECT_EQ(mc1.use_count(), 1);
+}
+
+TEST_F(SharedPtrUnitTest, DISABLED__weak_ptr_test)
+{
 }
 
 

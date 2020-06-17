@@ -63,17 +63,18 @@ using namespace std;
 
 int main()
 {
-    cout << "--- shared_ptr playground 1 ---\n";
+    cerr << "--- shared_ptr playground 1 ---\n";
     estl::shared_ptr<MyClass> mc1;
     {
         estl::shared_ptr<MyClass> mc2 = estl::shared_ptr<MyClass>(new MyClass());
         mc2->val(12);
         mc1 = mc2;
     }
-    cout << "--- shared_ptr playground 2 ---\n";
+    cerr << "--- shared_ptr playground 2 ---\n";
 
+    cerr << "mc1.get() : " << mc1.get() << "\n";
 
-    cout << "--- shared_ptr playground 3 ---\n";
+    cerr << "--- shared_ptr playground 3 ---\n";
 
     return 0;
 }

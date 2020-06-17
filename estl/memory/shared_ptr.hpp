@@ -1,16 +1,10 @@
-#ifndef ESTL_CONST_SEQUENCE_HPP
-#define ESTL_CONST_SEQUENCE_HPP
+#ifndef ESTL_SHARED_PTR_HPP
+#define ESTL_SHARED_PTR_HPP
 #include <nestle_default_config.h>
 
-#include <stddef.h>
-#include <iterator>
 #include <stdexcept>
-#include <algorithm>
 #include <memory>
 #include <atomic/atomic_use.hpp>
-
-// TODO:Temporary/development includes
-#include <iostream>
 
 namespace estl {
 template <class T> class weak_ptr;
@@ -21,7 +15,6 @@ typedef estl_use::atomic<unsigned> use_counter_type;
 template <class T>
 class shared_ptr {
 public:
-
     shared_ptr()
         : ptr_(0)
         , use_count_(nil())
@@ -71,10 +64,10 @@ public:
     const T*    operator->() const  { return ptr_;  }
     const T&    operator*() const   { return *ptr_; }
 
-    explicit    operator bool() const NESTLE_NOEXEPT        { return ptr_ != nullptr;   }
-    bool        operator==(const shared_ptr<T>& o) const    { return ptr_ == o.ptr_;    }
-    bool        operator!=(const shared_ptr<T>& o) const    { return ptr_ != o.ptr_;    }
-    bool        operator<(const shared_ptr<T>& o) const     { return ptr_ < o.ptr_;     }
+    explicit    operator bool   () const NESTLE_NOEXEPT         { return ptr_ != nullptr;   }
+    bool        operator==      (const shared_ptr<T>& o) const  { return ptr_ == o.ptr_;    }
+    bool        operator!=      (const shared_ptr<T>& o) const  { return ptr_ != o.ptr_;    }
+    bool        operator<       (const shared_ptr<T>& o) const  { return ptr_ < o.ptr_;     }
 
     unsigned    use_count   () const { return *use_count_; }
 private:
@@ -126,14 +119,14 @@ public:
     T&          operator*()         { return *ptr_; }
 
     const T*    get() const         { return ptr_;  }
-    const T*    operator->() const  { return ptr_;  }
-    const T&    operator*() const   { return *ptr_; }
+    const T*    operator->  () const{ return ptr_;  }
+    const T&    operator*   () const{ return *ptr_; }
 
-    bool        operator==(const shared_ptr<T>& o) const { return ptr_ == o.ptr_; }
-    bool operator!=(const shared_ptr<T>& o) const { return ptr_ != o.ptr_; }
-    bool operator<(const shared_ptr<T>& o) const { return ptr_ < o.ptr_; }
+    bool        operator==  (const shared_ptr<T>& o) const { return ptr_ == o.ptr_; }
+    bool        operator!=  (const shared_ptr<T>& o) const { return ptr_ != o.ptr_; }
+    bool        operator<   (const shared_ptr<T>& o) const { return ptr_ < o.ptr_; }
 
-    unsigned use_count() const { return *count_; }
+    unsigned    use_count() const { return *count_; }
 private:
     // --- PRIVATE: Member data ---
     T* ptr_;
@@ -142,5 +135,4 @@ private:
 
 }
 
-
-#endif // ESTL_CONST_SEQUENCE_HPP
+#endif // ESTL_SHARED_PTR_HPP
