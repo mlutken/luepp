@@ -6,6 +6,9 @@
 #include <memory>
 #include <atomic/atomic_use.hpp>
 
+// FIXMENM: Debug only!
+#include <iostream>
+
 namespace estl {
 template <class T> class weak_ptr;
 
@@ -17,14 +20,18 @@ class shared_ptr {
 public:
     shared_ptr()
         : ptr_(0)
-        , use_count_(nil())
+        , use_count_(new use_counter_type(0))
     {
-        incref();
     }
 
     ~shared_ptr()
     {
         decref();
+    }
+
+    void reset()
+    {
+
     }
 
     shared_ptr(const shared_ptr<T>& o)
@@ -69,18 +76,26 @@ public:
     bool        operator!=      (const shared_ptr<T>& o) const  { return ptr_ != o.ptr_;    }
     bool        operator<       (const shared_ptr<T>& o) const  { return ptr_ < o.ptr_;     }
 
-    unsigned    use_count   () const { return *use_count_; }
-private:
-    /* special case, null pointer (nil-code) */
-    static use_counter_type* nil()
+    unsigned    use_count   () const
     {
-        static use_counter_type nil_counter(1);
-        return &nil_counter;
+        if (ptr_ == nullptr) return 0u;
+        return *use_count_;
     }
+
+//    unsigned    use_count   () const { return 0u; }
+private:
+//    /* special case, null pointer (nil-code) */
+//    static use_counter_type* nil()
+//    {
+//        static use_counter_type nil_counter(0);
+//        return &nil_counter;
+//    }
 
     void decref()
     {
+        std::cerr << "decref() before: " << *use_count_ << "\n";
         if (--(*use_count_) == 0) {
+            std::cerr << "FIXMENM DELETING\n";
             delete ptr_;
             delete use_count_;
         }
@@ -88,6 +103,7 @@ private:
 
     void incref()
     {
+        std::cerr << "incref() before: " << *use_count_ << "\n";
         ++(*use_count_);
     }
 
@@ -104,7 +120,8 @@ public:
     friend class shared_ptr<T>;
 
     weak_ptr()
-        : ptr_(0), count_(shared_ptr<T>::nil())
+//        : ptr_(0), count_(shared_ptr<T>::nil())
+        : ptr_(0), count_(nullptr)
     {}
 
     explicit weak_ptr( const shared_ptr<T>& s)

@@ -62,8 +62,8 @@ private:
 // -- Constructors ---
 // -------------------
 template <class T>
-//using shared_ptr_t = std::shared_ptr<T>;
-using shared_ptr_t = estl::shared_ptr<T>;
+using shared_ptr_t = std::shared_ptr<T>;
+//using shared_ptr_t = estl::shared_ptr<T>;
 
 TEST_F(SharedPtrUnitTest, constructor)
 {
@@ -72,7 +72,7 @@ TEST_F(SharedPtrUnitTest, constructor)
 }
 
 
-TEST_F(SharedPtrUnitTest, DISABLED__basic_test)
+TEST_F(SharedPtrUnitTest, basic_test)
 {
     shared_ptr_t<MyClass> mc1;
     EXPECT_EQ(mc1.use_count(), 0);
@@ -84,6 +84,23 @@ TEST_F(SharedPtrUnitTest, DISABLED__basic_test)
         EXPECT_EQ(mc2.use_count(), 2);
     }
     EXPECT_EQ(mc1.use_count(), 1);
+}
+
+TEST_F(SharedPtrUnitTest, use_count)
+{
+    shared_ptr_t<MyClass> mc1;
+    EXPECT_EQ(mc1.use_count(), 0);
+    mc1 = shared_ptr_t<MyClass>(new MyClass());
+    EXPECT_EQ(mc1.use_count(), 1);
+    auto mc2 = mc1;
+    EXPECT_EQ(mc1.use_count(), 2);
+    mc2 = shared_ptr_t<MyClass>(new MyClass());
+    EXPECT_EQ(mc1.use_count(), 1);
+    EXPECT_EQ(mc2.use_count(), 1);
+    mc1.reset();
+    EXPECT_EQ(mc1.use_count(), 0);
+    EXPECT_EQ(mc2.use_count(), 1);
+
 }
 
 TEST_F(SharedPtrUnitTest, DISABLED__weak_ptr_test)

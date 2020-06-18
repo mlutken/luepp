@@ -6,35 +6,35 @@
 class MyClass {
 public:
     MyClass () {
-        std::cout << "MyClass DEFAULT CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
+        std::cerr << "MyClass DEFAULT CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
         //  = default;  TODO: We should not need this
     }
     MyClass (const MyClass& other) : val_(other.val_) {
-        std::cout << "MyClass(MyClass& other) COPY CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
+        std::cerr << "MyClass(MyClass& other) COPY CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
     MyClass (MyClass&& other) noexcept : val_(other.val_) {
-        std::cout << "MyClass(MyClass&& other) MOVE CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
+        std::cerr << "MyClass(MyClass&& other) MOVE CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
     MyClass& operator= (const MyClass& other) {
         val_ = other.val_;
-        std::cout << "MyClass COPY assignment(const MyClass& other)" << val_ << " this: " << this <<  std::endl;
+        std::cerr << "MyClass COPY assignment(const MyClass& other)" << val_ << " this: " << this <<  std::endl;
         return *this;
     }
 
     MyClass& operator= (MyClass&& other) noexcept {
         val_ = other.val_;
-        std::cout << "MyClass MOVE assignment(MyClass&& other)" << val_ << " this: " << this <<  std::endl;
+        std::cerr << "MyClass MOVE assignment(MyClass&& other)" << val_ << " this: " << this <<  std::endl;
         return *this;
     }
 
     MyClass (int val) : val_(val) {
-        std::cout << "MyClass(int val) CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
+        std::cerr << "MyClass(int val) CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
     ~MyClass() {
-        std::cout << "~MyClass! DESTRUCTOR: " << val_ << " this: " << this <<  std::endl;
+        std::cerr << "~MyClass! DESTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
 
@@ -60,21 +60,29 @@ inline std::ostream& operator<<(std::ostream& os, const MyClass& mc)
 using namespace std;
 
 
+template <class T>
+//using shared_ptr_t = std::shared_ptr<T>;
+using shared_ptr_t = estl::shared_ptr<T>;
 
 int main()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
-    estl::shared_ptr<MyClass> mc1;
+    shared_ptr_t<MyClass> mc1;
     {
-        estl::shared_ptr<MyClass> mc2 = estl::shared_ptr<MyClass>(new MyClass());
+        shared_ptr_t<MyClass> mc2 = shared_ptr_t<MyClass>(new MyClass());
         mc2->val(12);
         mc1 = mc2;
+        cerr << "mc1.get() : " << mc1.get() << "mc1.use_count():" << mc1.use_count() << " \n";
     }
     cerr << "--- shared_ptr playground 2 ---\n";
 
-    cerr << "mc1.get() : " << mc1.get() << "\n";
+    cerr << "mc1.get() : " << mc1.get() << "mc1.use_count():" << mc1.use_count() << " \n";
 
-    cerr << "--- shared_ptr playground 3 ---\n";
+    if (mc1) {
+        cerr << "mc1->val(): " << mc1->val() << "\n";
+    }
+
+    cerr << "--- shared_ptr playground 3: mc1 ---\n";
 
     return 0;
 }
