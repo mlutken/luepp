@@ -19,19 +19,14 @@ template <class T>
 class shared_ptr {
 public:
     shared_ptr()
-        : ptr_(0)
-        , use_count_(new use_counter_type(0))
+        : ptr_(nullptr)
+        , use_count_(nullptr)
     {
     }
 
     ~shared_ptr()
     {
         decref();
-    }
-
-    void reset()
-    {
-
     }
 
     shared_ptr(const shared_ptr<T>& o)
@@ -52,6 +47,19 @@ public:
     {
         incref();
     }
+
+    void reset()
+    {
+        destroy();
+    }
+
+    void reset(T* p)
+    {
+        destroy();
+        ptr_ = p;
+        use_count_ = new use_counter_type(1);
+    }
+
 
     shared_ptr<T>& operator=(const shared_ptr<T>& o)
     {
@@ -93,11 +101,17 @@ private:
 
     void decref()
     {
-        std::cerr << "decref() before: " << *use_count_ << "\n";
+        if (!ptr_) {
+            return;
+        }
+        std::cerr << "decref() before: " << *use_count_ << " ";
         if (--(*use_count_) == 0) {
-            std::cerr << "FIXMENM DELETING\n";
-            delete ptr_;
-            delete use_count_;
+            std::cerr << "  FIXMENM DELETING  ";
+            std::cerr << "   decref() after: " << *use_count_ << "\n";
+            destroy();
+        }
+        else {
+            std::cerr << "   decref() after: " << *use_count_ << "\n";
         }
     }
 
@@ -105,6 +119,14 @@ private:
     {
         std::cerr << "incref() before: " << *use_count_ << "\n";
         ++(*use_count_);
+    }
+
+    void destroy()
+    {
+        delete ptr_;
+        delete use_count_;
+        ptr_ = nullptr;
+        use_count_ = nullptr;
     }
 
     friend class weak_ptr<T>;
