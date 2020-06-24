@@ -22,7 +22,7 @@ class shared_ptr {
     friend class weak_ptr<T>;
     struct control_block {
         use_counter_type use_count_;
-        use_counter_type weak_count_;
+        use_counter_type countrol_block_count_;
     };
 
 public:
