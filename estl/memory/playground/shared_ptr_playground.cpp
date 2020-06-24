@@ -60,11 +60,43 @@ inline std::ostream& operator<<(std::ostream& os, const MyClass& mc)
 using namespace std;
 
 
-template <class T>
+//template <class T>
 //using shared_ptr_t = std::shared_ptr<T>;
+//template <class T>
+//using weak_ptr_t = std::weak_ptr<T>;
+
+template <class T>
 using shared_ptr_t = estl::shared_ptr<T>;
+template <class T>
+using weak_ptr_t = estl::weak_ptr<T>;
 
 int main()
+{
+    cerr << "--- shared_ptr playground 1 ---\n";
+    weak_ptr_t<MyClass> w_ptr;
+    {
+        shared_ptr_t<MyClass> s_ptr = shared_ptr_t<MyClass>(new MyClass());
+        w_ptr = s_ptr;
+        cerr << "w_ptr.use_count() inside scope: " << w_ptr.use_count() << '\n';
+        shared_ptr_t<MyClass> s_ptr2 = w_ptr.lock();
+        if (s_ptr2) {
+            s_ptr->val(3);
+            cerr << "weak_ptr lock succeded inside scope w_ptr.use_count() : " << w_ptr.use_count() << '\n';
+            cerr << "weak_ptr lock succeded inside scope s_ptr.use_count() : " << s_ptr.use_count() << '\n';
+            cerr << "weak_ptr lock succeded inside scope s_ptr2.use_count(): " << s_ptr2.use_count() << '\n';
+        }
+    }
+    cerr << "w_ptr.use_count() outside scope: " << w_ptr.use_count() << '\n';
+    shared_ptr_t<MyClass> s_ptr3 = w_ptr.lock();
+    if (s_ptr3) {
+        cerr << "lock outside w_ptr.use_count() : " << w_ptr.use_count() << " val: " << s_ptr3->val() <<  "\n";
+        cerr << "lock outside s_ptr2.use_count(): " << s_ptr3.use_count() << "\n";
+    }
+
+    return 0;
+}
+
+int main1()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
     shared_ptr_t<MyClass> mc1;

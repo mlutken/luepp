@@ -6,6 +6,8 @@
 #include <memory>
 #include <atomic/atomic_use.hpp>
 
+// https://stackoverflow.com/questions/5671241/how-does-weak-ptr-work
+
 // FIXMENM: Debug only!
 #include <iostream>
 
@@ -17,6 +19,12 @@ typedef estl_use::atomic<unsigned> use_counter_type;
 
 template <class T>
 class shared_ptr {
+    friend class weak_ptr<T>;
+    struct control_block {
+        use_counter_type use_count_;
+        use_counter_type weak_count_;
+    };
+
 public:
     shared_ptr()
         : ptr_(nullptr)
@@ -43,7 +51,8 @@ public:
     }
 
     explicit shared_ptr(const weak_ptr<T>& w)
-        : ptr_(w.ptr_), use_count_(w.count_)
+        : ptr_(w.ptr_),
+          use_count_(w.use_count_)
     {
         incref();
     }
@@ -133,22 +142,34 @@ private:
 
     // --- PRIVATE: Member data ---
     T* ptr_;
-    use_counter_type* use_count_;
+    use_counter_type*   use_count_;
+    control_block*      control_block_ptr_;
 };
 
 template <class T>
 class weak_ptr {
+    typedef typename shared_ptr<T>::control_block control_block;
 public:
     friend class shared_ptr<T>;
 
     weak_ptr()
-//        : ptr_(0), count_(shared_ptr<T>::nil())
-        : ptr_(0), count_(nullptr)
+////        : ptr_(0), count_(shared_ptr<T>::nil())
+        : ptr_(nullptr),
+          use_count_(nullptr)
     {}
 
-    explicit weak_ptr( const shared_ptr<T>& s)
-        : ptr_(s.ptr_), count_(s.use_count_)
+    explicit weak_ptr(const shared_ptr<T>& s)
+        : ptr_(s.ptr_),
+          use_count_(s.use_count_)
     {}
+
+    weak_ptr<T>& operator=(const shared_ptr<T>& o)
+    {
+        if (ptr_ == o.ptr_) return *this;
+        ptr_ = o.ptr_;
+        use_count_ = o.use_count_;
+        return *this;
+    }
 
     shared_ptr<T> lock() const { return shared_ptr<T>(*this); }
 
@@ -165,11 +186,17 @@ public:
     bool        operator!=  (const shared_ptr<T>& o) const { return ptr_ != o.ptr_; }
     bool        operator<   (const shared_ptr<T>& o) const { return ptr_ < o.ptr_; }
 
-    unsigned    use_count() const { return *count_; }
+    unsigned    use_count   () const
+    {
+        if (ptr_ == nullptr) return 0u;
+        return *use_count_;
+    }
+
 private:
     // --- PRIVATE: Member data ---
     T* ptr_;
-    use_counter_type* count_;
+    use_counter_type*   use_count_;
+    control_block*      control_block_ptr_;
 };
 
 }
