@@ -21,14 +21,33 @@ template <class T>
 class shared_ptr {
     friend class weak_ptr<T>;
     struct control_block {
+        explicit control_block(unsigned initial_use_count, unsigned initial_control_block_count) :
+            use_count_(initial_use_count),
+            control_block_count_(initial_control_block_count)
+        {
+            std::cerr << "*** FIXMENM control_block CONSTRUCTOR " << this << "\n";
+        }
+        void reset (unsigned initial_use_count, unsigned initial_control_block_count) {
+            use_count_ = initial_use_count;
+            control_block_count_ = initial_control_block_count;
+        }
+
+        ~control_block() {
+            std::cerr << "*** FIXMENM ~control_block DESTRUCTOR " << this << "\n";
+        }
+
+        void dbg() {
+            std::cerr << "*** FIXMENM use count: " << use_count_ << " control count: " << control_block_count_ <<  " " << this << "\n";
+        }
+
         use_counter_type use_count_;
-        use_counter_type countrol_block_count_;
+        use_counter_type control_block_count_;
     };
 
 public:
     shared_ptr()
-        : ptr_(nullptr)
-        , use_count_(nullptr)
+        : ptr_(nullptr),
+          control_block_ptr_(nullptr)
     {
     }
 
@@ -38,21 +57,21 @@ public:
     }
 
     shared_ptr(const shared_ptr<T>& o)
-        : ptr_(o.ptr_)
-        , use_count_(o.use_count_)
+        : ptr_(o.ptr_),
+          control_block_ptr_(o.control_block_ptr_)
     {
         incref();
     }
 
     shared_ptr(T* p)
         : ptr_(p)
-        , use_count_(new use_counter_type(1))
+        , control_block_ptr_(new control_block(1, 0))
     {
     }
 
     explicit shared_ptr(const weak_ptr<T>& w)
         : ptr_(w.ptr_),
-          use_count_(w.use_count_)
+          control_block_ptr_(w.control_block_ptr_)
     {
         incref();
     }
@@ -66,16 +85,20 @@ public:
     {
         destroy();
         ptr_ = p;
-        use_count_ = new use_counter_type(1);
+        if (control_block_ptr_) {
+            control_block_ptr_->reset(1, 0);
+        }
+        else {
+            control_block_ptr_ = new control_block(1, 0);
+        }
     }
-
 
     shared_ptr<T>& operator=(const shared_ptr<T>& o)
     {
         if (ptr_ == o.ptr_) return *this;
         decref();
         ptr_ = o.ptr_;
-        use_count_ = o.use_count_;
+        control_block_ptr_ = o.control_block_ptr_;
         incref();
         return *this;
     }
@@ -96,54 +119,53 @@ public:
     unsigned    use_count   () const
     {
         if (ptr_ == nullptr) return 0u;
-        return *use_count_;
+        return control_block_ptr_->use_count_;
     }
 
-//    unsigned    use_count   () const { return 0u; }
 private:
-//    /* special case, null pointer (nil-code) */
-//    static use_counter_type* nil()
-//    {
-//        static use_counter_type nil_counter(0);
-//        return &nil_counter;
-//    }
-
     void decref()
     {
         if (!ptr_) {
             return;
         }
-        std::cerr << "decref() before: " << *use_count_ << " ";
-        if (--(*use_count_) == 0) {
+
+        std::cerr << "decref() "; control_block_ptr_->dbg();
+        if (--(control_block_ptr_->use_count_) == 0) {
             std::cerr << "  FIXMENM DELETING  ";
-            std::cerr << "   decref() after: " << *use_count_ << "\n";
+//            std::cerr << "   decref() after: " << *use_count_ << "\n";
             destroy();
         }
         else {
-            std::cerr << "   decref() after: " << *use_count_ << "\n";
+//            std::cerr << "   decref() after: " << *use_count_ << "\n";
         }
     }
 
     void incref()
     {
-        std::cerr << "incref() before: " << *use_count_ << "\n";
-        ++(*use_count_);
+        std::cerr << "incref() "; control_block_ptr_->dbg();
+        ++(control_block_ptr_->use_count_);
     }
 
     void destroy()
     {
         delete ptr_;
-        delete use_count_;
         ptr_ = nullptr;
-        use_count_ = nullptr;
+        check_and_destroy_control_block();
+    }
+
+    void check_and_destroy_control_block()
+    {
+        if (control_block_ptr_->control_block_count_ > 0) {
+            return;
+        }
+        delete control_block_ptr_;
+        control_block_ptr_ = nullptr;
     }
 
     friend class weak_ptr<T>;
-
     // --- PRIVATE: Member data ---
-    T* ptr_;
-    use_counter_type*   use_count_;
-    control_block*      control_block_ptr_;
+    T*              ptr_;
+    control_block*  control_block_ptr_;
 };
 
 template <class T>
@@ -153,21 +175,20 @@ public:
     friend class shared_ptr<T>;
 
     weak_ptr()
-////        : ptr_(0), count_(shared_ptr<T>::nil())
         : ptr_(nullptr),
-          use_count_(nullptr)
+          control_block_ptr_(nullptr)
     {}
 
     explicit weak_ptr(const shared_ptr<T>& s)
         : ptr_(s.ptr_),
-          use_count_(s.use_count_)
+          control_block_ptr_(s.control_block_ptr_)
     {}
 
     weak_ptr<T>& operator=(const shared_ptr<T>& o)
     {
         if (ptr_ == o.ptr_) return *this;
         ptr_ = o.ptr_;
-        use_count_ = o.use_count_;
+        control_block_ptr_ = o.control_block_ptr_;
         return *this;
     }
 
@@ -189,14 +210,22 @@ public:
     unsigned    use_count   () const
     {
         if (ptr_ == nullptr) return 0u;
-        return *use_count_;
+        return control_block_ptr_->use_count_;
     }
 
 private:
+    void check_and_destroy_control_block()
+    {
+        if (control_block_ptr_->control_block_count_ > 0) {
+            return;
+        }
+        delete control_block_ptr_;
+        control_block_ptr_ = nullptr;
+    }
+
     // --- PRIVATE: Member data ---
-    T* ptr_;
-    use_counter_type*   use_count_;
-    control_block*      control_block_ptr_;
+    T*              ptr_;
+    control_block*  control_block_ptr_;
 };
 
 }

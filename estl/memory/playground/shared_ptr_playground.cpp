@@ -70,7 +70,7 @@ using shared_ptr_t = estl::shared_ptr<T>;
 template <class T>
 using weak_ptr_t = estl::weak_ptr<T>;
 
-int main()
+int main1()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
     weak_ptr_t<MyClass> w_ptr;
@@ -96,7 +96,7 @@ int main()
     return 0;
 }
 
-int main1()
+int main()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
     shared_ptr_t<MyClass> mc1;
