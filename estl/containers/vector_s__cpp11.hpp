@@ -109,7 +109,7 @@ iterator emplace( const_iterator pos, Args&&... args )
 
     iterator ipos = const_cast<iterator>(pos);
     shift_right(ipos, end(), 1u);
-    new (static_cast<pointer>(ipos)) T(std::forward<Args>(args)...);
+    new (static_cast<pointer>(ipos)) T(NESTLE_FORWARD(args)...);
     size_ = new_size;
     return ipos;
 }
@@ -118,7 +118,7 @@ void push_back (T&& value)
 {
     const auto new_size = size() + 1;
     if (new_size > capacity()) {
-        throw std::range_error{"cas::vector_s push_back beyond capacity."};
+        ESTL_THROW(std::range_error, "cas::vector_s push_back beyond capacity.");
     }
     const pointer insert_ptr = data_ptr_ + size();
     new (insert_ptr) value_type{NESTLE_MOVE(value)};
@@ -135,7 +135,7 @@ reference emplace_back(Args&&... args)
     }
 
     const pointer insert_ptr = data_ptr_ + size();
-    new (insert_ptr) value_type(std::forward<Args>(args)...);
+    new (insert_ptr) value_type(NESTLE_FORWARD(args)...);
     size_ = new_size;
     return *insert_ptr;
 }

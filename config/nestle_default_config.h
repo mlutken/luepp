@@ -46,10 +46,12 @@
 
 #if ( (CXX_STANDARD == 98) || (CXX_STANDARD_LIBRARY == 98))
     #define NESTLE_MOVE(x) x
+    #define NESTLE_FORWARD(x) x
 typedef long  signed_size_t;
 #else
     #include <cstdint>
     #define NESTLE_MOVE(x) std::move(x)
+    #define NESTLE_FORWARD(x) std::forward(x)
     typedef std::int64_t signed_size_t;
 #endif
 
@@ -57,7 +59,7 @@ typedef long  signed_size_t;
 #if (ESTL_USE_EXCEPTIONS == 1)
     #define ESTL_THROW(exception_type, message) throw exception_type(message)
 #else
-    #define ESTL_THROW_RANGE_ERROR(message)
+    #define ESTL_THROW(exception_type, message)
 #endif
 
 #ifndef NESTLE_PLATFORM_TYPE
