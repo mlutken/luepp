@@ -136,6 +136,7 @@ private:
         }
 
         std::cerr << "decref() "; control_block_ptr_->dbg();
+        --(control_block_ptr_->control_block_count_);
         if (--(control_block_ptr_->use_count_) == 0) {
             std::cerr << "  FIXMENM DELETING  ";
 //            std::cerr << "   decref() after: " << *use_count_ << "\n";
