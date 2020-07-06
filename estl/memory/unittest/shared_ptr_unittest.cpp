@@ -123,16 +123,24 @@ TEST_F(SharedPtrUnitTest, reset)
     EXPECT_EQ(mc2.use_count(), 1);
 }
 
-TEST_F(SharedPtrUnitTest, DISABLED_weak_ptr_test)
+TEST_F(SharedPtrUnitTest, weak_ptr_test)
 {
+//    return;
     weak_ptr_t<MyClass> w_ptr;
     {
         shared_ptr_t<MyClass> s_ptr = shared_ptr_t<MyClass>(new MyClass());
         w_ptr = s_ptr;
         EXPECT_EQ(w_ptr.use_count(), 1);
-//        std::cout << "w_ptr.use_count() inside scope: " << w_ptr.use_count() << '\n';
+        auto s_ptr2 = w_ptr.lock();
+        EXPECT_EQ(static_cast<bool>(s_ptr2), true);
+        EXPECT_EQ(w_ptr.use_count(), 2);
+        EXPECT_EQ(s_ptr.use_count(), 2);
+        EXPECT_EQ(s_ptr2.use_count(), 2);
+        std::cout << "w_ptr.use_count() inside scope: " << w_ptr.use_count() << '\n';
     }
     EXPECT_EQ(w_ptr.use_count(), 0);
+    auto s_ptr3 = w_ptr.lock();
+    EXPECT_EQ(static_cast<bool>(s_ptr3), false);
 }
 
 

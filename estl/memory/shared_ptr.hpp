@@ -37,13 +37,18 @@ class shared_ptr {
             ++control_block_count_;
         }
 
+        void increase_use_count             () { ++use_count_; }
+        void decrease_use_count             () { --use_count_; }
+        void increase_control_block_count   () { ++control_block_count_;}
+        void decrease_control_block_count   () { --control_block_count_;}
+
 
         ~control_block() {
             std::cerr << "*** FIXMENM ~control_block DESTRUCTOR " << this << "\n";
         }
 
         void dbg() {
-            std::cerr << "*** FIXMENM use count: " << use_count_ << " control count: " << control_block_count_ <<  " " << this << "\n";
+            std::cerr << "*** FIXMENM use count: " << use_count_ << " control count: " << control_block_count_ <<  ",  this: " << this << "\n";
         }
 
         use_counter_type use_count_;
@@ -71,12 +76,12 @@ public:
 
     shared_ptr(T* p)
         : ptr_(p)
-        , control_block_ptr_(new control_block(1, 0))
+        , control_block_ptr_(new control_block(1, 1))
     {
     }
 
     explicit shared_ptr(const weak_ptr<T>& w)
-        : ptr_(w.ptr_),
+        : ptr_(w.control_block_ptr_ && (w.control_block_ptr_->use_count_ > 0) ?  w.ptr_ : nullptr),
           control_block_ptr_(w.control_block_ptr_)
     {
         increase_counters();
@@ -92,10 +97,10 @@ public:
         destroy();
         ptr_ = p;
         if (control_block_ptr_) {
-            control_block_ptr_->reset(1, 0);
+            control_block_ptr_->reset(1, 1);
         }
         else {
-            control_block_ptr_ = new control_block(1, 0);
+            control_block_ptr_ = new control_block(1, 1);
         }
     }
 
@@ -131,40 +136,39 @@ public:
 private:
     void decrease_counters()
     {
-        if (!ptr_) {
+        if (!ptr_ || !control_block_ptr_) {
             return;
         }
 
         std::cerr << "decref() "; control_block_ptr_->dbg();
-        --(control_block_ptr_->control_block_count_);
         if (--(control_block_ptr_->use_count_) == 0) {
-            std::cerr << "  FIXMENM DELETING  ";
-//            std::cerr << "   decref() after: " << *use_count_ << "\n";
             destroy();
         }
-        else {
-//            std::cerr << "   decref() after: " << *use_count_ << "\n";
+        if (--(control_block_ptr_->control_block_count_) == 0) {
+            destroy_control_block();
         }
+
     }
 
     void increase_counters()
     {
+        if (!ptr_ || !control_block_ptr_) {
+            return;
+        }
         std::cerr << "incref() "; control_block_ptr_->dbg();
         control_block_ptr_->increase_counters();
     }
 
     void destroy()
     {
+        std::cerr << "  FIXMENM destroy object\n";
         delete ptr_;
         ptr_ = nullptr;
-        check_and_destroy_control_block();
     }
 
-    void check_and_destroy_control_block()
+    void destroy_control_block()
     {
-        if (control_block_ptr_->control_block_count_ > 0) {
-            return;
-        }
+        std::cerr << "  FIXMENM delete control block\n";
         delete control_block_ptr_;
         control_block_ptr_ = nullptr;
     }
@@ -188,14 +192,14 @@ public:
 
     ~weak_ptr()
     {
-        decrease_counter();
+        decrease_control_block_counter();
     }
 
     explicit weak_ptr(const shared_ptr<T>& s)
         : ptr_(s.ptr_),
           control_block_ptr_(s.control_block_ptr_)
     {
-        increase_counter();
+        increase_control_block_counter();
     }
 
     weak_ptr<T>& operator=(const shared_ptr<T>& o)
@@ -203,6 +207,9 @@ public:
         if (ptr_ == o.ptr_) return *this;
         ptr_ = o.ptr_;
         control_block_ptr_ = o.control_block_ptr_;
+        if (control_block_ptr_) {
+            control_block_ptr_->increase_control_block_count();
+        }
         return *this;
     }
 
@@ -228,14 +235,19 @@ public:
     }
 
 private:
-    void increase_counter()
+    void increase_control_block_counter()
     {
         std::cerr << "control increase "; control_block_ptr_->dbg();
-        ++(control_block_ptr_->control_block_count_);
+        if (control_block_ptr_) {
+            control_block_ptr_->increase_control_block_count();
+        }
     }
 
-    void decrease_counter()
+    void decrease_control_block_counter()
     {
+        if (!control_block_ptr_) {
+            return;
+        }
         std::cerr << "control decrease "; control_block_ptr_->dbg();
         if (--(control_block_ptr_->control_block_count_) == 0) {
             delete control_block_ptr_;

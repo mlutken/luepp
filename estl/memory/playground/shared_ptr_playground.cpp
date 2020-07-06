@@ -70,20 +70,48 @@ using shared_ptr_t = estl::shared_ptr<T>;
 template <class T>
 using weak_ptr_t = estl::weak_ptr<T>;
 
+
 int main()
+{
+    weak_ptr_t<MyClass> w_ptr;
+    {
+        shared_ptr_t<MyClass> s_ptr = shared_ptr_t<MyClass>(new MyClass());
+        w_ptr = s_ptr;
+        cerr << "w_ptr.use_count(1) : " << w_ptr.use_count() << "\n";
+        auto s_ptr2 = w_ptr.lock();
+        if (static_cast<bool>(s_ptr2) == true) {
+            cerr << "w_ptr.lock() succeeded as expected\n";
+        }
+        cerr << "w_ptr.use_count(2)  : " << w_ptr.use_count() << "\n";
+        cerr << "s_ptr.use_count(2)  : " << s_ptr.use_count() << "\n";
+        cerr << "s_ptr2.use_count(2) : " << s_ptr2.use_count() << "\n";
+        std::cout << "w_ptr.use_count() inside scope: " << w_ptr.use_count() << "\n";
+    }
+    cerr << "w_ptr.use_count(0)  : " << w_ptr.use_count() << "\n";
+    auto s_ptr3 = w_ptr.lock();
+    if (static_cast<bool>(s_ptr3) == false) {
+        cerr << "w_ptr.lock() failed as expected\n";
+    }
+
+
+    return 0;
+}
+
+
+int main1()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
     weak_ptr_t<MyClass> w_ptr;
     {
         shared_ptr_t<MyClass> s_ptr = shared_ptr_t<MyClass>(new MyClass());
         w_ptr = s_ptr;
-        cerr << "w_ptr.use_count() inside scope: " << w_ptr.use_count() << '\n';
+        cerr << "w_ptr.use_count() inside scope: " << w_ptr.use_count() << "\n";
         shared_ptr_t<MyClass> s_ptr2 = w_ptr.lock();
         if (s_ptr2) {
             s_ptr->val(3);
-            cerr << "weak_ptr lock succeded inside scope w_ptr.use_count() : " << w_ptr.use_count() << '\n';
-            cerr << "weak_ptr lock succeded inside scope s_ptr.use_count() : " << s_ptr.use_count() << '\n';
-            cerr << "weak_ptr lock succeded inside scope s_ptr2.use_count(): " << s_ptr2.use_count() << '\n';
+            cerr << "weak_ptr lock succeded inside scope w_ptr.use_count() : " << w_ptr.use_count() << "\n";
+            cerr << "weak_ptr lock succeded inside scope s_ptr.use_count() : " << s_ptr.use_count() << "\n";
+            cerr << "weak_ptr lock succeded inside scope s_ptr2.use_count(): " << s_ptr2.use_count() << "\n";
         }
     }
     cerr << "w_ptr.use_count() outside scope: " << w_ptr.use_count() << '\n';
@@ -96,7 +124,7 @@ int main()
     return 0;
 }
 
-int main1()
+int main2()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
     shared_ptr_t<MyClass> mc1;
