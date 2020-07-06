@@ -20,30 +20,35 @@ class SharedPtrUnitTest : public testing::Test
 class MyClass {
 public:
     MyClass () {
-        std::cerr << "MyClass() CONSTRUCTOR: " << val_ << " this: " << this << "\n";
+        std::cerr << "MyClass DEFAULT CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
+        //  = default;  TODO: We should not need this
     }
     MyClass (const MyClass& other) : val_(other.val_) {
-        std::cerr << "MyClass(MyClass& other) CONSTRUCTOR: " << val_ << " this: " << this << "\n";
+        std::cerr << "MyClass(MyClass& other) COPY CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
     MyClass (MyClass&& other) noexcept : val_(other.val_) {
-        std::cerr << "~MyClass() DESTRUCTOR: " << val_ << " this: " << this <<  "\n";
+        std::cerr << "MyClass(MyClass&& other) MOVE CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
     MyClass& operator= (const MyClass& other) {
         val_ = other.val_;
+        std::cerr << "MyClass COPY assignment(const MyClass& other)" << val_ << " this: " << this <<  std::endl;
         return *this;
     }
 
     MyClass& operator= (MyClass&& other) noexcept {
         val_ = other.val_;
+        std::cerr << "MyClass MOVE assignment(MyClass&& other)" << val_ << " this: " << this <<  std::endl;
         return *this;
     }
 
     MyClass (int val) : val_(val) {
+        std::cerr << "MyClass(int val) CONSTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
     ~MyClass() {
+        std::cerr << "~MyClass! DESTRUCTOR: " << val_ << " this: " << this <<  std::endl;
     }
 
 
@@ -58,7 +63,6 @@ public:
 private:
     int val_ = -99;
 };
-
 
 // -------------------
 // -- Constructors ---
@@ -118,6 +122,7 @@ TEST_F(SharedPtrUnitTest, reset)
     EXPECT_EQ(mc1.use_count(), 1);
     auto mc2 = mc1;
     EXPECT_EQ(mc1.use_count(), 2);
+    EXPECT_EQ(mc2.use_count(), 2);
     mc1.reset(new MyClass());
     EXPECT_EQ(mc1.use_count(), 1);
     EXPECT_EQ(mc2.use_count(), 1);
@@ -125,7 +130,6 @@ TEST_F(SharedPtrUnitTest, reset)
 
 TEST_F(SharedPtrUnitTest, weak_ptr_test)
 {
-//    return;
     weak_ptr_t<MyClass> w_ptr;
     {
         shared_ptr_t<MyClass> s_ptr = shared_ptr_t<MyClass>(new MyClass());
@@ -136,7 +140,6 @@ TEST_F(SharedPtrUnitTest, weak_ptr_test)
         EXPECT_EQ(w_ptr.use_count(), 2);
         EXPECT_EQ(s_ptr.use_count(), 2);
         EXPECT_EQ(s_ptr2.use_count(), 2);
-        std::cout << "w_ptr.use_count() inside scope: " << w_ptr.use_count() << '\n';
     }
     EXPECT_EQ(w_ptr.use_count(), 0);
     auto s_ptr3 = w_ptr.lock();

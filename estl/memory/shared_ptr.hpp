@@ -94,14 +94,9 @@ public:
 
     void reset(T* p)
     {
-        destroy();
+        decrease_counters();
         ptr_ = p;
-        if (control_block_ptr_) {
-            control_block_ptr_->reset(1, 1);
-        }
-        else {
-            control_block_ptr_ = new control_block(1, 1);
-        }
+        control_block_ptr_ = new control_block(1, 1);
     }
 
     shared_ptr<T>& operator=(const shared_ptr<T>& o)
@@ -147,7 +142,6 @@ private:
         if (--(control_block_ptr_->control_block_count_) == 0) {
             destroy_control_block();
         }
-
     }
 
     void increase_counters()

@@ -70,9 +70,34 @@ using shared_ptr_t = estl::shared_ptr<T>;
 template <class T>
 using weak_ptr_t = estl::weak_ptr<T>;
 
-
 int main()
 {
+
+    {
+        shared_ptr_t<MyClass> mc1 = shared_ptr_t<MyClass>(new MyClass(10));
+        auto mc2 = mc1;
+        cerr << "mc1.use_clount(2) : " << mc1.use_count() << ",  mc1.value: " << mc1->val() <<  "\n";
+        cerr << "mc2.use_count(2) : " << mc2.use_count() << ",  mc2.value: " << mc2->val() <<  "\n";
+        mc1.reset(new MyClass(20));
+        cerr << "mc1.use_count(1) : " << mc1.use_count() << ",  mc1.value: " << mc1->val() <<  "\n";
+        cerr << "mc2.use_count(1) : " << mc2.use_count() << ",  mc2.value: " << mc2->val() <<  "\n";
+    }
+
+    shared_ptr_t<MyClass> s_ptr = shared_ptr_t<MyClass>(new MyClass());
+    return 0;
+}
+
+
+int main3()
+{
+
+    {
+        shared_ptr_t<MyClass> mc1;
+        mc1 = shared_ptr_t<MyClass>(new MyClass());
+        auto mc2 = mc1;
+        mc1.reset(new MyClass());
+    }
+
     weak_ptr_t<MyClass> w_ptr;
     {
         shared_ptr_t<MyClass> s_ptr = shared_ptr_t<MyClass>(new MyClass());
@@ -98,7 +123,7 @@ int main()
 }
 
 
-int main1()
+int main2()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
     weak_ptr_t<MyClass> w_ptr;
@@ -124,7 +149,7 @@ int main1()
     return 0;
 }
 
-int main2()
+int main1()
 {
     cerr << "--- shared_ptr playground 1 ---\n";
     shared_ptr_t<MyClass> mc1;
