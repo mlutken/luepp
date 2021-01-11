@@ -15,6 +15,7 @@ static int test_cesl_fifo_push(const char* str)
     return cesl_fifo_push(&my_pool_g, str, strlen(str));
 }
 
+
 // static char* test_cesl_fifo_front_strcpy(char* dst_str)
 // {
 //     return strncpy(dst_str, cesl_fifo_front(&my_pool_g), my_pool_elem_max_size);
