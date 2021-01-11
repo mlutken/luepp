@@ -86,8 +86,15 @@ int cesl_llfifo_full (llfifo_t* self)
 
 size_t cesl_llfifo_size(llfifo_t* self)
 {
-    int64_t sz = (int64_t)llfifo_write_index(self) - (int64_t)llfifo_read_index(self);
-    return sz >= 0 ? (size_t)sz : (size_t)(- sz -1);
+    const size_t read_index = llfifo_read_index(self);
+    const size_t write_index = llfifo_write_index(self);
+    int64_t sz = (int64_t)(write_index) - (int64_t)(read_index);
+    if (sz >= 0) {
+        return (size_t)(sz);
+    }
+    else {
+        return self->elems_max_count_ - read_index + write_index;
+    }
 }
 
 // TODO: Change this to not take the size parameter
