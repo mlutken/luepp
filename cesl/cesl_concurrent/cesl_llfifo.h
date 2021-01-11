@@ -28,17 +28,17 @@ typedef struct {
 // PUBLIC: functions ---
 // ---------------------
 
-extern_C int    llfifo_create       (llfifo_t* self, size_t elem_max_size,
-                                     size_t elems_max_count, char* fifo_buffer);
-extern_C int    llfifo_empty        (llfifo_t* self);
-extern_C char*  llfifo_front        (llfifo_t* self);
-extern_C char*  llfifo_element      (llfifo_t* self, size_t index);
-extern_C int    llfifo_full         (llfifo_t* self);
-extern_C size_t llfifo_size         (llfifo_t* self);
-extern_C int    llfifo_push         (llfifo_t* self, const char* elm_ptr, size_t elem_size);
-extern_C int    llfifo_push_size    (llfifo_t* self, const char* elm_ptr, size_t elem_size);
-extern_C int    llfifo_start_push   (llfifo_t* self, size_t* write_index);
-extern_C int    llfifo_end_push     (llfifo_t* self, size_t write_index);
-extern_C int    llfifo_pop          (llfifo_t* self);
+extern_C int    cesl_llfifo_create       (llfifo_t* self, size_t elem_max_size,
+                                          size_t elems_max_count, char* fifo_buffer);
+extern_C int    cesl_llfifo_empty        (llfifo_t* self);
+extern_C char*  cesl_llfifo_front        (llfifo_t* self);
+extern_C char*  cesl_llfifo_element      (llfifo_t* self, size_t index);
+extern_C int    cesl_llfifo_full         (llfifo_t* self);
+extern_C size_t cesl_llfifo_size         (llfifo_t* self);
+extern_C int    cesl_llfifo_push         (llfifo_t* self, const char* elm_ptr, size_t elem_size);
+extern_C int    cesl_llfifo_push_size    (llfifo_t* self, const char* elm_ptr, size_t elem_size);
+extern_C int    cesl_llfifo_start_push   (llfifo_t* self, size_t* write_index);
+extern_C int    cesl_llfifo_end_push     (llfifo_t* self, size_t write_index);
+extern_C int    cesl_llfifo_pop          (llfifo_t* self);
 
 #endif //CESL_CONCURRENT_LLFIFO_H
