@@ -1,7 +1,3 @@
-/**@file
- * cesl_llfifo Lockless FIFO (ring) buffer in C supporting
- * one producer and one consumer.
-*/
 #ifndef CESL_CONCURRENT_LLFIFO_H
 #define CESL_CONCURRENT_LLFIFO_H
 
@@ -10,6 +6,11 @@
 #include <stddef.h>
 
 CESL_ALIGNED_TYPE(size_t, 64) cesl_llfifo_aligned64_size_t;
+
+/**@file
+ * cesl_llfifo Lockless FIFO (ring) buffer in C supporting
+ * one producer and one consumer. Statically allocated.
+*/
 
 // -----------------
 // PUBLIC: types ---

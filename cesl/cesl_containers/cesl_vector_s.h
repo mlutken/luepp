@@ -1,12 +1,13 @@
-/**@file
- * cesl_vector_s: STL like vector with a max size defined at
- * creation time of the vector.
-*/
 #ifndef CESL_CONCURRENT_cesl_vector_s_H
 #define CESL_CONCURRENT_cesl_vector_s_H
 
 #include <cesl_compiler/cesl_extern_c.h>
 #include <stddef.h>
+
+/**@file
+ * cesl_vector_s: STL like vector with a max size defined at
+ * creation time of the vector. Statically allocated.
+*/
 
 // -----------------
 // PUBLIC: types ---
