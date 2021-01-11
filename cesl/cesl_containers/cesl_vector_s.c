@@ -1,7 +1,7 @@
 #include "cesl_vector_s.h"
-#include <cesl_compiler/cesl_atomic.h>
 #include <string.h>
-#include<stdint.h>
+#include <stdint.h>
+
 
 // -----------------------------
 // PRIVATE: Helper functions ---
