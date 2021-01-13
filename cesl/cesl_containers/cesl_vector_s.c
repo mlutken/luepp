@@ -23,7 +23,7 @@ void cesl_vector_s_move_elements (cesl_vector_s_t* self, size_t index_from, size
     memmove(ptr_to, ptr_from, positions * self->elem_max_size_);
 }
 
-void cesl_vector_s_insert_at(cesl_vector_s_t* self, size_t index, const char* elm_ptr,  size_t elem_size)
+void cesl_vector_s_insert_at(cesl_vector_s_t* self, size_t index, const void* elm_ptr,  size_t elem_size)
 {
     char* dst_ptr = cesl_vector_s_get_ptr_to_index(self, index);
     memcpy (dst_ptr, elm_ptr, elem_size);
