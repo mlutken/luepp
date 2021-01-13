@@ -40,6 +40,6 @@ extern_C int    cesl_vector_s_insert_size       (cesl_vector_s_t* self, size_t i
 extern_C int    cesl_vector_s_push_back         (cesl_vector_s_t* self, const void* elm_ptr);
 extern_C int    cesl_vector_s_push_back_size    (cesl_vector_s_t* self, const void* elm_ptr, size_t elem_size);
 extern_C void   cesl_vector_s_pop_back          (cesl_vector_s_t* self);
-extern_C void   cesl_vector_s_append            (cesl_vector_s_t* self, cesl_vector_s_t* other);
+extern_C int    cesl_vector_s_append            (cesl_vector_s_t* self, cesl_vector_s_t* other);
 
 #endif //CESL_CONCURRENT_cesl_vector_s_H

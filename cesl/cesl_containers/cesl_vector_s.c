@@ -132,11 +132,14 @@ void cesl_vector_s_pop_back (cesl_vector_s_t* self)
     self->elems_count_ = self->elems_count_ - 1u;
 }
 
-void cesl_vector_s_append (cesl_vector_s_t* self, cesl_vector_s_t* other)
+int cesl_vector_s_append (cesl_vector_s_t* self, cesl_vector_s_t* other)
 {
     const size_t other_size = cesl_vector_s_size(other);
     for (size_t i = 0; i < other_size; ++i) {
         const void* src_elem = cesl_vector_s_get(other, i);
-        cesl_vector_s_push_back(self, src_elem);
+        if (!cesl_vector_s_push_back(self, src_elem)) {
+            return 0;
+        }
     }
+    return 1;
 }
