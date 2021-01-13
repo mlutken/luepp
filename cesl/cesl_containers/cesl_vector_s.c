@@ -35,7 +35,7 @@ void cesl_vector_s_insert_at(cesl_vector_s_t* self, size_t index, const char* el
 // PUBLIC: functions ---
 // ---------------------
 
-int cesl_vector_s_create(cesl_vector_s_t* self, size_t elem_max_size, size_t elems_max_count, char* fifo_buffer)
+int cesl_vector_s_create(cesl_vector_s_t* self, size_t elem_max_size, size_t elems_max_count, void* fifo_buffer)
 {
     self->elem_max_size_ = elem_max_size;
     self->elems_max_count_ = elems_max_count;
@@ -87,7 +87,7 @@ size_t cesl_vector_s_size(cesl_vector_s_t* self)
     return self->elems_count_;
 }
 
-int cesl_vector_s_insert(cesl_vector_s_t* self, size_t index, const char* elm_ptr)
+int cesl_vector_s_insert(cesl_vector_s_t* self, size_t index, const void* elm_ptr)
 {
     if (self->elems_count_ < self->elems_max_count_) {
         cesl_vector_s_move_elements(self, index, index + 1u);
@@ -97,7 +97,7 @@ int cesl_vector_s_insert(cesl_vector_s_t* self, size_t index, const char* elm_pt
     return 0;
 }
 
-int cesl_vector_s_insert_size(cesl_vector_s_t* self, size_t index, const char* elm_ptr, size_t elem_size)
+int cesl_vector_s_insert_size(cesl_vector_s_t* self, size_t index, const void* elm_ptr, size_t elem_size)
 {
     if (self->elems_count_ < self->elems_max_count_) {
         elem_size = elem_size == 0 ? self->elem_max_size_ : elem_size;
@@ -108,7 +108,7 @@ int cesl_vector_s_insert_size(cesl_vector_s_t* self, size_t index, const char* e
     return 0;
 }
 
-int cesl_vector_s_push_back (cesl_vector_s_t* self, const char* elm_ptr)
+int cesl_vector_s_push_back (cesl_vector_s_t* self, const void* elm_ptr)
 {
     if (self->elems_count_ < self->elems_max_count_) {
         cesl_vector_s_insert_at(self, self->elems_count_, elm_ptr, self->elem_max_size_);
@@ -117,7 +117,7 @@ int cesl_vector_s_push_back (cesl_vector_s_t* self, const char* elm_ptr)
     return 0;
 }
 
-int cesl_vector_s_push_back_size (cesl_vector_s_t* self, const char* elm_ptr, size_t elem_size)
+int cesl_vector_s_push_back_size (cesl_vector_s_t* self, const void* elm_ptr, size_t elem_size)
 {
     if (self->elems_count_ < self->elems_max_count_) {
         elem_size = elem_size == 0 ? self->elem_max_size_ : elem_size;

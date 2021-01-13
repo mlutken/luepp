@@ -48,7 +48,7 @@ static inline void llfifo_write_index_set (llfifo_t* self, size_t write_index )
 // PUBLIC: functions ---
 // ---------------------
 
-int cesl_llfifo_create(llfifo_t* self, size_t elem_max_size, size_t elems_max_count, char* fifo_buffer)
+int cesl_llfifo_create(llfifo_t* self, size_t elem_max_size, size_t elems_max_count, void* fifo_buffer)
 {
     // Check that elems_max_count is a power of 2!
     if( (elems_max_count & (elems_max_count-1)) != 0) {
@@ -98,7 +98,7 @@ size_t cesl_llfifo_size(llfifo_t* self)
 }
 
 // TODO: Change this to not take the size parameter
-int cesl_llfifo_push (llfifo_t* self, const char* elm_ptr, size_t elem_size )
+int cesl_llfifo_push (llfifo_t* self, const void* elm_ptr, size_t elem_size )
 {
     size_t next_write_index = llfifo_inc_index(self, llfifo_write_index(self));
     if ( next_write_index != llfifo_read_index(self) ) {
@@ -111,7 +111,7 @@ int cesl_llfifo_push (llfifo_t* self, const char* elm_ptr, size_t elem_size )
     return 0;
 }
 
-int cesl_llfifo_push_size (llfifo_t* self, const char* elm_ptr, size_t elem_size )
+int cesl_llfifo_push_size (llfifo_t* self, const void* elm_ptr, size_t elem_size )
 {
     size_t next_write_index = llfifo_inc_index(self, llfifo_write_index(self));
     if ( next_write_index != llfifo_read_index(self) ) {

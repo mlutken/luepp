@@ -31,6 +31,7 @@ int main()
     cesl_dprintf("cesl_vector_s_front()          : '%s'\n", cesl_vector_s_front(&my_vector_g));
     cesl_vector_s_pop_back(&my_vector_g);
     cesl_dprintf("cesl_vector_s_size()           : '%d', back: '%s'\n\n", cesl_vector_s_size(&my_vector_g), cesl_vector_s_back(&my_vector_g));
+
     cesl_dprintf("cesl_vector_s_empty()          : '%d'  cesl_vector_s_full(): '%d'\n", cesl_vector_s_empty(&my_vector_g), cesl_vector_s_full(&my_vector_g));
     cesl_dprintf("cesl_vector_s_front()          : '%s'\n", cesl_vector_s_front(&my_vector_g));
     cesl_dprintf("cesl_vector_s_push('fourth')   : '%d'\n", test_vector_s_push_back_size("fourth"));
