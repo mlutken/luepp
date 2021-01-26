@@ -35,6 +35,7 @@ extern_C char*  cesl_vector_s_get               (cesl_vector_s_t *self, size_t i
 extern_C int    cesl_vector_s_full              (cesl_vector_s_t* self);
 extern_C size_t cesl_vector_s_size              (cesl_vector_s_t* self);
 extern_C int    cesl_vector_s_insert            (cesl_vector_s_t* self, size_t index, const void* elm_ptr);
+extern_C void   cesl_vector_s_erase_at          (cesl_vector_s_t* self, size_t index);
 extern_C int    cesl_vector_s_insert_size       (cesl_vector_s_t* self, size_t index, const void* elm_ptr, size_t elem_size);
 //extern_C int    cesl_vector_s_insert_range      (cesl_vector_s_t* self, size_t index, void char* elm_ptr, size_t count);
 extern_C int    cesl_vector_s_push_back         (cesl_vector_s_t* self, const void* elm_ptr);

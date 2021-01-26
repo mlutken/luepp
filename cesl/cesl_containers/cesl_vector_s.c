@@ -8,7 +8,7 @@
 // -----------------------------
 
 /** Get pointer (inside fifo_buffer) to the index requested */
-char* cesl_vector_s_get_ptr_to_index (cesl_vector_s_t* self, size_t index)
+void* cesl_vector_s_get_ptr_to_index (cesl_vector_s_t* self, size_t index)
 {
     return self->buffer_ + (index * self->elem_max_size_);
 }
@@ -17,13 +17,16 @@ char* cesl_vector_s_get_ptr_to_index (cesl_vector_s_t* self, size_t index)
 void cesl_vector_s_move_elements (cesl_vector_s_t* self, size_t index_from, size_t index_to)
 {
     if (index_from == index_to) return;
-    size_t positions = index_from < index_to ? index_to - index_from : index_from - index_to;
-    char* ptr_from  = cesl_vector_s_get_ptr_to_index (self, index_from);
-    char* ptr_to    = cesl_vector_s_get_ptr_to_index (self, index_to);
+    const size_t size = cesl_vector_s_size(self);
+    if (size == 0) return;
+    size_t positions = size - index_from;
+
+    void* ptr_from  = cesl_vector_s_get_ptr_to_index (self, index_from);
+    void* ptr_to    = cesl_vector_s_get_ptr_to_index (self, index_to);
     memmove(ptr_to, ptr_from, positions * self->elem_max_size_);
 }
 
-void cesl_vector_s_insert_at(cesl_vector_s_t* self, size_t index, const void* elm_ptr,  size_t elem_size)
+void cesl_vector_s_insert_at(cesl_vector_s_t* self, size_t index, const void* elm_ptr, size_t elem_size)
 {
     char* dst_ptr = cesl_vector_s_get_ptr_to_index(self, index);
     memcpy (dst_ptr, elm_ptr, elem_size);
@@ -85,6 +88,20 @@ int cesl_vector_s_full (cesl_vector_s_t* self)
 size_t cesl_vector_s_size(cesl_vector_s_t* self)
 {
     return self->elems_count_;
+}
+
+void cesl_vector_s_erase_at (cesl_vector_s_t* self, size_t index)
+{
+    const size_t size = cesl_vector_s_size(self);
+    if (size == 0 || index >= size) return;
+
+    const size_t last = size - 1;
+    if (index == last) {
+        cesl_vector_s_pop_back(self);
+        return;
+    }
+    cesl_vector_s_move_elements(self, index + 1, index);
+    self->elems_count_ = self->elems_count_ - 1u;
 }
 
 int cesl_vector_s_insert(cesl_vector_s_t* self, size_t index, const void* elm_ptr)
