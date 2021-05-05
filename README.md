@@ -7,7 +7,7 @@ Motivation
 This library aims to provide a way for mainly embedded software
 project to use the functionality from the Standard Template Library.
 
-The problem you often have on embedded platforms is that you can often only
+The problem commonly faced on embedded platforms is that you can often only
 use the "Free standing" C++ implementation and thus you will run into problems
 when trying to use the compiler supplied STL implementation.
 
