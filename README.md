@@ -11,8 +11,8 @@ The problem commonly faced on embedded platforms is that you can often only
 use the "Free standing" C++ implementation and thus you will run into problems
 when trying to use the compiler supplied STL implementation.
 
-In plain C99 projects you don't hjave anything like an STL library so here people
-often "re-invent the wheel" all over the project implenting adhoc vectors. list etc.
+In plain C99 projects you don't have anything like an STL library so here people
+often "re-invent the wheel" all over the project implementing ad hoc vectors. list etc.
 
 *Performance and multithreading*
 A secondary goal with this library is to provide classes (also in C) for performance critical
