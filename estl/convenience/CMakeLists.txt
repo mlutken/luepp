@@ -12,4 +12,4 @@ target_link_libraries(${library_name} "")
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${library_name} INTERFACE ${PARENT_DIR})
 
-add_subdirectories_standard_98()
+add_subdirectories_standard()
