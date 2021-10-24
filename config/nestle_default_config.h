@@ -35,24 +35,24 @@
 
 // Some definitions
 #if (CXX_STANDARD == 98)
-    #define NESTLE_NOEXEPT throw()
-    #define constexpr
-    #define nullptr NULL
-    #define NESTLE_ALIGNAS(x) x
+	#define NESTLE_NOEXEPT throw()
+	#define constexpr
+	#define nullptr NULL
+	#define NESTLE_ALIGNAS(x) x
 #else
-    #define NESTLE_NOEXEPT noexcept
-    #define NESTLE_ALIGNAS(x) alignas(x)
+	#define NESTLE_NOEXEPT noexcept
+	#define NESTLE_ALIGNAS(x) alignas(x)
 #endif
 
 #if ( (CXX_STANDARD == 98) || (CXX_STANDARD_LIBRARY == 98))
     #define NESTLE_MOVE(x) x
-    #define NESTLE_FORWARD(x) x
+	#define NESTLE_FORWARD(TYPE, x) x
 typedef long  signed_size_t;
 #else
-    #include <cstdint>
-    #define NESTLE_MOVE(x) std::move(x)
-    #define NESTLE_FORWARD(x) std::forward(x)
-    typedef std::int64_t signed_size_t;
+	#include <cstdint>
+	#define NESTLE_MOVE(x) std::move(x)
+	#define NESTLE_FORWARD(TYPE, x) std::forward<TYPE>(x)
+	typedef std::int64_t signed_size_t;
 #endif
 
 

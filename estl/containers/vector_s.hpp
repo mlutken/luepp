@@ -27,7 +27,7 @@ public:
     typedef std::reverse_iterator<iterator>             reverse_iterator;
     typedef const std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    // ------------------------------
+	// ------------------------------
     // -- Constructors/Assignment ---
     // ------------------------------
     vector_s() = default;
