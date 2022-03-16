@@ -107,6 +107,11 @@ public:
         return BUFFER_SIZE;
     }
 
+    size_type capacity() const
+    {
+        return BUFFER_SIZE;
+    }
+
 private:
     // -----------------------------
     // PRIVATE: Helper functions ---

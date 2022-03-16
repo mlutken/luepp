@@ -36,6 +36,13 @@ public:
     typedef typename queue_vec_t::pointer           pointer;
     typedef typename queue_vec_t::const_pointer     const_pointer;
 
+    srsw_fifo ()
+        : m_write_index(0)
+        , m_queue(0)
+        , m_read_index(0)
+    {
+    }
+
     explicit srsw_fifo (size_type queueSize)
         : m_write_index(0)
         , m_queue(queueSize)
@@ -48,6 +55,29 @@ public:
         , m_queue(queueSize, allocator)
         , m_read_index(0)
     {
+    }
+
+    void init_queue(size_type queue_size) {
+        m_queue.reserve(queue_size);
+        for (size_t n = 0; n != queue_size; ++n) {
+            m_queue.push_back(value_type{});
+        }
+        m_write_index = 0;
+        m_read_index = 0;
+    }
+
+    void resize_queue(size_type queue_size) {
+        queue_vec_t temp;
+        temp.reserve(buffer_size());
+        while (!empty()) {
+            temp.push_back(std::move(front()));
+            pop();
+        }
+
+        init_queue(queue_size);
+        for (auto&& elem: temp) {
+            push(std::move(elem));
+        }
     }
 
     bool push (T&& v)
@@ -112,6 +142,11 @@ public:
     }
 
     size_type buffer_size() const
+    {
+        return m_queue.size();
+    }
+
+    size_type capacity() const
     {
         return m_queue.size();
     }
