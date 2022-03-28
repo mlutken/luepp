@@ -18,8 +18,8 @@ template <class T>
 class atomic
 {
 public:
-    constexpr atomic() NESTLE_NOEXEPT;
-    constexpr atomic(T desired) NESTLE_NOEXEPT;
+    constexpr atomic() noexcept;
+    constexpr atomic(T desired) noexcept;
 
 #if (CXX_STANDARD != 98)
     atomic(const atomic&) = delete;
@@ -33,45 +33,45 @@ private:
 public:
 #endif
 
-    T operator=( T desired ) NESTLE_NOEXEPT;
-    T operator=( T desired ) volatile NESTLE_NOEXEPT;
+    T operator=( T desired ) noexcept;
+    T operator=( T desired ) volatile noexcept;
 
-    operator T() const NESTLE_NOEXEPT;
-    operator T() const volatile NESTLE_NOEXEPT;
+    operator T() const noexcept;
+    operator T() const volatile noexcept;
 
     // Pre increment
-    T operator++() NESTLE_NOEXEPT;
-    T operator++() volatile NESTLE_NOEXEPT;
+    T operator++() noexcept;
+    T operator++() volatile noexcept;
 
     // Post increment
-    T operator++(int) NESTLE_NOEXEPT;
-    T operator++(int) volatile NESTLE_NOEXEPT;
+    T operator++(int) noexcept;
+    T operator++(int) volatile noexcept;
 
     // Pre decrement
-    T operator--() NESTLE_NOEXEPT;
-    T operator--() volatile NESTLE_NOEXEPT;
+    T operator--() noexcept;
+    T operator--() volatile noexcept;
 
     // Post decrement
-    T operator--(int) NESTLE_NOEXEPT;
-    T operator--(int) volatile NESTLE_NOEXEPT;
+    T operator--(int) noexcept;
+    T operator--(int) volatile noexcept;
 
-    T operator+=(T arg) NESTLE_NOEXEPT;
-    T operator+=(T arg) volatile NESTLE_NOEXEPT;
+    T operator+=(T arg) noexcept;
+    T operator+=(T arg) volatile noexcept;
 
-    T operator-=(T arg) NESTLE_NOEXEPT;
-    T operator-=(T arg) volatile NESTLE_NOEXEPT;
+    T operator-=(T arg) noexcept;
+    T operator-=(T arg) volatile noexcept;
 
-    T operator&=(T arg) NESTLE_NOEXEPT;
-    T operator&=(T arg) volatile NESTLE_NOEXEPT;
+    T operator&=(T arg) noexcept;
+    T operator&=(T arg) volatile noexcept;
 
-    T operator|=(T arg) NESTLE_NOEXEPT;
-    T operator|=(T arg) volatile NESTLE_NOEXEPT;
+    T operator|=(T arg) noexcept;
+    T operator|=(T arg) volatile noexcept;
 
-    T operator^=(T arg) NESTLE_NOEXEPT;
-    T operator^=(T arg) volatile NESTLE_NOEXEPT;
+    T operator^=(T arg) noexcept;
+    T operator^=(T arg) volatile noexcept;
 
-    bool is_lock_free   () const NESTLE_NOEXEPT;
-    bool is_lock_free   () const volatile NESTLE_NOEXEPT;
+    bool is_lock_free   () const noexcept;
+    bool is_lock_free   () const volatile noexcept;
 private:
     // If needed for a given platform/compiler add #ifdefs here!
     volatile mutable T value_;

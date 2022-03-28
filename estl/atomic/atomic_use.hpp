@@ -21,10 +21,10 @@ template<typename T>
 class atomic : public estl::atomic<T>
 {
 public:
-    constexpr atomic()          NESTLE_NOEXEPT : estl::atomic<T>::atomic()  {}
-    constexpr atomic(T desired) NESTLE_NOEXEPT : estl::atomic<T>::atomic(desired) {}
-    T operator=( T desired ) NESTLE_NOEXEPT { return estl::atomic<T>::operator=(desired); }
-    T operator=( T desired ) volatile NESTLE_NOEXEPT { return estl::atomic<T>::operator=(desired); }
+    constexpr atomic()          noexcept : estl::atomic<T>::atomic()  {}
+    constexpr atomic(T desired) noexcept : estl::atomic<T>::atomic(desired) {}
+    T operator=( T desired ) noexcept { return estl::atomic<T>::operator=(desired); }
+    T operator=( T desired ) volatile noexcept { return estl::atomic<T>::operator=(desired); }
 };
 
 #else

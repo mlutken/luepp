@@ -117,7 +117,7 @@ public:
     const T*    operator->() const  { return ptr_;  }
     const T&    operator*() const   { return *ptr_; }
 
-    explicit    operator bool   () const NESTLE_NOEXEPT         { return ptr_ != nullptr;   }
+    explicit    operator bool   () const noexcept         { return ptr_ != nullptr;   }
     bool        operator==      (const shared_ptr<T>& o) const  { return ptr_ == o.ptr_;    }
     bool        operator!=      (const shared_ptr<T>& o) const  { return ptr_ != o.ptr_;    }
     bool        operator<       (const shared_ptr<T>& o) const  { return ptr_ < o.ptr_;     }

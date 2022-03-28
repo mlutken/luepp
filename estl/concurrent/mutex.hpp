@@ -24,8 +24,8 @@ struct adopt_lock_t { };
 class mutex
 {
 public:
-    //constexpr mutex() NESTLE_NOEXEPT; // Hmm: How to do this?
-    mutex() NESTLE_NOEXEPT;
+    //constexpr mutex() noexcept; // Hmm: How to do this?
+    mutex() noexcept;
     ~mutex();
 
 #if (CXX_STANDARD != 98)

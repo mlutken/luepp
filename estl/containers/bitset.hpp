@@ -40,10 +40,10 @@ public:
     // ----------------
     // --- Capacity ---
     // ----------------
-    bool          empty       () const NESTLE_NOEXEPT {   return size_ == 0;    }
-    size_type     size        () const NESTLE_NOEXEPT {   return size_;         }
-    size_type     max_size    () const NESTLE_NOEXEPT {   return CAPACITY;      }
-    size_type     capacity    () const NESTLE_NOEXEPT {   return CAPACITY;      }
+    bool          empty       () const noexcept {   return size_ == 0;    }
+    size_type     size        () const noexcept {   return size_;         }
+    size_type     max_size    () const noexcept {   return CAPACITY;      }
+    size_type     capacity    () const noexcept {   return CAPACITY;      }
 
     // -----------------
     // --- Modifiers ---

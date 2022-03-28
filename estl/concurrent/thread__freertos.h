@@ -18,8 +18,8 @@ namespace estl {
 class thread
 {
 public:
-    //constexpr mutex() NESTLE_NOEXEPT; // Hmm: How to do this?
-	thread() NESTLE_NOEXEPT;
+    //constexpr mutex() noexcept; // Hmm: How to do this?
+	thread() noexcept;
 	~thread();
 
 	thread(const mutex& ) = delete;

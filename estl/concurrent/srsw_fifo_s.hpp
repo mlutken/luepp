@@ -124,9 +124,9 @@ private:
     // ------------------------
     // PRIVATE: Member data ---
     // ------------------------
-    NESTLE_ALIGNAS(ALIGN_SIZE) atomic_size_type    m_write_index;   // Aligning to avoid "false sharing"
-    queue_vec_t                                    m_queue;
-    NESTLE_ALIGNAS(ALIGN_SIZE) atomic_size_type    m_read_index;    // Aligning to avoid "false sharing"
+    alignas(ALIGN_SIZE) atomic_size_type    m_write_index;   // Aligning to avoid "false sharing"
+    queue_vec_t                             m_queue;
+    alignas(ALIGN_SIZE) atomic_size_type    m_read_index;    // Aligning to avoid "false sharing"
 };
 
 } // END namespace estl

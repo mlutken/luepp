@@ -317,29 +317,29 @@ public:
     // -----------------
     // --- Iterators ---
     // -----------------
-    iterator                begin()     NESTLE_NOEXEPT          { return &(*this)[0]; }
-    const_iterator          begin()     const NESTLE_NOEXEPT    { return &(*this)[0]; }
-    const_iterator          cbegin()    const NESTLE_NOEXEPT    { return &(*this)[0]; }
+    iterator                begin()     noexcept          { return &(*this)[0]; }
+    const_iterator          begin()     const noexcept    { return &(*this)[0]; }
+    const_iterator          cbegin()    const noexcept    { return &(*this)[0]; }
 
-    iterator                end()       NESTLE_NOEXEPT          { return &(*this)[size_]; }
-    const_iterator          end()       const NESTLE_NOEXEPT    { return &(*this)[size_]; }
-    const_iterator          cend()      const NESTLE_NOEXEPT    { return &(*this)[size_]; }
+    iterator                end()       noexcept          { return &(*this)[size_]; }
+    const_iterator          end()       const noexcept    { return &(*this)[size_]; }
+    const_iterator          cend()      const noexcept    { return &(*this)[size_]; }
 
-    reverse_iterator        rbegin()    NESTLE_NOEXEPT          { return reverse_iterator(end()); }
-    const_reverse_iterator  rbegin()    const NESTLE_NOEXEPT    { return const_reverse_iterator(cend()); }
-    const_reverse_iterator  crbegin()   const NESTLE_NOEXEPT    { return const_reverse_iterator(cend()); }
+    reverse_iterator        rbegin()    noexcept          { return reverse_iterator(end()); }
+    const_reverse_iterator  rbegin()    const noexcept    { return const_reverse_iterator(cend()); }
+    const_reverse_iterator  crbegin()   const noexcept    { return const_reverse_iterator(cend()); }
 
     reverse_iterator        rend()      noexcept                { return reverse_iterator(begin()); }
-    const_reverse_iterator  rend()      const NESTLE_NOEXEPT    { return const_reverse_iterator(cbegin()); }
-    const_reverse_iterator  crend()     const NESTLE_NOEXEPT    { return const_reverse_iterator(cbegin()); }
+    const_reverse_iterator  rend()      const noexcept    { return const_reverse_iterator(cbegin()); }
+    const_reverse_iterator  crend()     const noexcept    { return const_reverse_iterator(cbegin()); }
 
     // ----------------
     // --- Capacity ---
     // ----------------
-    bool          empty       () const NESTLE_NOEXEPT {   return size_ == 0;    }
-    size_type     size        () const NESTLE_NOEXEPT {   return size_;         }
-    size_type     max_size    () const NESTLE_NOEXEPT {   return CAPACITY;      }
-    size_type     capacity    () const NESTLE_NOEXEPT {   return CAPACITY;      }
+    bool          empty       () const noexcept {   return size_ == 0;    }
+    size_type     size        () const noexcept {   return size_;         }
+    size_type     max_size    () const noexcept {   return CAPACITY;      }
+    size_type     capacity    () const noexcept {   return CAPACITY;      }
 
     // -----------------
     // --- Modifiers ---

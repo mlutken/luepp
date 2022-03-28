@@ -84,29 +84,29 @@ public:
     // -----------------
     // --- Iterators ---
     // -----------------
-    iterator                begin   ()  NESTLE_NOEXEPT          { return data_vec_.begin(); }
-    const_iterator          begin   ()  const NESTLE_NOEXEPT    { return data_vec_.begin(); }
-    const_iterator          cbegin  ()  const NESTLE_NOEXEPT    { return data_vec_.cbegin(); }
+    iterator                begin   ()  noexcept          { return data_vec_.begin(); }
+    const_iterator          begin   ()  const noexcept    { return data_vec_.begin(); }
+    const_iterator          cbegin  ()  const noexcept    { return data_vec_.cbegin(); }
 
-    iterator                end     ()  NESTLE_NOEXEPT          { return data_vec_.end(); }
-    const_iterator          end     ()  const NESTLE_NOEXEPT    { return data_vec_.end(); }
-    const_iterator          cend    ()  const NESTLE_NOEXEPT    { return data_vec_.cend(); }
+    iterator                end     ()  noexcept          { return data_vec_.end(); }
+    const_iterator          end     ()  const noexcept    { return data_vec_.end(); }
+    const_iterator          cend    ()  const noexcept    { return data_vec_.cend(); }
 
-    reverse_iterator        rbegin  ()  NESTLE_NOEXEPT          { return data_vec_.rbegin(); }
-    const_reverse_iterator  rbegin  ()  const NESTLE_NOEXEPT    { return data_vec_.rbegin(); }
-    const_reverse_iterator  crbegin ()  const NESTLE_NOEXEPT    { return data_vec_.crbegin(); }
+    reverse_iterator        rbegin  ()  noexcept          { return data_vec_.rbegin(); }
+    const_reverse_iterator  rbegin  ()  const noexcept    { return data_vec_.rbegin(); }
+    const_reverse_iterator  crbegin ()  const noexcept    { return data_vec_.crbegin(); }
 
-    reverse_iterator        rend    ()  NESTLE_NOEXEPT          { return data_vec_.rend(); }
-    const_reverse_iterator  rend    ()  const NESTLE_NOEXEPT    { return data_vec_.rend(); }
-    const_reverse_iterator  crend   ()  const NESTLE_NOEXEPT    { return data_vec_.crend(); }
+    reverse_iterator        rend    ()  noexcept          { return data_vec_.rend(); }
+    const_reverse_iterator  rend    ()  const noexcept    { return data_vec_.rend(); }
+    const_reverse_iterator  crend   ()  const noexcept    { return data_vec_.crend(); }
 
     // ----------------
     // --- Capacity ---
     // ----------------
-    bool                    empty       () const NESTLE_NOEXEPT {   return size() == 0; }
-    size_type               size        () const NESTLE_NOEXEPT {   return data_vec_.size(); }
-    size_type               max_size    () const NESTLE_NOEXEPT {   return data_vec_.max_size(); }
-    size_type               capacity    () const NESTLE_NOEXEPT {   return data_vec_.capacity(); }
+    bool                    empty       () const noexcept {   return size() == 0; }
+    size_type               size        () const noexcept {   return data_vec_.size(); }
+    size_type               max_size    () const noexcept {   return data_vec_.max_size(); }
+    size_type               capacity    () const noexcept {   return data_vec_.capacity(); }
 
     // -----------------
     // --- Modifiers ---
