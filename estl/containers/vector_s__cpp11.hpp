@@ -5,7 +5,7 @@ vector_s( vector_s&& other ) noexcept
     for (auto i = other.size(); i > 0; ) {
         --i;
         const pointer insert_ptr = data_ptr_ + i;
-        new (insert_ptr) value_type(NESTLE_MOVE(other[i]));
+        new (insert_ptr) value_type(std::move(other[i]));
     }
     size_ = other.size();
 }
@@ -40,7 +40,7 @@ vector_s& operator=(vector_s&& other)
         for (auto i = other.size(); i > 0; ) {
             --i;
             const pointer insert_ptr = data_ptr_ + i;
-            new (insert_ptr) value_type(NESTLE_MOVE(other[i]));
+            new (insert_ptr) value_type(std::move(other[i]));
         }
         size_ = other.size();
     }
@@ -59,7 +59,7 @@ vector_s& operator=(vector_s<T, CAPACITY_OTHER>&& other)
         for (auto i = other.size(); i > 0; ) {
             --i;
             const pointer insert_ptr = data_ptr_ + i;
-            new (insert_ptr) value_type(NESTLE_MOVE(other[i]));
+            new (insert_ptr) value_type(std::move(other[i]));
         }
         size_ = other.size();
     }
@@ -109,7 +109,7 @@ iterator emplace( const_iterator pos, Args&&... args )
 
     iterator ipos = const_cast<iterator>(pos);
     shift_right(ipos, end(), 1u);
-	new (static_cast<pointer>(ipos)) T(NESTLE_FORWARD(Args, args)...);
+    new (static_cast<pointer>(ipos)) T(std::forward<Args>(args)...);
     size_ = new_size;
     return ipos;
 }
@@ -121,7 +121,7 @@ void push_back (T&& value)
         ESTL_THROW(std::range_error, "cas::vector_s push_back beyond capacity.");
     }
     const pointer insert_ptr = data_ptr_ + size();
-    new (insert_ptr) value_type{NESTLE_MOVE(value)};
+    new (insert_ptr) value_type{std::move(value)};
     size_ = new_size;
 }
 
@@ -135,7 +135,7 @@ reference emplace_back(Args&&... args)
     }
 
     const pointer insert_ptr = data_ptr_ + size();
-	new (insert_ptr) value_type(NESTLE_FORWARD(Args, args)...);
+    new (insert_ptr) value_type(std::forward<Args>(args)...);
     size_ = new_size;
     return *insert_ptr;
 }
@@ -152,8 +152,8 @@ iterator insert(const_iterator pos, const T&& value)
     shift_right(ipos, end(), 1u);// Allocates new elements
 
     const pointer insert_ptr = static_cast<pointer>(ipos);
-    new (insert_ptr) value_type(NESTLE_MOVE(value));
-    // *ipos = NESTLE_MOVE(value); // TODO: This seems ok too since the extra elements are already "allocated" by shift_right
+    new (insert_ptr) value_type(std::move(value));
+    // *ipos = std::move(value); // TODO: This seems ok too since the extra elements are already "allocated" by shift_right
 
     size_ = new_size;
     return ipos;

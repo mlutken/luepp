@@ -96,7 +96,7 @@ public:
         for (size_type i = other.size(); i > 0; ) {
             --i;
             const pointer insert_ptr = data_ptr_ + i;
-            new (insert_ptr) value_type(NESTLE_MOVE(other[i]));
+            new (insert_ptr) value_type(std::move(other[i]));
         }
         size_ = other.size();
     }
@@ -299,7 +299,7 @@ public:
     template< class InputIt >
     iterator insert (const_iterator pos, InputIt first, InputIt last)
     {
-        const signed_size_t count_signed = last - first;
+        const std::int64_t count_signed = last - first;
         if (count_signed < 0) {
             ESTL_THROW (std::out_of_range, "cas::vector_s range constructing/assigning from inverted range.");
             return end();
@@ -403,7 +403,7 @@ private:
     template<class InputIt>
     size_type check_range(InputIt first, InputIt last)
     {
-        const signed_size_t diff_signed = last - first;
+        const std::int64_t diff_signed = last - first;
         if (diff_signed < 0) {
             ESTL_THROW (std::out_of_range, "cas::vector_s range constructing/assigning from inverted range.");
             return 0;
@@ -433,7 +433,7 @@ private:
 
         for (InputIt it = last; it != first;) {
             --it;
-            *(it+n) = NESTLE_MOVE(*it);
+            *(it+n) = std::move(*it);
         }
     }
 
@@ -446,7 +446,7 @@ private:
             return;
         }
         for (InputIt it = first; it != last;) {
-            *(it-n) = NESTLE_MOVE(*it);
+            *(it-n) = std::move(*it);
             ++it;
         }
     }

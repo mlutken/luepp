@@ -44,18 +44,6 @@
 	#define NESTLE_ALIGNAS(x) alignas(x)
 #endif
 
-#if ( (CXX_STANDARD == 98) || (CXX_STANDARD_LIBRARY == 98))
-    #define NESTLE_MOVE(x) x
-	#define NESTLE_FORWARD(TYPE, x) x
-typedef long  signed_size_t;
-#else
-	#include <cstdint>
-	#define NESTLE_MOVE(x) std::move(x)
-	#define NESTLE_FORWARD(TYPE, x) std::forward<TYPE>(x)
-	typedef std::int64_t signed_size_t;
-#endif
-
-
 #if (ESTL_USE_EXCEPTIONS == 1)
     #define ESTL_THROW(exception_type, message) throw exception_type(message)
 #else

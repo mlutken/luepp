@@ -46,7 +46,7 @@ public:
         const size_type write_index = m_write_index;
         const size_type next_write_index = incIndex(write_index);
         if ( next_write_index != m_read_index ) {
-            m_queue[write_index] = NESTLE_MOVE(v);
+            m_queue[write_index] = std::move(v);
             m_write_index = next_write_index;
             return true;
         }
