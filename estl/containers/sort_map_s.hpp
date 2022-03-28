@@ -48,6 +48,22 @@ public:
         : comperator_(comperator)
     {}
 
+    explicit sort_map_s(const std::initializer_list<value_type>& init)
+        : comperator_(Compare())
+    {
+        for (auto elem : init) {
+            data_vec_.push_back(elem);
+        }
+    }
+
+    sort_map_s(const std::initializer_list<value_type>& init, const Compare& comperator)
+        : comperator_(comperator)
+    {
+        for (auto elem : init) {
+            data_vec_.push_back(elem);
+        }
+    }
+
 
     // ----------------------
     // --- Element access ---
@@ -238,9 +254,6 @@ private:
     comperator  comperator_;
     bool        is_sorted_ = false;
 
-#if (CXX_STANDARD != 98)
-#   include "sort_map_s__cpp11.hpp"
-#endif
 };
 
 } // END namespace estl
