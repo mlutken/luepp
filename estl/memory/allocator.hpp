@@ -5,6 +5,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <algorithm>
+#include <limits>
 #include <memory>
 
 // TODO: Add platform support. So projects can plugin their own.
