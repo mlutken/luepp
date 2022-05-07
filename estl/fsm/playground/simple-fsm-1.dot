@@ -1,0 +1,7 @@
+digraph g{
+   rankdir="LR";
+   edge[splines="curved"]
+   ON -> OFF [label="sw=0"];
+   OFF -> ON [label="sw=1"];
+   OFF -> HEST [label="sw=2"];
+}
