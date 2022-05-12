@@ -4,7 +4,7 @@
  */
 #ifndef ESTL_THREAD_USE_H
 #define ESTL_THREAD_USE_H
-#include <nestle_default_config.h>
+#include <luepp_default_config.h>
 
 // --- Handle include files ---
 #if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)

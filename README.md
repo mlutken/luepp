@@ -2,6 +2,9 @@ A fast STL inspired C++ library for embedded, games and realtime
 ================================================================
 Fast standard library like classes in static versions along with lockless fifos etc.
 
+*note: * This library is replacing the old named "nestle". I you still need the C parts of the 
+original library you can find it here: https://github.com/mlutken/nestle
+
 
 Motivation
 ----------
@@ -53,12 +56,12 @@ The code is written using CMake a little as possible for platfor specific stuff,
 of this in plain header files using the C/C++ preprocessor. Thus it's relatively simple to simply add
 all the .c and .cpp files into your own build system and set a few preprocessor macros on your compiler
 command line. These are the relevant ones. (see more in the root CMakeLists.txt file,
-tools/cmake/default_versions.cmake, config/nestle_default_config.h ).
+tools/cmake/default_versions.cmake, config/lueppdefault_config.h ).
 
 - -DCXX_STANDARD_LIBRARY=(Possible values: 11, 14, 17, 20)
 - -DCXX_STANDARD=(Possible values: 11, 14, 17, 20)
-- -DNESTLE_PLATFORM_TYPE=(Possible values: 1 (NESTLE_PLATFORM_TYPE_DESKTOP), 2 (NESTLE_PLATFORM_TYPE_EMBEDDED))
-- -DNESTLE_SYSTEM_NAME=(Possible values: 1 (NESTLE_SYSTEM_NAME_LINUX), 2 (NESTLE_SYSTEM_NAME_WINDOWS), 3 (NESTLE_SYSTEM_NAME_OSX), 4 (NESTLE_SYSTEM_NAME_FREERTOS) )
+- -DLUEPP_PLATFORM_TYPE=(Possible values: 1 (LUEPP_PLATFORM_TYPE_DESKTOP), 2 (LUEPP_PLATFORM_TYPE_EMBEDDED))
+- -DLUEPP_SYSTEM_NAME=(Possible values: 1 (LUEPP_SYSTEM_NAME_LINUX), 2 (LUEPP_SYSTEM_NAME_WINDOWS), 3 (LUEPP_SYSTEM_NAME_OSX), 4 (LUEPP_SYSTEM_NAME_FREERTOS) )
 
 *Some CMake "features" worth mentioning:*
 - Multiple platform support, using toolchain files for cross compiling
@@ -81,11 +84,9 @@ Known limitations
 Building
 --------
 # Building on Linux
-$ git clone https://github.com/mlutken/nestle.git
-$ mkdir -p _build/nestle
-$ cd _build/nestle/
-$ cmake ../../nestle
-$ make -j
+$ git clone https://github.com/mlutken/lueppgit
+$ mkdir -p _build/luepp$ cd _build/luepp
+$ cmake ../../luepp$ make -j
 ...
 Or Use QtCreator or any otherway you prefer when dealing with CMake projects.
 

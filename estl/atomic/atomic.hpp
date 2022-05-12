@@ -4,7 +4,7 @@
  */
 #ifndef ESTL_ATOMIC_H
 #define ESTL_ATOMIC_H
-#include <nestle_default_config.h>
+#include <luepp_default_config.h>
 #include <stdbool.h>
 
 namespace estl {

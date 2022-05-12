@@ -6,7 +6,7 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 # -----------------------------
 # --- Defines documentation ---
 # -----------------------------
-# IMPORTANT: Must match the definitions set in config/nestle_default_config.h
+# IMPORTANT: Must match the definitions set in config/luepp_default_config.h
 #            The reason for the redundancy is to make it easier for users that do not want
 #            to compile this using cmake!
 set (LUEPP_PLATFORM_TYPE_DESKTOP   1)

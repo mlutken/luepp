@@ -4,7 +4,7 @@
  */
 #ifndef ESTL_ATOMIC_USE_H
 #define ESTL_ATOMIC_USE_H
-#include <nestle_default_config.h>
+#include <luepp_default_config.h>
 
 // --- Handle include files ---
 #if (CXX_STANDARD_LIBRARY == 98)

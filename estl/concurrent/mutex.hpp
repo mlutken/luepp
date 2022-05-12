@@ -1,6 +1,6 @@
 #ifndef ESTL_MUTEX_HPP
 #define ESTL_MUTEX_HPP
-#include <nestle_default_config.h>
+#include <luepp_default_config.h>
 #include <cstdint>
 
 #if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_LINUX)
