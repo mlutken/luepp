@@ -2,7 +2,7 @@ A fast STL inspired C++ library for embedded, games and realtime
 ================================================================
 Fast standard library like classes in static versions along with lockless fifos etc.
 
-*note: * This library is replacing the old named "nestle". I you still need the C parts of the 
+*note:* This library is replacing the old named "nestle". I you still need the C parts of the 
 original library you can find it here: https://github.com/mlutken/nestle
 
 
