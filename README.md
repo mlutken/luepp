@@ -17,7 +17,7 @@ when trying to use the compiler supplied STL implementation.
 
 
 **Performance and multithreading**
-A secondary goal with this library is to provide classes (also in C) for performance critical
+A secondary goal with this library is to provide classes for performance critical
 projects like games where you often want to avoid dynamic allocation and need to use effective
 lock free structures like for example queues.
 
@@ -36,6 +36,7 @@ coming non dynamically allocation estl::function will need C++11 or newer.
 - **mrsw_fifo**: _(planned) Multiple reader, single writer lockless fifo._
 - **srmw_fifo**: _(planned) Single reader, multiple writer lockless fifo._
 - **mrmw_fifo**: _(planned) Multiple reader, multiple writer lockless fifo._
+- **function_s**: _(planned) std::function equivalent with static allocation - most likely with some limitations compared to the original.
 - **shared_ptr**: Simple shared_ptr and weak_ptr implementation.
 - **unique_ptr**: _(planned)Simple unique_ptr. C++11 and newer only!_
 - **state_machine**: A novel approach to state machines. Emphasis on splitting state changes from actions.
