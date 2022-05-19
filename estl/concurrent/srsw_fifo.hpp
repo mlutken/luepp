@@ -117,7 +117,15 @@ public:
         return m_queue[m_read_index];
     }
 
-    bool full () const
+	void flush () {
+		const auto elements_to_pop = size();
+		while (!empty() && elements_to_pop > 0 ) {
+			pop();
+			--elements_to_pop;
+		}
+	}
+
+	bool full () const
     {
         size_type writeCheck = incIndex(m_write_index);
         return (writeCheck == m_read_index);
