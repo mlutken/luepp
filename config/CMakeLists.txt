@@ -1,4 +1,4 @@
-set (lib_name config)
+set (lib_name luepp_config)
 
 add_library(${lib_name} INTERFACE)
 
