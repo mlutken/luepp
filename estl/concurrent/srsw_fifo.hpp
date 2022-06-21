@@ -117,6 +117,11 @@ public:
         return m_queue[m_read_index];
     }
 
+    const T& front () const
+    {
+        return m_queue[m_read_index];
+    }
+
     void flush () {
         const auto elements_to_pop = size();
         while (!empty() && elements_to_pop > 0 ) {
