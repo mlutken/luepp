@@ -1,3 +1,12 @@
+# ---------------------
+# --- Set functions ---
+# ---------------------
+macro (set_default var_name default_value)
+    if (NOT ${var_name} )
+        set (${var_name} ${default_value})
+    endif()
+endmacro()
+
 # ---------------------------
 # --- Directory functions ---
 # ---------------------------
@@ -25,13 +34,13 @@ endfunction()
 # --- Subdirectories functions ---
 # --------------------------------
 function(add_subdirectories_standard)
-    if (NOT CMAKE_CROSSCOMPILING AND NOT ("${CMAKE_CXX_STANDARD}" STREQUAL "98") AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/unittest)
+    if (NOT CMAKE_CROSSCOMPILING AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/unittest)
         add_subdirectory(unittest)
     endif()
-    if (NOT CMAKE_CROSSCOMPILING AND NOT ("${CMAKE_CXX_STANDARD}" STREQUAL "98") AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/integrationtest)
+    if (NOT CMAKE_CROSSCOMPILING AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/integrationtest)
         add_subdirectory(integrationtest)
     endif()
-    if (NOT ("${CMAKE_CXX_STANDARD}" STREQUAL "98") AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/playground)
+    if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/playground)
         add_subdirectory(playground)
     endif()
 endfunction()
