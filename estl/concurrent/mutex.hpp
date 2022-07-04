@@ -42,7 +42,6 @@ private:
     pthread_mutex_t pthread_mutex_;
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_WINDOWS)
     pthread_mutex_t pthread_mutex_;
-// #   error "Missing estl::mutex Windows header member data !"
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_OSX)
 #   error "Missing estl::mutex OSX header member data !"
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)

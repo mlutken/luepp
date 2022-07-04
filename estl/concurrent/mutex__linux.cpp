@@ -2,7 +2,7 @@
 
 namespace estl {
 
-mutex::mutex() LUEPP_NOEXEPT
+mutex::mutex() noexcept
 {
     pthread_mutex_init(&pthread_mutex_, nullptr);
 }

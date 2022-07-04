@@ -6,7 +6,6 @@ include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
 #include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
-
 include("tools/cmake/HunterGate.cmake")
 
 option(build_fsm "Build the FSM (Finite State Machine. Needs Boost)" OFF)
@@ -29,9 +28,6 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_definitions(
-    -DCXX_STANDARD_LIBRARY=${ESTL_CXX_STANDARD_LIBRARY}
-    -DCXX_STANDARD=${CMAKE_CXX_STANDARD}
-    -DC_STANDARD=${CMAKE_C_STANDARD}
     -DLUEPP_PLATFORM_TYPE=${LUEPP_PLATFORM_TYPE}
     -DLUEPP_SYSTEM_NAME=${LUEPP_SYSTEM_NAME}
 )
@@ -49,12 +45,10 @@ string(REPLACE " " ";" CXX_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${CXX_COMP
 #    set(PLATFORM_NAME hostlinux)
 #endif()
 
-set(PLATFORM_NAME "")
+#set_default(PLATFORM_NAME "hostlinux")
 
-set_default(PLATFORM_NAME "hostlinux")
-
-message ("PLATFORM_NAME     : '${PLATFORM_NAME}'")
-message ("PRODUCTION_RELEASE: '${PRODUCTION_RELEASE}'")
+#message ("PLATFORM_NAME     : '${PLATFORM_NAME}'")
+#message ("PRODUCTION_RELEASE: '${PRODUCTION_RELEASE}'")
 
 
 # --- Add testing before setting general compiler flags ---

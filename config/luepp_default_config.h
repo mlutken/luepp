@@ -1,5 +1,14 @@
 #ifndef LUEPP_DEFAULT_CONFIG_H
 #define LUEPP_DEFAULT_CONFIG_H
+#if 0
+
+#if (ESTL_USE_EXCEPTIONS == 1)
+    #define ESTL_THROW(exception_type, message) throw exception_type(message)
+#else
+    #define ESTL_THROW(exception_type, message)
+#endif
+
+#else
 
 // IMPORTANT: Must match the definitions set in tools/cmake/default_versions.cmake
 //            The reason for the redundancy is to make it easier for users that do not want
@@ -29,6 +38,7 @@
 #endif
 
 
+
 // Some definitions
 #if (CXX_STANDARD == 98)
     #define LUEPP_NOEXEPT throw()
@@ -40,11 +50,6 @@
     #define LUEPP_ALIGNAS(x) alignas(x)
 #endif
 
-#if (ESTL_USE_EXCEPTIONS == 1)
-    #define ESTL_THROW(exception_type, message) throw exception_type(message)
-#else
-    #define ESTL_THROW(exception_type, message)
-#endif
 
 #ifndef LUEPP_PLATFORM_TYPE
     #define LUEPP_PLATFORM_TYPE LUEPP_PLATFORM_TYPE_DESKTOP
@@ -53,6 +58,12 @@
 #ifndef LUEPP_SYSTEM_NAME
     #define LUEPP_SYSTEM_NAME LUEPP_SYSTEM_NAME_LINUX
     // TODO: Alternatives windows, osx
+#endif
+
+#if (ESTL_USE_EXCEPTIONS == 1)
+    #define ESTL_THROW(exception_type, message) throw exception_type(message)
+#else
+    #define ESTL_THROW(exception_type, message)
 #endif
 
 
@@ -69,5 +80,6 @@
 #define LUEPP_CAT_4(A,X,Y,Z) LUEPP_CAT(A,LUEPP_CAT_3(X,Y,Z))
 #define LUEPP_CAT_5(B,A,X,Y,Z) LUEPP_CAT(B,LUEPP_CAT_4(A,X,Y,Z))
 
+#endif
 
 #endif //LUEPP_DEFAULT_CONFIG_H
