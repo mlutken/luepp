@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 project(luepp)
-#include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
-#include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_versions.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
 #include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
+
 
 include("tools/cmake/HunterGate.cmake")
 
@@ -18,8 +21,6 @@ endif()
 
 enable_testing()
 
-include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
-include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_versions.cmake)
 
 set(ESTL_CXX_STANDARD_LIBRARY 17)
 set(CMAKE_CXX_STANDARD 17)
