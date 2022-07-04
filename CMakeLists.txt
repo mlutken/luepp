@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(luepp)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
-#include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_versions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
@@ -33,17 +32,6 @@ set(C_COMPILE_FLAGS "-Wall -Wextra")
 set(CXX_COMPILE_FLAGS "-Wall -Wextra")
 string(REPLACE " " ";" C_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${C_COMPILE_FLAGS}")
 string(REPLACE " " ";" CXX_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${CXX_COMPILE_FLAGS}")
-
-# --- Set default platform values ---
-#if (NOT DEFINED PLATFORM_NAME)
-#    #set(PLATFORM_TYPE hostwindows)
-#    set(PLATFORM_NAME hostlinux)
-#endif()
-
-#set_default(PLATFORM_NAME "hostlinux")
-
-#message ("PLATFORM_NAME     : '${PLATFORM_NAME}'")
-#message ("PRODUCTION_RELEASE: '${PRODUCTION_RELEASE}'")
 
 
 # --- Add testing before setting general compiler flags ---
