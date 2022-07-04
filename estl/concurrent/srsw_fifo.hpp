@@ -93,6 +93,20 @@ public:
         return false;
     }
 
+    template<class... Args >
+    bool emplace(Args&&... args)
+    {
+        const size_type write_index = m_write_index;
+        const size_type next_write_index = incIndex(write_index);
+        if ( next_write_index != m_read_index ) {
+            const pointer insert_ptr = &m_queue[write_index];
+            new (insert_ptr) value_type(std::forward<Args>(args)...);
+            m_write_index = next_write_index;
+            return true;
+        }
+        return false;
+    }
+
     bool push (const T& v)
     {
         const size_type write_index = m_write_index;
