@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(luepp)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
-include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_versions.cmake)
+#include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_versions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
-#include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
 include("tools/cmake/HunterGate.cmake")
 
@@ -27,10 +27,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-add_definitions(
-    -DLUEPP_PLATFORM_TYPE=${LUEPP_PLATFORM_TYPE}
-    -DLUEPP_SYSTEM_NAME=${LUEPP_SYSTEM_NAME}
-)
+#add_definitions(
+#    -DLUEPP_PLATFORM_TYPE=${LUEPP_PLATFORM_TYPE}
+#    -DLUEPP_SYSTEM_NAME=${LUEPP_SYSTEM_NAME}
+#)
 
 #set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
 set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Werror")

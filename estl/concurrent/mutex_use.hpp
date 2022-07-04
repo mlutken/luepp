@@ -4,10 +4,10 @@
  */
 #ifndef ESTL_MUTEX_USE_H
 #define ESTL_MUTEX_USE_H
-#include <luepp_default_config.h>
+#include <luepp_platform_definitions.h>
 
 // --- Handle include files ---
-#if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
+#if (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
 #include <concurrent/mutex.hpp>
 #else
 #include <mutex>
@@ -16,7 +16,7 @@
 namespace estl_use {
 
 // --- Define correct types depending on configuration ---
-#if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
+#if (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
 using mutex = estl::mutex;
 #else
 using mutex = std::mutex;

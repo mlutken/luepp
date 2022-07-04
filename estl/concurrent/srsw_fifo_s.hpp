@@ -1,6 +1,7 @@
 #ifndef ESTL_SRSW_FIFO_S_HPP
 #define ESTL_SRSW_FIFO_S_HPP
 
+#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
 #include <atomic/atomic_use.hpp>
 #include <containers/vector_s.hpp>

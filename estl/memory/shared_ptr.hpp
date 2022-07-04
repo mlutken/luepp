@@ -1,6 +1,6 @@
 #ifndef ESTL_SHARED_PTR_HPP
 #define ESTL_SHARED_PTR_HPP
-#include <luepp_default_config.h>
+#include <luepp_platform_definitions.h>
 
 #include <stdexcept>
 #include <memory>

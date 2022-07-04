@@ -1,3 +1,4 @@
+#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
 #include <iostream>
 #include <vector>

@@ -4,6 +4,7 @@
  */
 #ifndef ESTL_ATOMIC_H
 #define ESTL_ATOMIC_H
+#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
 #include <stdbool.h>
 

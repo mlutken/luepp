@@ -1,5 +1,6 @@
 #ifndef ESTL_MUTEX_HPP
 #define ESTL_MUTEX_HPP
+#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
 #include <cstdint>
 
