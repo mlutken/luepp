@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(luepp)
+
+option(build_fsm "Build the FSM (Finite State Machine. Needs Boost)" OFF)
+
 enable_testing()
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_versions.cmake)
 

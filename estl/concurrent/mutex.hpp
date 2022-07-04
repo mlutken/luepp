@@ -6,6 +6,7 @@
 #if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_LINUX)
 #include <pthread.h>
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_WINDOWS)
+#include <pthread.h>
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_OSX)
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
 #else
@@ -28,15 +29,8 @@ public:
     mutex() noexcept;
     ~mutex();
 
-#if (CXX_STANDARD != 98)
     mutex(const mutex& ) = delete;
     mutex& operator=(const mutex&) = delete;
-#else
-private:
-    mutex(const mutex&);
-    mutex& operator=(const mutex&);
-public:
-#endif // (CXX_STANDARD != 98)
 
     void lock();
     bool try_lock();
@@ -47,7 +41,8 @@ private:
 #if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_LINUX)
     pthread_mutex_t pthread_mutex_;
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_WINDOWS)
-#   error "Missing estl::mutex Windows header member data !"
+    pthread_mutex_t pthread_mutex_;
+// #   error "Missing estl::mutex Windows header member data !"
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_OSX)
 #   error "Missing estl::mutex OSX header member data !"
 #elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
