@@ -21,16 +21,11 @@ endif()
 enable_testing()
 
 
-set(ESTL_CXX_STANDARD_LIBRARY 17)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-#add_definitions(
-#    -DLUEPP_PLATFORM_TYPE=${LUEPP_PLATFORM_TYPE}
-#    -DLUEPP_SYSTEM_NAME=${LUEPP_SYSTEM_NAME}
-#)
 
 #set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
 set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Werror")

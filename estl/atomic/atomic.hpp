@@ -22,17 +22,9 @@ public:
     constexpr atomic() noexcept;
     constexpr atomic(T desired) noexcept;
 
-#if (CXX_STANDARD != 98)
     atomic(const atomic&) = delete;
     atomic& operator=(const atomic&) = delete;
     atomic& operator=(const atomic&) volatile = delete;
-#else
-private:
-    atomic(const atomic&);
-    atomic& operator=(const atomic&);
-    atomic& operator=(const atomic&) volatile;
-public:
-#endif
 
     T operator=( T desired ) noexcept;
     T operator=( T desired ) volatile noexcept;

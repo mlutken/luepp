@@ -4,10 +4,11 @@
  */
 #ifndef ESTL_THREAD_USE_H
 #define ESTL_THREAD_USE_H
+#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
 
 // --- Handle include files ---
-#if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
+#if (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
 #include <concurrent/thread.hpp>
 #else
 #include <thread>
@@ -16,7 +17,7 @@
 namespace estl_use {
 
 // --- Define correct types depending on configuration ---
-#if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
+#if (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
 using thread = estl::thread;
 #else
 using thread = std::thread;

@@ -163,8 +163,6 @@ TEST_F(VectorSUnitTest, push_back)
     EXPECT_EQ(4u, v.size());
 }
 
-#if (CXX_STANDARD != 98)
-
 TEST_F(VectorSUnitTest, assignment)
 {
     std::vector<int> v_raw_src{0,1,2,3,4};
@@ -884,9 +882,6 @@ TEST_F(VectorSUnitTest, swap)
     EXPECT_EQ(v1, original_v2);
     EXPECT_EQ(v2, original_v1);
 }
-
-#endif // (CXX_STANDARD != 98)
-
 
 int main(int argc, char **argv)
 {

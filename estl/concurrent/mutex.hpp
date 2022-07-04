@@ -4,15 +4,15 @@
 #include <luepp_default_config.h>
 #include <cstdint>
 
-#if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_LINUX)
+#if (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_LINUX)
 #include <pthread.h>
-#elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_WINDOWS)
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_WINDOWS)
 #include <pthread.h>
-#elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_OSX)
-#elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_OSX)
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
 #else
 #   error "Missing estl::mutex system includes !"
-#endif // (LUEPP_SYSTEM_NAME)
+#endif // (LUEPP_SYSTEM_ID)
 
 // -------------------
 // --- mutex, lock ---
@@ -39,18 +39,18 @@ public:
 //    native_handle_type native_handle();
 
 private:
-#if (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_LINUX)
+#if (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_LINUX)
     pthread_mutex_t pthread_mutex_;
-#elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_WINDOWS)
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_WINDOWS)
     pthread_mutex_t pthread_mutex_;
-#elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_OSX)
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_OSX)
 #   error "Missing estl::mutex OSX header member data !"
-#elif (LUEPP_SYSTEM_NAME == LUEPP_SYSTEM_NAME_FREERTOS)
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
     void ensure_created();
     SemaphoreHandle_t semaphore_ = nullptr;
 #else
 #   error "Missing estl::mutex system header member data !"
-#endif // (LUEPP_SYSTEM_NAME)
+#endif // (LUEPP_SYSTEM_ID)
 
 };
 
@@ -74,15 +74,8 @@ class lock_guard {
         mutex_.unlock();
     }
 
-#if (CXX_STANDARD != 98)
     lock_guard (const lock_guard&) = delete;
     lock_guard& operator=(const lock_guard&) = delete;
-#else
-private:
-    lock_guard (const lock_guard&);
-    lock_guard& operator=(const lock_guard&);
-public:
-#endif // (CXX_STANDARD != 98)
 private:
     mutex_type& mutex_;
 };

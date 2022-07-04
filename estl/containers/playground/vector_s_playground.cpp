@@ -62,21 +62,15 @@ void debug_print(const CONTAINER& container)
 using namespace std;
 using namespace estl;
 
-#if (CXX_STANDARD != 98)
 void main__cpp11();
-#endif
 
 
 int main()
 {
     cout << "--- vector_s playground ---\n";
-
-#if (CXX_STANDARD != 98)
     main__cpp11();
-#endif
-
 }
-#if (CXX_STANDARD != 98)
+
 void main__cpp11()
 {
     using myvec_t = estl::vector_s<int, 50>;
@@ -96,4 +90,3 @@ void main__cpp11()
     debug_print(vs);
 }
 
-#endif

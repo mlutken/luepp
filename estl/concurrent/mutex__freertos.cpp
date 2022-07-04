@@ -2,7 +2,7 @@
 
 namespace estl {
 
-mutex::mutex() LUEPP_NOEXEPT
+mutex::mutex() noexcept
 {
     ensure_created(); // TODO: Should we make this lazy?? Perhaps due problems with FreeRTOS call during static initialization!!
 }

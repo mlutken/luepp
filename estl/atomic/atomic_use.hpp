@@ -8,7 +8,7 @@
 #include <luepp_default_config.h>
 
 // --- Handle include files ---
-#if (CXX_STANDARD_LIBRARY == 98)
+#if (LUEPP_HAS_ATOMIC == 0)
 #include <atomic/atomic.hpp>
 #else
 #include <atomic>
@@ -17,7 +17,7 @@
 namespace estl_use {
 
 // --- Define correct types depending on configuration ---
-#if (CXX_STANDARD_LIBRARY == 98)
+#if (LUEPP_HAS_ATOMIC == 0)
 template<typename T>
 class atomic : public estl::atomic<T>
 {
