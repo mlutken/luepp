@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 project(luepp)
+message ("(luepp)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
+
+set (LUEPP_IS_TOP_LEVEL_PROJECT FALSE)
+if ( "${CMAKE_PROJECT_NAME}" MATCHES "luepp")
+    set (LUEPP_IS_TOP_LEVEL_PROJECT TRUE)
+endif ()
+
+
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
@@ -16,8 +24,10 @@ if (build_fsm)
     set(Boost_USE_STATIC_RUNTIME OFF)
 endif()
 
-
-enable_testing()
+if (LUEPP_IS_TOP_LEVEL_PROJECT)
+    message ("INFO: luepp is top level project!")
+    enable_testing()
+endif()
 
 
 set(CMAKE_CXX_STANDARD 17)
@@ -35,7 +45,9 @@ string(REPLACE " " ";" CXX_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${CXX_COMP
 
 
 # --- Add testing before setting general compiler flags ---
-add_subdirectory(testing)
+if (LUEPP_IS_TOP_LEVEL_PROJECT)
+    add_subdirectory(testing)
+endif()
 
 # Set general project wide compiler flags
 add_compile_options(
