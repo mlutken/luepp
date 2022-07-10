@@ -330,7 +330,7 @@ public:
     const_reverse_iterator  rbegin()    const noexcept    { return const_reverse_iterator(cend()); }
     const_reverse_iterator  crbegin()   const noexcept    { return const_reverse_iterator(cend()); }
 
-    reverse_iterator        rend()      noexcept                { return reverse_iterator(begin()); }
+    reverse_iterator        rend()      noexcept          { return reverse_iterator(begin()); }
     const_reverse_iterator  rend()      const noexcept    { return const_reverse_iterator(cbegin()); }
     const_reverse_iterator  crend()     const noexcept    { return const_reverse_iterator(cbegin()); }
 

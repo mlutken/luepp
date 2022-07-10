@@ -11,6 +11,8 @@
 // --- srsw_fifo.h ---
 // ----------------------------------------------
 namespace estl {
+template <typename T1, size_t BUFFER_SIZE1, size_t ALIGN_SIZE1 >
+class srmw_fifo;
 
 /**
 Single reader, single writer lockless fifo.
@@ -22,6 +24,9 @@ template <typename T, class Allocator = std::allocator<T>, size_t ALIGN_SIZE = 1
 class srsw_fifo
 {
 private:
+    template <typename T1, size_t BUFFER_SIZE1, size_t ALIGN_SIZE1>
+    friend class srmw_fifo;
+
     typedef std::vector<T, Allocator >    queue_vec_t;
 public:
     // ------------------------
@@ -183,6 +188,18 @@ private:
     // -----------------------------
     // PRIVATE: Helper functions ---
     // -----------------------------
+    const T* reserve ()
+    {
+        const size_type write_index = m_write_index;
+        const size_type next_write_index = incIndex(write_index);
+        if ( next_write_index != m_read_index ) {
+            m_write_index = next_write_index;
+            const T* ptr = &(m_queue[write_index]);
+            return ptr;
+        }
+        return nullptr;
+    }
+
     size_type    incIndex ( size_type index ) const
     {
         return (index +1) % buffer_size();

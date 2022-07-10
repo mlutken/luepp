@@ -6,6 +6,7 @@ target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/mutex.hpp
     ${CMAKE_CURRENT_LIST_DIR}/srsw_fifo.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/srmw_fifo_s.hpp
     ${CMAKE_CURRENT_LIST_DIR}/srsw_fifo_s.hpp
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/mutex.cpp
