@@ -28,11 +28,11 @@ public:
     typedef std::reverse_iterator<iterator>             reverse_iterator;
     typedef const std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-	// ------------------------------
+    // ------------------------------
     // -- Constructors/Assignment ---
     // ------------------------------
-    vector_s() = default;
-    vector_s(size_type count, const T& value)
+    constexpr vector_s() = default;
+    constexpr vector_s(size_type count, const T& value)
     {
         if (count > capacity()) {
             ESTL_THROW(std::range_error, "cas::vector_s constructing beyond capacity.");
@@ -45,7 +45,7 @@ public:
         size_ = count;
     }
 
-    explicit vector_s(size_type count)
+    constexpr explicit vector_s(size_type count)
     {
         if (count > capacity()) {
             ESTL_THROW(std::range_error, "cas::vector_s constructing beyond capacity.");
@@ -59,7 +59,7 @@ public:
     }
 
     template<class InputIt>
-    vector_s(const InputIt& first, const InputIt& last)
+    constexpr vector_s(const InputIt& first, const InputIt& last)
     {
         const size_type diff = check_range(first, last);
         size_type i = 0u;
@@ -70,7 +70,7 @@ public:
         size_ = diff;
     }
 
-    vector_s(const vector_s& other)
+    constexpr vector_s(const vector_s& other)
     {
         for (size_type i = other.size(); i > 0; ) {
             --i;
@@ -80,7 +80,7 @@ public:
         size_ = other.size();
     }
 
-    vector_s( vector_s&& other ) noexcept
+    constexpr vector_s( vector_s&& other ) noexcept
     {
         for (auto i = other.size(); i > 0; ) {
             --i;
@@ -91,7 +91,7 @@ public:
     }
 
     template<size_t CAPACITY_OTHER>
-    vector_s(const vector_s<T, CAPACITY_OTHER>& other)
+    constexpr vector_s(const vector_s<T, CAPACITY_OTHER>& other)
     {
         for (size_type i = other.size(); i > 0; ) {
             --i;
@@ -102,7 +102,7 @@ public:
     }
 
     template<size_t CAPACITY_OTHER>
-    vector_s(vector_s<T, CAPACITY_OTHER>&& other)
+    constexpr vector_s(vector_s<T, CAPACITY_OTHER>&& other)
     {
         for (size_type i = other.size(); i > 0; ) {
             --i;
@@ -118,7 +118,7 @@ public:
     //      This is quite annoying a seems like a wase op CPU cycles for no good reason
     //      We really should allow the C++ standrd to construct the element in place like
     //      when doing emplace_back.
-    vector_s(const std::initializer_list<T>& init)
+    constexpr vector_s(const std::initializer_list<T>& init)
     {
     //        std::cout << "vector_s(const std::initializer_list<T>& init) constructor this: " << this <<  std::endl;
         auto it = init.begin();
@@ -154,7 +154,7 @@ public:
     static nature of this vector: swap needs to copy all elements and not
     just swap pointers as std::vector::swap() can do.
     */
-    vector_s& operator=(const vector_s& other)
+    constexpr vector_s& operator=(const vector_s& other)
     {
         // NOTE: The reinterpret cast is needed as the pointer types can potentially
         //       be different if the capacities of the vectors are different.
@@ -172,7 +172,7 @@ public:
         return *this;
     }
 
-    vector_s& operator=(vector_s&& other)
+    constexpr vector_s& operator=(vector_s&& other)
     {
         // NOTE: The reinterpret cast is needed as the pointer types can potentially
         //       be different if the capacities of the vectors are different.
@@ -191,7 +191,7 @@ public:
     }
 
     template<size_t CAPACITY_OTHER>
-    vector_s& operator=(const vector_s<T, CAPACITY_OTHER>& other)
+    constexpr vector_s& operator=(const vector_s<T, CAPACITY_OTHER>& other)
     {
         // NOTE: The reinterpret cast is needed as the pointer types can potentially
         //       be different if the capacities of the vectors are different.
@@ -210,7 +210,7 @@ public:
     }
 
     template<size_t CAPACITY_OTHER>
-    vector_s& operator=(vector_s<T, CAPACITY_OTHER>&& other)
+    constexpr vector_s& operator=(vector_s<T, CAPACITY_OTHER>&& other)
     {
         // NOTE: The reinterpret cast is needed as the pointer types can potentially
         //       be different if the capacities of the vectors are different.
@@ -228,7 +228,7 @@ public:
         return *this;
     }
 
-    vector_s& operator=(std::initializer_list<T> ilist)
+    constexpr vector_s& operator=(std::initializer_list<T> ilist)
     {
         auto it = ilist.begin();
         const auto end = ilist.end();
@@ -242,7 +242,7 @@ public:
         return *this;
     }
 
-    void assign(size_type count, const T& value)
+    constexpr void assign(size_type count, const T& value)
     {
         if (count > capacity()) {
             ESTL_THROW (std::range_error, "cas::vector_s assigning beyond capacity.");
@@ -256,7 +256,7 @@ public:
     }
 
     template< class InputIt >
-    void assign(InputIt first, InputIt last)
+    constexpr void assign(InputIt first, InputIt last)
     {
         const size_type diff = check_range(first, last);
         size_type i = 0u;
@@ -267,7 +267,7 @@ public:
         size_ = diff;
     }
 
-    void assign(std::initializer_list<T> ilist)
+    constexpr void assign(std::initializer_list<T> ilist)
     {
         auto it = ilist.begin();
         const auto end = ilist.end();
@@ -281,13 +281,13 @@ public:
     }
 
     ~vector_s() {
-        destroy_elements();
+//        destroy_elements();
     }
 
     // ----------------------
     // --- Element access ---
     // ----------------------
-    reference at(size_type pos)
+    constexpr reference at(size_type pos)
     {
         if (pos >= size()) {
             ESTL_THROW ( std::out_of_range, "cas::vector_s access (vector_s::at()) beyond size.");
@@ -295,7 +295,7 @@ public:
         return (*this)[pos];
     }
 
-    const_reference at(size_type pos) const
+    constexpr const_reference at(size_type pos) const
     {
         if (pos >= size()) {
             ESTL_THROW (std::out_of_range, "cas::vector_s access (const vector_s::at()) beyond size.");
@@ -303,55 +303,55 @@ public:
         return (*this)[pos];
     }
 
-    reference       operator[]( size_type pos ) { return *(data_ptr_ + pos); }
-    const_reference operator[]( size_type pos ) const { return *(data_ptr_ + pos); }
+    constexpr reference       operator[]( size_type pos ) { return *(data_ptr_ + pos); }
+    constexpr const_reference operator[]( size_type pos ) const { return *(data_ptr_ + pos); }
 
-    reference       front   ()                  { return (*this)[0]; }
-    const_reference front   () const            { return (*this)[0]; }
+    constexpr reference       front   ()                  { return (*this)[0]; }
+    constexpr const_reference front   () const            { return (*this)[0]; }
 
-    reference       back    ()                  { return (*this)[size_ -1]; }
-    const_reference back    () const            { return (*this)[size_ -1]; }
+    constexpr reference       back    ()                  { return (*this)[size_ -1]; }
+    constexpr const_reference back    () const            { return (*this)[size_ -1]; }
 
-    T*              data    () noexcept         { return &(*this)[0]; }
-    const T*        data    () const noexcept   { return &(*this)[0]; }
+    constexpr T*              data    () noexcept         { return &(*this)[0]; }
+    constexpr const T*        data    () const noexcept   { return &(*this)[0]; }
 
     // -----------------
     // --- Iterators ---
     // -----------------
-    iterator                begin()     noexcept          { return &(*this)[0]; }
-    const_iterator          begin()     const noexcept    { return &(*this)[0]; }
-    const_iterator          cbegin()    const noexcept    { return &(*this)[0]; }
+    constexpr iterator                begin()     noexcept          { return &(*this)[0]; }
+    constexpr const_iterator          begin()     const noexcept    { return &(*this)[0]; }
+    constexpr const_iterator          cbegin()    const noexcept    { return &(*this)[0]; }
 
-    iterator                end()       noexcept          { return &(*this)[size_]; }
-    const_iterator          end()       const noexcept    { return &(*this)[size_]; }
-    const_iterator          cend()      const noexcept    { return &(*this)[size_]; }
+    constexpr iterator                end()       noexcept          { return &(*this)[size_]; }
+    constexpr const_iterator          end()       const noexcept    { return &(*this)[size_]; }
+    constexpr const_iterator          cend()      const noexcept    { return &(*this)[size_]; }
 
-    reverse_iterator        rbegin()    noexcept          { return reverse_iterator(end()); }
-    const_reverse_iterator  rbegin()    const noexcept    { return const_reverse_iterator(cend()); }
-    const_reverse_iterator  crbegin()   const noexcept    { return const_reverse_iterator(cend()); }
+    constexpr reverse_iterator        rbegin()    noexcept          { return reverse_iterator(end()); }
+    constexpr const_reverse_iterator  rbegin()    const noexcept    { return const_reverse_iterator(cend()); }
+    constexpr const_reverse_iterator  crbegin()   const noexcept    { return const_reverse_iterator(cend()); }
 
-    reverse_iterator        rend()      noexcept          { return reverse_iterator(begin()); }
-    const_reverse_iterator  rend()      const noexcept    { return const_reverse_iterator(cbegin()); }
-    const_reverse_iterator  crend()     const noexcept    { return const_reverse_iterator(cbegin()); }
+    constexpr reverse_iterator        rend()      noexcept          { return reverse_iterator(begin()); }
+    constexpr const_reverse_iterator  rend()      const noexcept    { return const_reverse_iterator(cbegin()); }
+    constexpr const_reverse_iterator  crend()     const noexcept    { return const_reverse_iterator(cbegin()); }
 
     // ----------------
     // --- Capacity ---
     // ----------------
-    bool          empty       () const noexcept {   return size_ == 0;    }
-    size_type     size        () const noexcept {   return size_;         }
-    size_type     max_size    () const noexcept {   return CAPACITY;      }
-    size_type     capacity    () const noexcept {   return CAPACITY;      }
+    constexpr bool          empty       () const noexcept {   return size_ == 0;    }
+    constexpr size_type     size        () const noexcept {   return size_;         }
+    constexpr size_type     max_size    () const noexcept {   return CAPACITY;      }
+    constexpr size_type     capacity    () const noexcept {   return CAPACITY;      }
 
     // -----------------
     // --- Modifiers ---
     // -----------------
-    void clear() noexcept
+    constexpr void clear() noexcept
     {
         destroy_elements();
         size_ = 0;
     }
 
-    iterator insert(const_iterator pos, const T& value)
+    constexpr iterator insert(const_iterator pos, const T& value)
     {
         const size_type new_size = size() + 1u;
         if (new_size > capacity()) {
@@ -369,7 +369,7 @@ public:
         return ipos;
     }
 
-    iterator insert(const_iterator pos, const T&& value)
+    constexpr iterator insert(const_iterator pos, const T&& value)
     {
         const auto new_size = size() + 1u;
         if (new_size > capacity()) {
@@ -388,7 +388,7 @@ public:
         return ipos;
     }
 
-    iterator insert(const_iterator pos, size_type count, const T& value)
+    constexpr iterator insert(const_iterator pos, size_type count, const T& value)
     {
         const size_type new_size = size() + count;
         if (new_size > capacity()) {
@@ -409,7 +409,7 @@ public:
     }
 
     template< class InputIt >
-    iterator insert (const_iterator pos, InputIt first, InputIt last)
+    constexpr iterator insert (const_iterator pos, InputIt first, InputIt last)
     {
         const std::int64_t count_signed = last - first;
         if (count_signed < 0) {
@@ -435,13 +435,13 @@ public:
         return ipos_start;
     }
 
-    iterator insert (const_iterator pos, std::initializer_list<T> ilist)
+    constexpr iterator insert (const_iterator pos, std::initializer_list<T> ilist)
     {
         return insert(pos, ilist.begin(), ilist.end());
     }
 
     template< class... Args >
-    iterator emplace( const_iterator pos, Args&&... args )
+    constexpr iterator emplace( const_iterator pos, Args&&... args )
     {
         const auto new_size = size() + 1u;
         if (new_size > capacity()) {
@@ -456,7 +456,7 @@ public:
         return ipos;
     }
 
-    iterator erase (const_iterator pos)
+    constexpr iterator erase (const_iterator pos)
     {
         destroy(pos);
         iterator ipos = const_cast<iterator>(pos);
@@ -465,9 +465,9 @@ public:
         return ipos;
     }
 
-    iterator erase (const_iterator first, const_iterator last)
+    constexpr iterator erase (const_iterator first, const_iterator last)
     {
-		destroy(first, last);
+        destroy(first, last);
         const size_type diff = check_range(first, last);
         const iterator ifirst = const_cast<iterator>(first);
         const iterator ilast = const_cast<iterator>(last);
@@ -476,7 +476,7 @@ public:
         return ifirst;
     }
 
-    void push_back (const T& value)
+    constexpr void push_back (const T& value)
     {
         const size_type new_size = size() + 1;
         if (new_size > capacity()) {
@@ -487,7 +487,7 @@ public:
         size_ = new_size;
     }
 
-    void push_back (T&& value)
+    constexpr void push_back (T&& value)
     {
         const auto new_size = size() + 1;
         if (new_size > capacity()) {
@@ -499,7 +499,7 @@ public:
     }
 
     template<class... Args >
-    reference emplace_back(Args&&... args)
+    constexpr reference emplace_back(Args&&... args)
     {
         const auto new_size = size() + 1;
         if (new_size > capacity()) {
@@ -512,13 +512,13 @@ public:
         return *insert_ptr;
     }
 
-    void pop_back()
+    constexpr void pop_back()
     {
         --size_;
     }
 
     template<size_t CAPACITY_OTHER>
-    void swap(vector_s<T, CAPACITY_OTHER>& other) noexcept
+    constexpr void swap(vector_s<T, CAPACITY_OTHER>& other) noexcept
     {
         if ( other.size() > capacity() ||
              other.capacity() < size() ) {
@@ -533,14 +533,14 @@ public:
     // --- Helper functions ---
     // ------------------------
 private:
-    void destroy(const_iterator begin, const_iterator end)
+    constexpr void destroy(const_iterator begin, const_iterator end)
     {
         for (const_iterator it = begin; it != end; ++it) {
             destroy(it);
         }
     }
 
-    void destroy(const_iterator pos)
+    constexpr void destroy(const_iterator pos)
     {
         iterator ipos = const_cast<iterator>(pos);
         pointer ptr = static_cast<pointer>(ipos);
@@ -548,7 +548,7 @@ private:
     }
 
     /** Destroy all elements. */
-    void destroy_elements()
+    constexpr void destroy_elements()
     {
         for (size_type i = size(); i > 0; ) {
             --i;
@@ -559,7 +559,7 @@ private:
 
     /** Check range */
     template<class InputIt>
-    size_type check_range(InputIt first, InputIt last)
+    constexpr size_type check_range(InputIt first, InputIt last)
     {
         const std::int64_t diff_signed = last - first;
         if (diff_signed < 0) {
@@ -576,7 +576,7 @@ private:
 
     /** Shift range right by n elements. */
     template<class InputIt>
-    void shift_right(InputIt first, InputIt last, size_type n)
+    constexpr void shift_right(InputIt first, InputIt last, size_type n)
     {
         const long diff_signed = last - first;
         if (diff_signed < 0) {
@@ -597,7 +597,7 @@ private:
 
     /** Shift range left by n elements. */
     template<class InputIt>
-    void shift_left(InputIt first,InputIt last, size_type n)
+    constexpr void shift_left(InputIt first,InputIt last, size_type n)
     {
         const long diff_signed = last - first;
         if (diff_signed < 0) {
@@ -619,15 +619,14 @@ private:
     // So: We simply want to reserve the memory at first.
     size_type       size_ = 0u;
     char            data_[CAPACITY*sizeof(value_type)]; // TODO: Use std::byte when we require C++17
-    pointer         data_ptr_ = reinterpret_cast<pointer>(&data_[0]);
-
+    pointer         data_ptr_ = static_cast<pointer>( static_cast<void*>(&data_[0]) );
 };
 
 // ------------------------
 // -- Compare operators ---
 // ------------------------
 template <typename T, size_t CAP_LHS, size_t CAP_RHS>
-bool operator==( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CAP_RHS>& rhs )
+constexpr bool operator==( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CAP_RHS>& rhs )
 {
     if (lhs.size() != rhs.size()) {
         return false;
@@ -643,7 +642,7 @@ bool operator==( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CAP_RHS>& rh
 }
 
 template <typename T, size_t CAP_LHS, size_t CAP_RHS>
-bool operator!=( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CAP_RHS>& rhs )
+constexpr bool operator!=( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CAP_RHS>& rhs )
 {
     return !(lhs == rhs);
 }
