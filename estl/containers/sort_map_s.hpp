@@ -10,10 +10,51 @@
 namespace estl {
 
 /**
+ * A static implementation of std::map<KEY,VALUE>
  *
+ * Uses the third template argument to specify not the allocator, but an unsigned integer
+ * constant specifying the maximum capacity at compile time like this:
+ * auto translate_map = sort_map_s<std::string, std::string, 50>;
+ * So translate_map now starts out with zero elements, but you can't ever fir more the 50 elements.
+ * Otherwise it works like your normal std::map, but it will never do any dynamic allocations
+ * as all memory is reserved at compile time.
+ * The name 'sort_map_s' signifies that tha maps is sorted (like std::map) to utitilze fast lookups
+ * through bisection. For small sizes (10 or less by default) the map will do a linear search and never
+ * sort the elements.
  *
- * @references https://www.geeksforgeeks.org/insertion-sort-using-c-stl/
- *
+ * @see https://en.cppreference.com/w/cpp/container/map
+ * @see https://www.geeksforgeeks.org/insertion-sort-using-c-stl/
+ 
+ * @example
+*
+#include <iostream>
+#include <containers/sort_map_s.hpp>
+
+using namespace estl;
+
+void map_s_dictionary_example()
+{
+    using MyMap = sort_map_s<std::string, std::string, 30>;
+    MyMap m;
+
+    m["goat"] = "ged";
+    m["horse"] = "hest";
+
+    std::cerr << "m.size()" << m.size() << "\n";
+    std::cerr << "m['goat'] => " << m["goat"] << "\n";
+    std::cerr << "m['horse'] => " << m["horse"] << "\n";
+
+
+    std::cerr << "Printing Map\n";
+    for (auto it = m.begin(); it != m.end(); ++it) {
+        std::cerr << (*it).first << " => " << (*it).second << "\n";
+    }
+
+    std::cerr << "\n";
+}
+
+ * @endexample
+ 
  */
 
 

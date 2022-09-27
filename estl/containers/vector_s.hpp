@@ -10,6 +10,55 @@
 
 
 namespace estl {
+/**
+ * A static implementation of std::vector<T>
+ *
+ * Uses the second template argument to specify not the allocator, but an unsigned integer
+ * constant specifying the maximum capacity at compile time like this:
+ * auto my_vec = vector_s<int, 50>;
+ * So my_vec now starts out with zero elements, but my_vec.capacity() == 50 always.
+ * Otherwise it works like your normal std::vector, but it will never do any dynamic allocations
+ * as all memory is reserved at compile time like with std::array.
+ * Difference here is that you can do my_vec.push_back(42) etc. like the std::vector.
+ *
+ * @note This is not the same as std::array<>. This is simply a std::vector<T, CAPACITY>
+ * @see https://en.cppreference.com/w/cpp/container/vector
+ * @example
+
+#include <iostream>
+#include <containers/vector_s.hpp>
+
+using namespace estl;
+
+template <class CONTAINER>
+void debug_print(const CONTAINER& container) {
+  for (const auto& elem : container) {
+    std::cerr << elem << ", ";
+  }
+  std::cerr << "\n";
+}
+
+void sorting_vectors_example()
+{
+    using myvec_t = vector_s<int, 50>;
+    using stringvec_t = vector_s<std::string, 50>;
+
+    myvec_t v{7,3,5,1,20,9,8};
+
+    debug_print(v);
+    std::sort(v.begin(), v.end(), std::greater<int>());
+    debug_print(v);
+
+    stringvec_t vs{"07","03","05","01","20","09","08"};
+
+    debug_print(vs);
+    std::sort(vs.begin(), vs.end(), std::greater<std::string>());
+    debug_print(vs);
+}
+
+ * @endexample
+ 
+*/
 
 template <typename T, size_t CAPACITY>
 class vector_s
