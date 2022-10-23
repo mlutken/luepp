@@ -1,0 +1,12 @@
+[requires]
+gtest/cci.20210126
+
+[options]
+#qt:shared=True
+
+[generators]
+cmake
+cmake_find_package
+#cmake_find_package_multi
+#CMakeDeps
+#CMakeToolchain

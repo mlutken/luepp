@@ -10,15 +10,38 @@ endif ()
 SET(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP TRUE)
 SET(QT_CREATOR_SKIP_CONAN_SETUP TRUE)
 
-enable_testing()
-
 
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
-include("tools/cmake/HunterGate.cmake")
+if (LUEPP_IS_TOP_LEVEL_PROJECT)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+      file(COPY_FILE "${CMAKE_CURRENT_LIST_DIR}/3rdparty/conan/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
+    #  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake" TLS_VERIFY ON)
+    endif()
+
+
+    include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+    conan_cmake_autodetect(settings)
+
+    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
+                        BUILD missing
+                        REMOTE conancenter
+                        SETTINGS ${settings})
+
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+endif()
+
+
+
+#include("tools/cmake/HunterGate.cmake")
 
 option(build_fsm "Build the FSM (Finite State Machine. Needs Boost)" OFF)
 
@@ -37,21 +60,17 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
 
 
-#set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
+set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
 set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Werror")
-set(C_COMPILE_FLAGS "-Wall -Wextra")
 set(CXX_COMPILE_FLAGS "-Wall -Wextra")
-string(REPLACE " " ";" C_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${C_COMPILE_FLAGS}")
 string(REPLACE " " ";" CXX_COMPILE_FLAGS_ALL "${COMMON_COMPILE_FLAGS} ${CXX_COMPILE_FLAGS}")
 
 
 # --- Add testing before setting general compiler flags ---
 if (LUEPP_IS_TOP_LEVEL_PROJECT)
-    add_subdirectory(testing)
+#    add_subdirectory(testing)
 endif()
 
 # Set general project wide compiler flags

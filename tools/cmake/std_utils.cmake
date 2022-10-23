@@ -65,6 +65,7 @@ function(add_unit_test name link_libs)
         set (test_name  ${name}_unittest)
         set (test_link_libraries ${link_libs})
         find_package(Threads REQUIRED)
+        find_package(GTest REQUIRED)
 
         add_executable(${test_name} "")
         target_sources(${test_name}
@@ -72,7 +73,8 @@ function(add_unit_test name link_libs)
                 "${CMAKE_CURRENT_LIST_DIR}/${test_name}.cpp"
         )
 
-        target_link_libraries(${test_name} ${test_link_libraries} gmock gtest_main gtest ${CMAKE_THREAD_LIBS_INIT})
+         target_link_libraries(${test_name} ${test_link_libraries} GTest::GTest ${CMAKE_THREAD_LIBS_INIT})
+#        target_link_libraries(${test_name} ${test_link_libraries} gmock gtest_main gtest ${CMAKE_THREAD_LIBS_INIT})
 
         add_test(
             NAME ${test_name}
