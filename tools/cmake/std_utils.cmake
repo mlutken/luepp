@@ -34,14 +34,16 @@ endfunction()
 # --- Subdirectories functions ---
 # --------------------------------
 function(add_subdirectories_standard)
-    if (NOT CMAKE_CROSSCOMPILING AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/unittest)
-        add_subdirectory(unittest)
-    endif()
-    if (NOT CMAKE_CROSSCOMPILING AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/integrationtest)
-        add_subdirectory(integrationtest)
-    endif()
-    if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/playground)
-        add_subdirectory(playground)
+    if (LUEPP_IS_TOP_LEVEL_PROJECT)
+        if (NOT CMAKE_CROSSCOMPILING AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/unittest)
+            add_subdirectory(unittest)
+        endif()
+        if (NOT CMAKE_CROSSCOMPILING AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/integrationtest)
+            add_subdirectory(integrationtest)
+        endif()
+        if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/playground)
+            add_subdirectory(playground)
+        endif()
     endif()
 endfunction()
 
@@ -61,25 +63,25 @@ endfunction()
 # --- Unit test functions ---
 # ---------------------------
 function(add_unit_test name link_libs)
-    if (NOT CMAKE_CROSSCOMPILING)
-        set (test_name  ${name}_unittest)
-        set (test_link_libraries ${link_libs})
-        find_package(Threads REQUIRED)
-        find_package(GTest REQUIRED)
+    if (LUEPP_IS_TOP_LEVEL_PROJECT)
+        if (NOT CMAKE_CROSSCOMPILING)
+            set (test_name  ${name}_unittest)
+            set (test_link_libraries ${link_libs})
+            find_package(Threads REQUIRED)
+            find_package(GTest REQUIRED)
 
-        add_executable(${test_name} "")
-        target_sources(${test_name}
-            PRIVATE
-                "${CMAKE_CURRENT_LIST_DIR}/${test_name}.cpp"
-        )
+            add_executable(${test_name} "")
+            target_sources(${test_name}
+                PRIVATE
+                    "${CMAKE_CURRENT_LIST_DIR}/${test_name}.cpp"
+            )
 
-         target_link_libraries(${test_name} ${test_link_libraries} GTest::GTest ${CMAKE_THREAD_LIBS_INIT})
-#        target_link_libraries(${test_name} ${test_link_libraries} gmock gtest_main gtest ${CMAKE_THREAD_LIBS_INIT})
-
-        add_test(
-            NAME ${test_name}
-            COMMAND ${test_name}
-        )
+            target_link_libraries(${test_name} ${test_link_libraries} GTest::GTest ${CMAKE_THREAD_LIBS_INIT})
+            add_test(
+                NAME ${test_name}
+                COMMAND ${test_name}
+            )
+        endif()
     endif()
 endfunction()
 
