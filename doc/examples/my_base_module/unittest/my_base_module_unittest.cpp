@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+
 #include <cesl_gmock/cesl_gmock_free_func.h>
 
 #include "../my_base_module.h"

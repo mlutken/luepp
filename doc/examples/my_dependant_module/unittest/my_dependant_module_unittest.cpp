@@ -1,7 +1,7 @@
 #include "../my_dependant_module.h"
 #include <my_base_module/my_base_module_mock.h>
 #include <cesl_gmock/cesl_gmock_free_func.h>
-#include <gmock/gmock.h>
+
 #include <gtest/gtest.h>
 
 GMOCK_C_FUNC_IMPLEMENTATION(my_base_module_)

@@ -7,6 +7,11 @@ if ( "${CMAKE_PROJECT_NAME}" MATCHES "luepp")
     set (LUEPP_IS_TOP_LEVEL_PROJECT TRUE)
 endif ()
 
+SET(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP TRUE)
+SET(QT_CREATOR_SKIP_CONAN_SETUP TRUE)
+
+enable_testing()
+
 
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)

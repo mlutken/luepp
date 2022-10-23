@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_MY_DEPENDANT_MODULE_MOCK_H
 #define EXAMPLES_MY_DEPENDANT_MODULE_MOCK_H
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+
 #include <cesl_gmock/cesl_gmock_free_func.h>
 
 
