@@ -16,9 +16,37 @@ template <typename T1, size_t BUFFER_SIZE1, size_t ALIGN_SIZE1 >
 class srmw_fifo_s;
 
 /**
-Single reader, single writer lockless fifo.
-Uses atomics for the read and write indices internally.
-@sa estl::srsw_fifo which is the same using std::vector as "backend"
+ * @brief Ringbuffer lockless FIFO template with one reader and one writer.
+ * Single reader, single writer lockless fifo (ring buffer).
+ * Uses atomics for the read and write indices internally and uses vector_s
+ * as storage container.
+ * @sa estl::srsw_fifo which is the same using std::vector as "backend"
+ * @example
+
+#include <iostream>
+#include <concurrent/srsw_fifo_s.hpp>
+
+using namespace estl;
+
+void fifo_example()
+{
+    using my_fifo = srsw_fifo_s<int,12>;
+    my_fifo f;
+
+    std::cerr << "Initial f.size(): " << f.size() << "\n";
+    f.push(10); // size = 1
+    f.push(20); // size = 2
+    f.push(30); // size = 3
+    std::cerr << "f.front(): " << f.front() << "\n";  // Outputs 10
+    f.pop();    // size = 2
+    f.push(40); // size = 3
+    const auto sz = f.size();
+
+    std::cerr << "f.size(): " << sz << "\n";
+}
+
+ * @endexample
+ 
 */
 
 template <typename T, size_t BUFFER_SIZE, size_t ALIGN_SIZE = 128 >
