@@ -34,7 +34,7 @@ endfunction()
 # --- Subdirectories functions ---
 # --------------------------------
 function(add_subdirectories_standard)
-    if (LUEPP_IS_TOP_LEVEL_PROJECT)
+#    if (LUEPP_IS_TOP_LEVEL_PROJECT)
         if (NOT CMAKE_CROSSCOMPILING AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/unittest)
             add_subdirectory(unittest)
         endif()
@@ -44,7 +44,7 @@ function(add_subdirectories_standard)
         if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/playground)
             add_subdirectory(playground)
         endif()
-    endif()
+#    endif()
 endfunction()
 
 # -----------------------------
@@ -63,7 +63,7 @@ endfunction()
 # --- Unit test functions ---
 # ---------------------------
 function(add_unit_test name link_libs)
-    if (LUEPP_IS_TOP_LEVEL_PROJECT)
+#    if (LUEPP_IS_TOP_LEVEL_PROJECT)
         if (NOT CMAKE_CROSSCOMPILING)
             set (test_name  ${name}_unittest)
             set (test_link_libraries ${link_libs})
@@ -82,7 +82,7 @@ function(add_unit_test name link_libs)
                 COMMAND ${test_name}
             )
         endif()
-    endif()
+#    endif()
 endfunction()
 
 # ----------------------------------
