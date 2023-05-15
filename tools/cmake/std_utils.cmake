@@ -1,3 +1,4 @@
+
 # ---------------------
 # --- Set functions ---
 # ---------------------
@@ -67,8 +68,6 @@ function(add_unit_test name link_libs)
         if (NOT CMAKE_CROSSCOMPILING)
             set (test_name  ${name}_unittest)
             set (test_link_libraries ${link_libs})
-            find_package(Threads REQUIRED)
-            find_package(GTest REQUIRED)
 
             add_executable(${test_name} "")
             target_sources(${test_name}
@@ -92,7 +91,6 @@ function(add_integration_test name link_libs)
     if (NOT CMAKE_CROSSCOMPILING)
         set (test_name  ${name}_integrationtest)
         set (test_link_libraries ${link_libs})
-        find_package(Threads REQUIRED)
 
         add_executable(${test_name} "")
         target_sources(${test_name}

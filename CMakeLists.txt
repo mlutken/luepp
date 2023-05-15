@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.23)
 project(luepp)
 message ("(luepp)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
 
@@ -11,14 +11,10 @@ SET(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP TRUE)
 SET(QT_CREATOR_SKIP_CONAN_SETUP TRUE)
 
 
-include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
-include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
-include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
-include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
 if (LUEPP_IS_TOP_LEVEL_PROJECT)
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+    #list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+    #list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
       file(COPY_FILE "${CMAKE_CURRENT_LIST_DIR}/3rdparty/conan/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
@@ -27,19 +23,26 @@ if (LUEPP_IS_TOP_LEVEL_PROJECT)
 
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
-
     conan_cmake_autodetect(settings)
+
+    #message ("FIXMENM CONAN:settings: ${settings}")
 
     conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
                         BUILD missing
                         REMOTE conancenter
+                        OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
                         SETTINGS ${settings})
 
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup()
+    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+    find_package(Threads REQUIRED)
+    find_package(GTest REQUIRED)
 endif()
 
 
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
 #include("tools/cmake/HunterGate.cmake")
 
