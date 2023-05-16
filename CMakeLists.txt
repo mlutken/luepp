@@ -7,14 +7,17 @@ if ( "${CMAKE_PROJECT_NAME}" MATCHES "luepp")
     set (LUEPP_IS_TOP_LEVEL_PROJECT TRUE)
 endif ()
 
-SET(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP TRUE)
-SET(QT_CREATOR_SKIP_CONAN_SETUP TRUE)
-
-
 
 if (LUEPP_IS_TOP_LEVEL_PROJECT)
-    #list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-    #list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+    SET(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP TRUE)
+    SET(QT_CREATOR_SKIP_CONAN_SETUP TRUE)
+    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY     ${CMAKE_BINARY_DIR}/bin)
+    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY     ${CMAKE_BINARY_DIR}/bin)
+    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY     ${CMAKE_BINARY_DIR}/lib)
+    set (CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pdb)
+
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
       file(COPY_FILE "${CMAKE_CURRENT_LIST_DIR}/3rdparty/conan/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
@@ -24,8 +27,6 @@ if (LUEPP_IS_TOP_LEVEL_PROJECT)
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
     conan_cmake_autodetect(settings)
-
-    #message ("FIXMENM CONAN:settings: ${settings}")
 
     conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
                         BUILD missing
@@ -44,8 +45,6 @@ include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
-#include("tools/cmake/HunterGate.cmake")
-
 option(build_fsm "Build the FSM (Finite State Machine. Needs Boost)" OFF)
 
 if (build_fsm)
@@ -59,10 +58,6 @@ if (LUEPP_IS_TOP_LEVEL_PROJECT)
     message ("INFO: luepp is top level project!")
     enable_testing()
 endif()
-
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 set(COMMON_COMPILE_FLAGS "-Wall -Wextra -Wsign-conversion -Wno-zero-as-null-pointer-constant -Werror")
