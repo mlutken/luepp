@@ -3,7 +3,7 @@
 #include <string>
 #include <chrono>
 #include <vector>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -241,7 +241,7 @@ void parse_cpp_fsm_part(fsm_def& sm, Iterator first, Iterator last)
     }
 }
 
-fsm_def fsm_from_file(const boost::filesystem::path& input_file_path)
+fsm_def fsm_from_file(const std::filesystem::path& input_file_path)
 {
     namespace ba = boost::algorithm;
     fsm_def sm;
@@ -364,7 +364,7 @@ int main(int argc, const char *argv[])
         if (vm.count("dot-params")) {
         }
 
-        auto input_file_path = boost::filesystem::path(vm["file"].as<std::string >());
+        auto input_file_path = std::filesystem::path(vm["file"].as<std::string >());
         {
             fsm_def sm = fsm_from_file(input_file_path);
 
