@@ -2,7 +2,6 @@
 gtest/cci.20210126
 
 [options]
-#qt:shared=True
 
 [generators]
 CMakeDeps

@@ -9,6 +9,7 @@ endif ()
 
 
 if (LUEPP_IS_TOP_LEVEL_PROJECT)
+    include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/conan_utils.cmake)
     SET(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP TRUE)
     SET(QT_CREATOR_SKIP_CONAN_SETUP TRUE)
     set (CMAKE_RUNTIME_OUTPUT_DIRECTORY     ${CMAKE_BINARY_DIR}/bin)
@@ -19,20 +20,17 @@ if (LUEPP_IS_TOP_LEVEL_PROJECT)
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-      file(COPY_FILE "${CMAKE_CURRENT_LIST_DIR}/3rdparty/conan/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
-    #  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake" TLS_VERIFY ON)
-    endif()
+    conan_utils_get_profile_settings(conan_profile_settings)
+    conan_utils_get_profile_name(conan_profile_name)
 
+    message ("INFO! Using Conan profile name: ${conan_profile_name}")
+    message ("INFO! Using Conan settings: ${conan_profile_settings}")
 
-    include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_cmake_autodetect(settings)
-
-    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
-                        BUILD missing
-                        REMOTE conancenter
-                        OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
-                        SETTINGS ${settings})
+    conan_utils_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
+                              BUILD missing
+                              REMOTE conancenter
+                              OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
+                              SETTINGS ${conan_profile_settings})
 
     include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
     find_package(Threads REQUIRED)
