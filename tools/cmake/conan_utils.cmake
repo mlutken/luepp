@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 # -----------------------
 # --- Conan functions ---
 # -----------------------
@@ -11,6 +13,9 @@ function(conan_utils_get_profile_name out_profile_name)
     set (profile_name "default")
     if (CONAN_PROFILE_NAME)
         set (profile_name ${CONAN_PROFILE_NAME})
+    endif()
+    if (CONAN_PROFILE)
+        set (profile_name ${CONAN_PROFILE})
     endif()
     set(${out_profile_name} ${profile_name} PARENT_SCOPE)
 endfunction()

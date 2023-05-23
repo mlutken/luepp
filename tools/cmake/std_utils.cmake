@@ -1,3 +1,4 @@
+include_guard(GLOBAL)
 
 # ---------------------
 # --- Set functions ---
@@ -64,7 +65,7 @@ endfunction()
 # --- Unit test functions ---
 # ---------------------------
 function(add_unit_test name link_libs)
-#    if (LUEPP_IS_TOP_LEVEL_PROJECT)
+#   if (BUILD_UNIT_TESTS)
         if (NOT CMAKE_CROSSCOMPILING)
             set (test_name  ${name}_unittest)
             set (test_link_libraries ${link_libs})
@@ -75,7 +76,7 @@ function(add_unit_test name link_libs)
                     "${CMAKE_CURRENT_LIST_DIR}/${test_name}.cpp"
             )
 
-            target_link_libraries(${test_name} ${test_link_libraries} GTest::GTest ${CMAKE_THREAD_LIBS_INIT})
+            target_link_libraries(${test_name} ${test_link_libraries} GTest::gtest ${CMAKE_THREAD_LIBS_INIT})
             add_test(
                 NAME ${test_name}
                 COMMAND ${test_name}
