@@ -92,9 +92,9 @@ void main__cpp11()
     debug_print(vs);
 }
 
-constexpr int N = 10;
+constexpr size_t N = 10;
 
-using intvec_t = estl::vector_s<int, N>;
+using intvec_t = estl::vector_s<size_t, N>;
 
 template<size_t N>
 struct Table
@@ -107,7 +107,7 @@ struct Table
             values[i][1] = i * i * i;
         }
     }
-    int values[N][2u];
+    size_t values[N][2u];
 };
 
 template<size_t N>
