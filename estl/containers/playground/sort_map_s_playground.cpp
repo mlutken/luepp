@@ -77,12 +77,12 @@ int main()
 
 //    std::sort(strings.begin(), strings.end(), std::less<std::string>() );
 
-    std::cerr << "Printing Map\n";
+    cout << "Printing Map\n";
     for (auto it = m.begin(); it != m.end(); ++it) {
-        std::cerr << (*it).first << " => " << (*it).second << "\n";
+        cout << (*it).first << " => " << (*it).second << "\n";
     }
 
-    std::cerr << "\n";
+    cout << endl;
 
 
     return 0;

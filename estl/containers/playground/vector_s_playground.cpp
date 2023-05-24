@@ -53,9 +53,9 @@ template <class CONTAINER>
 void debug_print(const CONTAINER& container)
 {
     for(const auto& elem : container) {
-        std::cerr << elem << ", ";
+        std::cout << elem << ", ";
     }
-    std::cerr << "\n";
+    std::cout << std::endl;
 }
 
 
@@ -71,6 +71,7 @@ int main()
     cout << "--- vector_s playground ---\n";
     main__cpp11();
     main__constxepr();
+    std::cout << std::endl;
 }
 
 void main__cpp11()
@@ -145,8 +146,9 @@ void main__constxepr()
 
 //    constexpr auto v = estl::vector_s<int, N>();
     constexpr auto a = Table<10>();
-    for (auto x : a.values)
+    for (auto x : a.values) {
         std::cout << "f(" << x[0] << ") = " << x[1] << '\n';
+    }
 
 }
 

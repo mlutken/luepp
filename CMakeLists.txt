@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 project(luepp)
 message ("(luepp)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
 
+# Emscripten CMake CMD: .../_build/luepp$ cmake  -DCMAKE_SYSTEM_NAME=Emscripten -DCMAKE_BUILD_TYPE=Release -DCONAN_PROFILE=emscripten -DCMAKE_C_COMPILER=/opt/user/emsdk/upstream/emscripten/emcc -DCMAKE_CXX_COMPILER=/opt/user/emsdk/upstream/emscripten/em++ -DCMAKE_AR=/opt/user/emsdk/upstream/emscripten/emar -DCMAKE_RANLIB=/opt/user/emsdk/upstream/emscripten/emranlib ../../luepp
+
 set (LUEPP_IS_TOP_LEVEL_PROJECT FALSE)
 if ( "${CMAKE_PROJECT_NAME}" MATCHES "luepp")
     set (LUEPP_IS_TOP_LEVEL_PROJECT TRUE)
@@ -25,6 +27,9 @@ if (LUEPP_IS_TOP_LEVEL_PROJECT)
 
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+        set (CMAKE_EXECUTABLE_SUFFIX    ".html" )
+    endif ()
 
     if (NOT CMAKE_TOOLCHAIN_FILE)
         conan_utils_get_profile_settings(conan_profile_settings)
