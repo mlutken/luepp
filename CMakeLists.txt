@@ -7,6 +7,12 @@ if ( "${CMAKE_PROJECT_NAME}" MATCHES "luepp")
     set (LUEPP_IS_TOP_LEVEL_PROJECT TRUE)
 endif ()
 
+if (CMAKE_CROSSCOMPILING)
+    message("INFO: CMAKE_CROSSCOMPILING for '${CMAKE_SYSTEM_NAME}'")
+else()
+    message("INFO: Compiling for current system '${CMAKE_SYSTEM_NAME}' ")
+endif()
+
 
 if (LUEPP_IS_TOP_LEVEL_PROJECT)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/conan_utils.cmake)
@@ -37,9 +43,11 @@ if (LUEPP_IS_TOP_LEVEL_PROJECT)
         include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
     endif()
     find_package(Threads REQUIRED)
-    find_package(GTest REQUIRED)
+    if (NOT CMAKE_CROSSCOMPILING)
+        message("INFO: Find GTest as we are NOT cross compiling!")
+        find_package(GTest REQUIRED)
+    endif()
 endif()
-
 
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/std_utils.cmake)
 include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)

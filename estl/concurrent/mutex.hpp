@@ -10,6 +10,8 @@
 #include <pthread.h>
 #elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_OSX)
 #elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_BROWSER)
+#include <pthread.h>
 #else
 #   error "Missing estl::mutex system includes !"
 #endif // (LUEPP_SYSTEM_ID)
@@ -48,6 +50,8 @@ private:
 #elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
     void ensure_created();
     SemaphoreHandle_t semaphore_ = nullptr;
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_BROWSER)
+    pthread_mutex_t pthread_mutex_;
 #else
 #   error "Missing estl::mutex system header member data !"
 #endif // (LUEPP_SYSTEM_ID)

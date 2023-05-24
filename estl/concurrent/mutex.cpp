@@ -10,6 +10,8 @@
 #   include "mutex__osx.cpp"
 #elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_FREERTOS)
 #   include "mutex__freertos.cpp"
+#elif (LUEPP_SYSTEM_ID == LUEPP_SYSTEM_ID_BROWSER)
+#   include "mutex__browser.cpp"
 #else
 #   error "Missing estl::mutex platform implementation file!"
 #endif // (LUEPP_SYSTEM_ID)
