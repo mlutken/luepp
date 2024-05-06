@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../commands.hpp"
+#include "../commands.h"
 
 
 using namespace testing;
