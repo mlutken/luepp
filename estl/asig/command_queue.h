@@ -59,6 +59,23 @@ public:
         push_call<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
     }
 
+    template<typename ReturnType,
+             class ResultMemberCallable, class ResultClassObject,
+             class CommandCallable, typename ... CommandArgs >
+    void call_memfun ( ResultMemberCallable result_callback_fun, ResultClassObject result_class_instance,
+              CommandCallable command_fun, CommandArgs... command_args
+              )
+    {
+        auto command_fn = [=]() -> ReturnType {
+            return std::invoke(command_fun, command_args...);
+        };
+
+        auto result_callback_fn = [=](const ReturnType& cmd_return_value){
+            return std::invoke(result_callback_fun, result_class_instance, cmd_return_value );
+        };
+        push_call<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
+    }
+
     bool    execute_next    ();
 
     size_t  size            () const { return queue_.size();        }
