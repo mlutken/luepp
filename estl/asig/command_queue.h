@@ -8,6 +8,7 @@
 // https://en.cppreference.com/w/cpp/utility/functional/invoke
 // https://codereview.stackexchange.com/questions/221828/c17-implementation-of-stdinvoke
 // https://stackoverflow.com/questions/46388524/when-to-use-stdinvoke-instead-of-simply-calling-the-invokable
+// https://stackoverflow.com/questions/9831501/how-can-i-have-multiple-parameter-packs-in-a-variadic-template
 
 namespace estl {
 
@@ -75,6 +76,51 @@ public:
         };
         push_call<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
     }
+
+    //////////////////////////////////
+
+    template<typename ReturnType ,typename ... Args>
+    void call_test    (Args...)
+    {
+        std::cerr << "Base case should never match\n";
+    }
+
+    // template<typename ReturnType,
+    //          class ResultMemberCallable, class ResultClassObject,
+    //          class CommandCallable, typename ... CommandArgs >
+    // void call_test<ReturnType, ResultClassObject, CommandCallable, CommandArgs...>
+    //             ( ResultMemberCallable result_callback_fun, ResultClassObject result_class_instance,
+    //            CommandCallable command_fun, CommandArgs... command_args
+    //           )
+    // {
+    //     auto command_fn = [=]() -> ReturnType {
+    //         return std::invoke(command_fun, command_args...);
+    //     };
+
+    //     auto result_callback_fn = [=](const ReturnType& cmd_return_value){
+    //         return std::invoke(result_callback_fun, result_class_instance, cmd_return_value );
+    //     };
+    //     push_call<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
+    // }
+
+    // template<typename ReturnType,
+    //          class ResultCallable,
+    //          class CommandCallable, typename ... CommandArgs >
+    // void call_test ( ResultCallable result_callback_fun,
+    //           CommandCallable command_fun, CommandArgs... command_args
+    //           )
+    // {
+    //     auto command_fn = [=]() -> ReturnType {
+    //         return std::invoke(command_fun, command_args...);
+    //     };
+
+    //     auto result_callback_fn = [=](const ReturnType& cmd_return_value){
+    //         return std::invoke(result_callback_fun, cmd_return_value );
+    //     };
+    //     push_call<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
+    // }
+
+
 
     bool    execute_next    ();
 
