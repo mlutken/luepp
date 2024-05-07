@@ -25,7 +25,6 @@ public:
                              std::function<void (const ReturnType&)>&& result_callback_fun)
     {
         auto cmd = [=]() {
-            std::cerr << "Executing with return type and direct callback\n";
             auto cmd_ret_val = command_fun();
             result_callback_fun(cmd_ret_val);
 
@@ -42,92 +41,16 @@ public:
         auto cmd = [=]() {
             auto cmd_ret_val = command_fun();
             if (response_queue) {
-                std::cerr << "Executing with return type and async callback command\n";
                 auto cb = [=]() {
-                    std::cerr << "Executing synchronous callback command\n";
                     result_callback_fun(cmd_ret_val);
                 };
                 response_queue->push(std::move(cb));
             }
             else {
-                std::cerr << "Executing with return type and direct callback\n";
                 result_callback_fun(cmd_ret_val);
             }
         };
         push(std::move(cmd));
-    }
-
-
-    template<class CommandCallable, typename ... CommandArgs>
-    void send (CommandCallable&& function, const CommandArgs&... args)
-    {
-        auto cmd = [=]() {
-            std::invoke(function, args...);
-        };
-        push(std::move(cmd));
-    }
-
-
-    template<typename ReturnType,
-             class ResultCallable,
-             class CommandCallable, typename ... CommandArgs >
-    void callback_free (ResultCallable result_callback_fun, CommandCallable command_fun, CommandArgs... command_args)
-    {
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_fun, command_args...);
-        };
-
-        auto result_callback_fn = [=](const ReturnType& cmd_return_value){
-            return std::invoke(result_callback_fun, cmd_return_value );
-        };
-        push_command_response<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
-    }
-
-    template<typename ReturnType,
-             class ResultMemberCallable,
-             class ResultClassObject,
-             class CommandCallable,
-             class CommandClassObject,
-             typename ... CommandArgs >
-    void callback ( ResultMemberCallable result_callback_fun,
-                    ResultClassObject* result_class_instance,
-                    CommandCallable command_fun,
-                    CommandClassObject* command_class_instance,
-                    CommandArgs... command_args
-                    )
-    {
-        std::cerr << "Member function callback: result_class_instance : " << result_class_instance << "\n";
-        std::cerr << "Member function callback: command_class_instance: " << command_class_instance << "\n";
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_fun, command_class_instance, command_args...);
-        };
-
-        auto result_callback_fn = [=](const ReturnType& cmd_return_value){
-            return std::invoke(result_callback_fun, result_class_instance, cmd_return_value );
-        };
-        push_callback<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
-    }
-
-    template<typename ReturnType,
-             class ResultMemberCallable,
-             class CommandCallable,
-             class CommandClassObject,
-             typename ... CommandArgs >
-    void callback( ResultMemberCallable result_callback_fun,
-                  CommandCallable command_fun,
-                  CommandClassObject* command_class_instance,
-                  CommandArgs... command_args
-                  )
-    {
-        std::cerr << "Free function callback: command_class_instance: " << command_class_instance << "\n";
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_fun, command_class_instance, command_args...);
-        };
-
-        auto result_callback_fn = [=](const ReturnType& cmd_return_value){
-            return std::invoke(result_callback_fun, cmd_return_value );
-        };
-        push_callback<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
     }
 
 
@@ -152,3 +75,35 @@ private:
 
 
 } // END namespace estl
+
+
+
+// template<class CommandCallable, typename ... CommandArgs>
+// void send (CommandCallable&& function, const CommandArgs&... args)
+// {
+//     auto cmd = [=]() {
+//         std::invoke(function, args...);
+//     };
+//     push(std::move(cmd));
+// }
+
+// template<typename ReturnType,
+//          class CallbackCallable,
+//          class CommandCallable,
+//          class CommandClassObject,
+//          typename ... CommandArgs >
+// void send_callback(CallbackCallable callback_fun,
+//                    CommandCallable command_member_fun,
+//                    CommandClassObject* command_class_obj_ptr,
+//                    CommandArgs... command_args
+//                    )
+// {
+//     auto command_fn = [=]() -> ReturnType {
+//         return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
+//     };
+
+//     auto callback_fn = [=](const ReturnType& cmd_return_value){
+//         return std::invoke(callback_fun, cmd_return_value );
+//     };
+//     push_callback<ReturnType>(std::move(command_fn), std::move(callback_fn));
+// }

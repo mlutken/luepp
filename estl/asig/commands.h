@@ -43,56 +43,60 @@ public:
 
     template<class ReturnType,
              class ResultMemberCallable,
-             class CallbackClassObject,
+             class ResponseClassObject,
              class CommandCallable,
              class CommandClassObject,
              typename ... CommandArgs >
-    void command_cb ( ResultMemberCallable result_callback_fun,
-                      CallbackClassObject* result_class_obj,
-                      CommandCallable command_fun,
-                      CommandClassObject* command_class_obj,
-                      CommandArgs... command_args
+    void send_response ( ResultMemberCallable response_member_fun,
+                         ResponseClassObject* response_class_obj_ptr,
+                         CommandCallable command_member_fun,
+                         CommandClassObject* command_class_obj_ptr,
+                         CommandArgs... command_args
                     )
     {
-        std::cerr << "Member function callback: command_class_instance: " << command_class_obj << "\n";
-        std::cerr << "Member function callback: result_class_instance : " << result_class_obj << "\n";
-        auto cmd_queue = get_receiver_queue(command_class_obj);
-        if (!cmd_queue) {
+        // std::cerr << "send_response : command_class_obj  : " << command_class_obj_ptr << "\n";
+        // std::cerr << "send_response : response_class_obj : " << response_class_obj_ptr << "\n";
+        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        if (!cmd_queue_ptr) {
             return;
         }
-        auto cb_queue = get_receiver_queue(result_class_obj);
+        auto cb_queue = get_receiver_queue(response_class_obj_ptr);
         auto cmd = [=]() -> ReturnType {
-            return std::invoke(command_fun, command_class_obj, command_args...);
+            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
         };
 
 
         auto cb = [=](const ReturnType& cmd_return_value){
-            return std::invoke(result_callback_fun, result_class_obj, cmd_return_value );
+            return std::invoke(response_member_fun, response_class_obj_ptr, cmd_return_value );
         };
-        command_queue& cc = *cmd_queue;
-        cc.push_response<ReturnType>(std::move(cmd), std::move(cb), cb_queue);
+        command_queue& cmd_queue = *cmd_queue_ptr;
+        cmd_queue.push_response<ReturnType>(std::move(cmd), std::move(cb), cb_queue);
     }
 
     template<typename ReturnType,
-             class ResultMemberCallable,
+             class CallbackCallable,
              class CommandCallable,
              class CommandClassObject,
              typename ... CommandArgs >
-    void command_cb( ResultMemberCallable result_callback_fun,
-                  CommandCallable command_fun,
-                  CommandClassObject* command_class_instance,
-                  CommandArgs... command_args
-                  )
+    void send_callback( CallbackCallable callback_fun,
+                        CommandCallable command_member_fun,
+                        CommandClassObject* command_class_obj_ptr,
+                        CommandArgs... command_args
+                        )
     {
-        // std::cerr << "Free function callback: command_class_instance: " << command_class_instance << "\n";
-        // auto command_fn = [=]() -> ReturnType {
-        //     return std::invoke(command_fun, command_class_instance, command_args...);
-        // };
+        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        if (!cmd_queue_ptr) {
+            return;
+        }
+        auto command_fn = [=]() -> ReturnType {
+            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
+        };
 
-        // auto result_callback_fn = [=](const ReturnType& cmd_return_value){
-        //     return std::invoke(result_callback_fun, cmd_return_value );
-        // };
-        // push_command_cb<ReturnType>(std::move(command_fn),  std::move(result_callback_fn));
+        auto result_callback_fn = [=](const ReturnType& cmd_return_value){
+            return std::invoke(callback_fun, cmd_return_value );
+        };
+        command_queue& cmd_queue = *cmd_queue_ptr;
+        cmd_queue.push_callback<ReturnType>(std::move(command_fn), std::move(result_callback_fn));
     }
 
     void        register_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
