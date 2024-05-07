@@ -171,7 +171,7 @@ macro(_conan_detect_compiler)
             set(_CONAN_SETTING_COMPILER_LIBCXX ${_LIBCXX})
         endif ()
     elseif (${CMAKE_${LANGUAGE}_COMPILER_ID} STREQUAL Clang
-                AND NOT "${CMAKE_${LANGUAGE}_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC" 
+                AND NOT "${CMAKE_${LANGUAGE}_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC"
                 AND NOT "${CMAKE_${LANGUAGE}_SIMULATE_ID}" STREQUAL "MSVC")
 
         string(REPLACE "." ";" VERSION_LIST ${CMAKE_${LANGUAGE}_COMPILER_VERSION})
@@ -194,8 +194,8 @@ macro(_conan_detect_compiler)
             set(_CONAN_SETTING_COMPILER_LIBCXX ${_LIBCXX})
         endif ()
     elseif(${CMAKE_${LANGUAGE}_COMPILER_ID} STREQUAL MSVC
-                OR (${CMAKE_${LANGUAGE}_COMPILER_ID} STREQUAL Clang 
-                    AND "${CMAKE_${LANGUAGE}_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC" 
+                OR (${CMAKE_${LANGUAGE}_COMPILER_ID} STREQUAL Clang
+                    AND "${CMAKE_${LANGUAGE}_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC"
                     AND "${CMAKE_${LANGUAGE}_SIMULATE_ID}" STREQUAL "MSVC"))
 
         set(_VISUAL "Visual Studio")
@@ -729,12 +729,12 @@ function(conan_cmake_lock_create)
         set(BASE --base)
     endif()
     set(lock_create_Args lock create ${PATH} ${REFERENCE} ${UPDATE} ${BASE} ${REMOTE} ${LOCKFILE} ${LOCKFILE_OUT} ${LOCKFILE_NODE_ID} ${INSTALL_FOLDER}
-                                ${GENERATOR} ${BUILD} ${ENV} ${ENV_HOST} ${ENV_BUILD} ${OPTIONS} ${OPTIONS_HOST} ${OPTIONS_BUILD} 
+                                ${GENERATOR} ${BUILD} ${ENV} ${ENV_HOST} ${ENV_BUILD} ${OPTIONS} ${OPTIONS_HOST} ${OPTIONS_BUILD}
                                 ${PROFILE} ${PROFILE_HOST} ${PROFILE_BUILD} ${SETTINGS} ${SETTINGS_HOST} ${SETTINGS_BUILD})
 
     string(REPLACE ";" " " _lock_create_Args "${lock_create_Args}")
     message(STATUS "Conan executing: ${CONAN_CMD} ${_lock_create_Args}")
-    
+
     if(ARGS_OUTPUT_QUIET)
       set(OUTPUT_OPT OUTPUT_QUIET)
     endif()
@@ -992,33 +992,33 @@ macro(conan_config_install)
     endif()
 
     if(DEFINED CONAN_VERIFY_SSL)
-	set(CONAN_VERIFY_SSL_ARG "--verify-ssl=${CONAN_VERIFY_SSL}")
+    set(CONAN_VERIFY_SSL_ARG "--verify-ssl=${CONAN_VERIFY_SSL}")
     endif()
 
     if(DEFINED CONAN_TYPE)
-	set(CONAN_TYPE_ARG "--type=${CONAN_TYPE}")
+    set(CONAN_TYPE_ARG "--type=${CONAN_TYPE}")
     endif()
 
     if(DEFINED CONAN_ARGS)
-	set(CONAN_ARGS_ARGS "--args=\"${CONAN_ARGS}\"")
+    set(CONAN_ARGS_ARGS "--args=\"${CONAN_ARGS}\"")
     endif()
 
     if(DEFINED CONAN_SOURCE)
-	set(CONAN_SOURCE_ARGS "--source-folder=${CONAN_SOURCE}")
+    set(CONAN_SOURCE_ARGS "--source-folder=${CONAN_SOURCE}")
     endif()
 
     if(DEFINED CONAN_TARGET)
-	set(CONAN_TARGET_ARGS "--target-folder=${CONAN_TARGET}")
+    set(CONAN_TARGET_ARGS "--target-folder=${CONAN_TARGET}")
     endif()
 
     set (CONAN_CONFIG_INSTALL_ARGS 	${CONAN_VERIFY_SSL_ARG}
-					${CONAN_TYPE_ARG}
-					${CONAN_ARGS_ARGS}
-					${CONAN_SOURCE_ARGS}
-					${CONAN_TARGET_ARGS})
+                    ${CONAN_TYPE_ARG}
+                    ${CONAN_ARGS_ARGS}
+                    ${CONAN_SOURCE_ARGS}
+                    ${CONAN_TARGET_ARGS})
 
     message(STATUS "Conan: Installing config from ${CONAN_ITEM}")
-	execute_process(COMMAND ${CONAN_CMD} config install ${CONAN_ITEM} ${CONAN_CONFIG_INSTALL_ARGS}
+    execute_process(COMMAND ${CONAN_CMD} config install ${CONAN_ITEM} ${CONAN_CONFIG_INSTALL_ARGS}
                   RESULT_VARIABLE return_code)
   if(NOT "${return_code}" STREQUAL "0")
     message(FATAL_ERROR "Conan config failed='${return_code}'")

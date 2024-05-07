@@ -2,11 +2,21 @@
 #include <vector>
 #include <string>
 
+#include <asig/commands.h>
 #include <asig/command_queue.h>
 
 using namespace std;
 using namespace estl;
 
+void free_function(int some_number)
+{
+    cerr << "Hello free_function(" << some_number << ")\n";;
+}
+
+void free_callback(int some_number)
+{
+    cerr << "Hello free_callback(" << some_number << ")\n";;
+}
 
 struct Thread1Class
 {
@@ -18,7 +28,7 @@ struct Thread1Class
 
     }
 
-    int mul2(int some_number)
+    int mul2(const int some_number)
     {
         cerr << name_ << "::mul2(" << some_number << ")\n";
         return 2*some_number;
@@ -39,47 +49,51 @@ struct Thread2Class
     std::string name_;
 };
 
-void free_function(int some_number)
-{
-    cerr << "Hello free_function(" << some_number << ")\n";;
-}
 
-void free_callback(int some_number)
-{
-    cerr << "Hello free_callback(" << some_number << ")\n";;
-}
-
+commands command_center{64};
 command_queue queue1{256};
 Thread1Class thread_1_class{"Thread 1 Class"};
 Thread2Class thread_2_class{"Thread 2 Class"};
 
 void test_variadic();
 
+
 int main()
 {
-    test_variadic();
+    command_center.register_receiver(&thread_1_class);
+    command_center.register_receiver(&thread_2_class);
     cerr << "--- commands playground ---\n";
-    cerr << "queue1.capacity()   : "  << queue1.capacity() << "\n";
-    cerr << "queue1.size()       : "  << queue1.size() << "\n";
+    cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
+    cerr << "command_center.queues_count()      : "  << command_center.queues_count() << "\n";
+    cerr << "command_center.receivers_count()   : "  << command_center.receivers_count() << "\n";
+    cerr << "queue1.capacity()                  : "  << queue1.capacity() << "\n";
+    cerr << "queue1.size()                      : "  << queue1.size() << "\n";
 
-    queue1.push_call_void([](){cerr << "Hello from push\n"; });
-    queue1.call_void(free_function, 12);
-    queue1.call_void(&Thread1Class::member_function, &thread_1_class, 23);
+    // queue1.push_call_void([](){cerr << "Hello from push\n"; });
+    // queue1.call_void(free_function, 12);
+    // queue1.call_void(&Thread1Class::member_function, &thread_1_class, 23);
 
-    auto command_fn = [=]() -> int {
-        return thread_1_class.mul2(25);
-    };
+    // auto command_fn = [=]() -> int {
+    //     return thread_1_class.mul2(25);
+    // };
 
-    auto result_callback_fn = [=](const int& cmd_return_value){
-        free_callback(cmd_return_value);
-    };
-    queue1.push_call<int>(std::move(command_fn),  std::move(result_callback_fn));
+    // auto result_callback_fn = [=](const int& cmd_return_value){
+    //     free_callback(cmd_return_value);
+    // };
+    // queue1.push_call<int>(std::move(command_fn),  std::move(result_callback_fn));
 
-    queue1.call<int>(free_callback, &Thread1Class::mul2, &thread_1_class, 30);
-    queue1.call_memfun<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 40);
+    // queue1.callback_free<int>(free_callback, &Thread1Class::mul2, &thread_1_class, 30);
+    // queue1.callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 40);
+    cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
+    cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
 
-    queue1.call_test<int>(free_callback, &Thread1Class::mul2, &thread_1_class, 31);
-    queue1.call_test<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 41);
+    queue1.callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 40);
+    queue1.callback<int>(free_callback, &Thread1Class::mul2, &thread_1_class, 41);
+    queue1.callback<int>([](int val) {cerr << "Lambda callback: " << val << "\n";}, &Thread1Class::mul2, &thread_1_class, 42);
+
+
+    // queue1.call_test<int>    (free_callback, &Thread1Class::mul2, &thread_1_class, 31);
+    // queue1.call_test<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 41);
 
     while (!queue1.empty()) {
         queue1.execute_next();
