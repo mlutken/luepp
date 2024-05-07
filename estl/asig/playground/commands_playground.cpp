@@ -134,7 +134,7 @@ private:
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
-            std::this_thread::sleep_for(850ms);
+            std::this_thread::sleep_for(10ms);
             // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
             while (!command_queue_->empty()) {
                 command_queue_->execute_next();
@@ -151,9 +151,11 @@ private:
         square_me_parameter += 10;
         cmd_seq_num += 1;
 
-        cerr << "From {" << this_thread::get_id() << "} / '" << name_ << "'  Calling Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-        // command_center_.send_response<int>(&Thread2Class::callback_fun1, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-        command_center_.send_response<int>(&Thread2Class::callback_fun2, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+        if (cmd_seq_num < 5) {
+            cerr << "From {" << this_thread::get_id() << "} / '" << name_ << "'  Calling Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
+            // command_center_.send_response<int>(&Thread2Class::callback_fun1, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+            command_center_.send_response<int>(&Thread2Class::callback_fun2, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+        }
     }
 
 
