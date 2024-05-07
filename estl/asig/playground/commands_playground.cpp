@@ -49,8 +49,9 @@ struct Thread1Class
 
     int square_me(const int& some_number)
     {
-        cerr  << "{" << this_thread::get_id() << "} " << name_ << "::square_me(" << some_number << ")\n";
-        return some_number*some_number;
+        const auto squared = some_number*some_number;
+        cerr  << "{" << this_thread::get_id() << "} " << name_ << "::square_me(" << some_number << ") => " << squared << "\n";
+        return squared;
     }
 
 private:
@@ -67,7 +68,7 @@ private:
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(900ms);
-            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
+            // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
             while (!command_queue_->empty()) {
                 command_queue_->execute_next();
             }
@@ -110,9 +111,14 @@ struct Thread2Class
     // -----------------
     // --- Callbacks ---
     // -----------------
-    void callback_fun(int some_number)
+    void callback_fun1(int squared_number)
     {
-        cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback(" << some_number << ")\n";
+        cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback_fun1(" << squared_number << ")\n";
+    }
+
+    void callback_fun2(int32_t cmd_seq_num, int squared_number)
+    {
+        cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback_fun2(" << squared_number << ") , cmd_seq_num: " << cmd_seq_num << "\n";
     }
 
 private:
@@ -129,7 +135,7 @@ private:
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(850ms);
-            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
+            // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
             while (!command_queue_->empty()) {
                 command_queue_->execute_next();
             }
@@ -141,10 +147,13 @@ private:
     void idle_work_function()
     {
         static int square_me_parameter = 0;
+        static int32_t cmd_seq_num = 0;
         square_me_parameter += 10;
+        cmd_seq_num += 1;
 
-        cerr << "From {" << this_thread::get_id() << "} / '" << name_ << "'  Calling Thread1Class::square_me(" << square_me_parameter << ")\n";
-        command_center_.send_response<int>(&Thread2Class::callback_fun, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+        cerr << "From {" << this_thread::get_id() << "} / '" << name_ << "'  Calling Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
+        // command_center_.send_response<int>(&Thread2Class::callback_fun1, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+        command_center_.send_response<int>(&Thread2Class::callback_fun2, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
     }
 
 

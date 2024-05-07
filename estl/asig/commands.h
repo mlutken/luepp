@@ -47,6 +47,38 @@ public:
              class CommandCallable,
              class CommandClassObject,
              typename ... CommandArgs >
+    void send_response(ResultMemberCallable response_member_fun,
+                       ResponseClassObject* response_class_obj_ptr,
+                       std::int32_t cmd_seq_num,
+                       CommandCallable command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       CommandArgs... command_args
+                       )
+    {
+        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        if (!cmd_queue_ptr) {
+            return;
+        }
+        auto cb_queue = get_receiver_queue(response_class_obj_ptr);
+        auto cmd = [=]() -> ReturnType {
+            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
+        };
+
+
+        auto cb = [=](const ReturnType& cmd_return_value){
+            return std::invoke(response_member_fun, response_class_obj_ptr, cmd_seq_num, cmd_return_value );
+        };
+        command_queue& cmd_queue = *cmd_queue_ptr;
+        cmd_queue.push_response<ReturnType>(std::move(cmd), std::move(cb), cb_queue);
+    }
+
+
+    template<class ReturnType,
+             class ResultMemberCallable,
+             class ResponseClassObject,
+             class CommandCallable,
+             class CommandClassObject,
+             typename ... CommandArgs >
     void send_response ( ResultMemberCallable response_member_fun,
                          ResponseClassObject* response_class_obj_ptr,
                          CommandCallable command_member_fun,
