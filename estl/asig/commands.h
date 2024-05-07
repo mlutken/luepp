@@ -20,6 +20,27 @@ public:
     commands    ();
     explicit    commands    (size_t command_queues_size);
 
+    template<class CommandCallable,
+             class CommandClassObject,
+             typename ... CommandArgs >
+    void send ( CommandCallable command_fun,
+                CommandClassObject* command_class_obj,
+                CommandArgs... command_args
+                )
+    {
+        std::cerr << "Member function callback: command_class_instance: " << command_class_obj << "\n";
+        auto cmd_queue = get_receiver_queue(command_class_obj);
+        if (!cmd_queue) {
+            return;
+        }
+        auto cmd = [=]() {
+            return std::invoke(command_fun, command_class_obj, command_args...);
+        };
+
+        command_queue& cc = *cmd_queue;
+        cc.push(std::move(cmd));
+    }
+
     template<class ReturnType,
              class ResultMemberCallable,
              class CallbackClassObject,
@@ -49,7 +70,7 @@ public:
             return std::invoke(result_callback_fun, result_class_obj, cmd_return_value );
         };
         command_queue& cc = *cmd_queue;
-        cc.push_command_cb<ReturnType>(std::move(cmd), std::move(cb), cb_queue);
+        cc.push_response<ReturnType>(std::move(cmd), std::move(cb), cb_queue);
     }
 
     template<typename ReturnType,

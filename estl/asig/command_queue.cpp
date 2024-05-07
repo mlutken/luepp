@@ -9,7 +9,7 @@ command_queue::command_queue(size_t queue_size)
 
 }
 
-void command_queue::push_command(std::function<void ()>&& command_fun)
+void command_queue::push(std::function<void ()>&& command_fun)
 {
     std::scoped_lock<std::mutex> lock(push_mutex_);
     queue_.push(cmd_t{std::move(command_fun)});

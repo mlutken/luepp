@@ -67,8 +67,8 @@ private:
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(900ms);
+            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
             while (!command_queue_->empty()) {
-                cerr << "[" << name_ << "] Processing commands\n";
                 command_queue_->execute_next();
             }
 
@@ -78,7 +78,6 @@ private:
 
     void idle_work_function()
     {
-        cerr << "In '" << name_ << "'\n";
     }
 
 
@@ -130,8 +129,8 @@ private:
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(850ms);
+            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
             while (!command_queue_->empty()) {
-                cerr << "[" << name_ << "] Processing commands\n";
                 command_queue_->execute_next();
             }
 
@@ -144,7 +143,7 @@ private:
         static int mul2_parameter = 0;
         mul2_parameter += 10;
 
-        cerr << "In '" << name_ << "'\n";
+        cerr << "From {" << this_thread::get_id() << "} / '" << name_ << "'  Calling Thread1Class::mul2(" << mul2_parameter << ")\n";
         command_center_.command_cb<int>(&Thread2Class::callback_fun, this, &Thread1Class::mul2, &thread_1_class, mul2_parameter);
     }
 
@@ -201,9 +200,9 @@ void simple_test()
 {
     cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
     cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
-    queue1.push_command([](){cerr << "Hello from push\n"; });
-    queue1.call_void(free_function, 12);
-    queue1.call_void(&Thread1Class::member_function, &thread_1_class, 23);
+    queue1.push([](){cerr << "Hello from push\n"; });
+    queue1.send(free_function, 12);
+    queue1.send(&Thread1Class::member_function, &thread_1_class, 23);
 
     // auto command_fn = [=]() -> int {
     //     return thread_1_class.mul2(25);
