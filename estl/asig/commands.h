@@ -22,13 +22,15 @@ public:
 
     void        context_call        ();
 
-    queue_ptr_t register_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
+    void        register_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
     queue_ptr_t get_receiver_queue  (std::thread::id thread_id = std::this_thread::get_id());
     queue_ptr_t get_receiver_queue  (void* class_instance_ptr);
 
     size_t      queues_count        () const;
     size_t      receivers_count     () const;
     size_t      queues_size         () const { return command_queues_size_; }
+
+    void        dbg_print_receivers () const;
 
 private:
     using cmd_queues_map_t      = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;

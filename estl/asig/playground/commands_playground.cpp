@@ -1,12 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
 
 #include <asig/commands.h>
 #include <asig/command_queue.h>
 
 using namespace std;
 using namespace estl;
+using namespace std::chrono;
+using namespace std::chrono_literals;
 
 void free_function(int some_number)
 {
@@ -20,8 +23,21 @@ void free_callback(int some_number)
 
 struct Thread1Class
 {
-    explicit Thread1Class(std::string name) { name_ = std::move(name); }
+    explicit Thread1Class(commands& cc, std::string name) : command_center_(cc), name_ (std::move(name))  {}
+    ~Thread1Class()  { is_running_ = false; }
 
+    void start  () {
+        is_running_ = false;
+        thread_ = std::make_unique<std::thread>(&Thread1Class::thread_function, this);
+        cerr << "Starting thread ' " << name_ << "' ID: " << thread_->get_id() << "\n";
+        thread_->detach();
+    }
+    void stop           () { is_running_ = false; }
+    bool is_running     () const { return is_running_; }
+
+    // -------------------------
+    // --- Command functions ---
+    // --------------------------
     void member_function(int some_number)
     {
         cerr << name_ << "::member_function(" << some_number << ")\n";
@@ -34,35 +50,112 @@ struct Thread1Class
         return 2*some_number;
     }
 
-    std::string name_;
+private:
+
+    // -----------------------------
+    // --- Thread main functions ---
+    // -----------------------------
+    void thread_function()
+    {
+        command_center_.register_receiver(this);
+
+        is_running_ = true;
+        const auto end_time = steady_clock::now() + 6s;
+        while(is_running_ && (steady_clock::now() < end_time) ) {
+            std::this_thread::sleep_for(1s);
+            work_function();
+        }
+    }
+
+    void work_function()
+    {
+        cerr << "In '" << name_ << "'\n";
+    }
+
+
+    // ------------------------
+    // --- Member variables ---
+    // ------------------------
+    commands&                       command_center_;
+    std::string                     name_               {};
+    std::shared_ptr<command_queue>  command_queue_      {nullptr};
+    std::atomic<bool>               is_running_         {false};
+    std::unique_ptr<std::thread>    thread_             {nullptr};
 };
+
 
 struct Thread2Class
 {
-    explicit Thread2Class(std::string name) { name_ = std::move(name); }
+    explicit Thread2Class(commands& cc, std::string name) : command_center_(cc), name_ (std::move(name))  {}
+    ~Thread2Class()  { is_running_ = false; }
 
+    void start  () {
+        is_running_ = false;
+        thread_ = std::make_unique<std::thread>(&Thread2Class::thread_function, this);
+        cerr << "Starting thread ' " << name_ << "' ID: " << thread_->get_id() << "\n";
+        thread_->detach();
+    }
+    void stop           () { is_running_ = false; }
+    bool is_running     () const { return is_running_; }
+
+    // -----------------
+    // --- Callbacks ---
+    // -----------------
     void callback_fun(int some_number)
     {
         cerr << name_ << "::callback(" << some_number << ")\n";
     }
 
-    std::string name_;
+private:
+
+    // -----------------------------
+    // --- Thread main functions ---
+    // -----------------------------
+    void thread_function()
+    {
+        command_center_.register_receiver(this);
+
+        is_running_ = true;
+        const auto end_time = steady_clock::now() + 6s;
+        while(is_running_ && (steady_clock::now() < end_time) ) {
+            std::this_thread::sleep_for(1s);
+            work_function();
+        }
+    }
+
+    void work_function()
+    {
+        cerr << "In '" << name_ << "'\n";
+    }
+
+
+    // ------------------------
+    // --- Member variables ---
+    // ------------------------
+    commands&                       command_center_;
+    std::string                     name_               {};
+    std::shared_ptr<command_queue>  command_queue_      {nullptr};
+    std::atomic<bool>               is_running_         {false};
+    std::unique_ptr<std::thread>    thread_             {nullptr};
 };
 
 
 commands command_center{64};
 command_queue queue1{256};
-Thread1Class thread_1_class{"Thread 1 Class"};
-Thread2Class thread_2_class{"Thread 2 Class"};
-
-void test_variadic();
-
+Thread1Class thread_1_class{command_center, "Thread 1 Class"};
+Thread2Class thread_2_class{command_center, "Thread 2 Class"};
 
 int main()
 {
-    command_center.register_receiver(&thread_1_class);
-    command_center.register_receiver(&thread_2_class);
-    cerr << "--- commands playground ---\n";
+
+    thread_1_class.start();
+    thread_2_class.start();
+    while (!(thread_1_class.is_running() && thread_2_class.is_running())) {
+        this_thread::sleep_for(1ms);
+    }
+    command_center.dbg_print_receivers();
+
+    cerr << "--- commands playground, Main thread ID: " << this_thread::get_id() << "---\n";
     cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
     cerr << "command_center.queues_count()      : "  << command_center.queues_count() << "\n";
     cerr << "command_center.receivers_count()   : "  << command_center.receivers_count() << "\n";
@@ -98,86 +191,10 @@ int main()
     while (!queue1.empty()) {
         queue1.execute_next();
     }
+
+    std::this_thread::sleep_for(4s);
+    // thread_1_class.stop();
+    thread_2_class.stop();
     return 0;
 }
 
-//////////////////
-
-#include <iostream>
-#include <tuple>
-
-template < typename ... >
-struct two_impl {};
-
-// Base case
-template < typename F,
-         typename ...Bs >
-struct two_impl < F, std::tuple <>, std::tuple< Bs... > >  {
-    void operator()(F f, Bs... bs) {
-        std::invoke(f, bs...);
-    }
-};
-
-// Recursive case
-template < typename F,
-         typename A,
-         typename ...As,
-         typename ...Bs >
-struct two_impl < F, std::tuple< A, As... >, std::tuple< Bs...> >  {
-    void operator()(F f, A a, As... as, Bs... bs) {
-        auto impl = two_impl < F, std::tuple < As... >, std::tuple < Bs..., A> >();
-        impl(f, as..., bs..., a);
-    }
-};
-
-template < typename F, typename ...Ts >
-void two(F f, Ts ...ts) {
-    auto impl = two_impl< F, std::tuple < Ts... >, std::tuple <> >();
-    impl(f, ts...);
-}
-
-// ----------------------------------
-template < typename ... >
-struct call_impl {};
-
-// Base case
-template<typename ReturnType, class ResultMemberCallable, class ResultClassObject>
-struct call_impl <ReturnType, ResultMemberCallable, ResultClassObject>  {
-    void operator()(ResultMemberCallable member_fun, ResultClassObject call_class_instance) {
-        // std::invoke(f, bs...);
-    }
-};
-
-          //   ( ResultMemberCallable result_callback_fun, ResultClassObject result_class_instance,
-          //  CommandCallable command_fun, CommandArgs... command_args
-          // )
-
-
-
-struct Test {
-    void fun1(int i) {
-        std::cerr << "fun1(" << i << ")\n";
-    }
-    int cmd1(int i) {
-        std::cerr << "cmd1(" << i << ")\n";
-        return 2*i;
-    }
-
-    void fun3(int i, float f, double d) {
-        std::cerr << i << std::endl << f << std::endl << d << std::endl;
-    }
-
-    void operator()(int i, float f, double d) {
-        std::cerr << i << std::endl << f << std::endl << d << std::endl;
-    }
-};
-
-void test_variadic()
-{
-    Test test;
-
-    cerr << "--- test_variadic ---\n";
-    two(&Test::fun1, &test, 2);
-    two(&Test::cmd1, &test, 5);
-    cerr << "\n";
-}
