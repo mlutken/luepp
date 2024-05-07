@@ -11,6 +11,9 @@ using namespace estl;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
+commands command_center{64};
+command_queue queue1{256};
+
 void free_function(int some_number)
 {
     cerr << "Hello free_function(" << some_number << ")\n";;
@@ -46,7 +49,7 @@ struct Thread1Class
 
     int mul2(const int some_number)
     {
-        cerr << name_ << "::mul2(" << some_number << ")\n";
+        cerr  << "{" << this_thread::get_id() << "} " << name_ << "::mul2(" << some_number << ")\n";
         return 2*some_number;
     }
 
@@ -58,16 +61,22 @@ private:
     void thread_function()
     {
         command_center_.register_receiver(this);
+        command_queue_ = command_center_.get_receiver_queue();
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
-            std::this_thread::sleep_for(1s);
-            work_function();
+            std::this_thread::sleep_for(900ms);
+            while (!command_queue_->empty()) {
+                cerr << "[" << name_ << "] Processing commands\n";
+                command_queue_->execute_next();
+            }
+
+            idle_work_function();
         }
     }
 
-    void work_function()
+    void idle_work_function()
     {
         cerr << "In '" << name_ << "'\n";
     }
@@ -83,6 +92,7 @@ private:
     std::unique_ptr<std::thread>    thread_             {nullptr};
 };
 
+Thread1Class thread_1_class{command_center, "Thread 1 Class"};
 
 struct Thread2Class
 {
@@ -103,7 +113,7 @@ struct Thread2Class
     // -----------------
     void callback_fun(int some_number)
     {
-        cerr << name_ << "::callback(" << some_number << ")\n";
+        cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback(" << some_number << ")\n";
     }
 
 private:
@@ -114,18 +124,28 @@ private:
     void thread_function()
     {
         command_center_.register_receiver(this);
+        command_queue_ = command_center_.get_receiver_queue();
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
-            std::this_thread::sleep_for(1s);
-            work_function();
+            std::this_thread::sleep_for(850ms);
+            while (!command_queue_->empty()) {
+                cerr << "[" << name_ << "] Processing commands\n";
+                command_queue_->execute_next();
+            }
+
+            idle_work_function();
         }
     }
 
-    void work_function()
+    void idle_work_function()
     {
+        static int mul2_parameter = 0;
+        mul2_parameter += 10;
+
         cerr << "In '" << name_ << "'\n";
+        command_center_.command_cb<int>(&Thread2Class::callback_fun, this, &Thread1Class::mul2, &thread_1_class, mul2_parameter);
     }
 
 
@@ -140,12 +160,9 @@ private:
 };
 
 
-commands command_center{64};
-command_queue queue1{256};
-Thread1Class thread_1_class{command_center, "Thread 1 Class"};
 Thread2Class thread_2_class{command_center, "Thread 2 Class"};
 
-int main()
+void threads_test()
 {
 
     thread_1_class.start();
@@ -162,9 +179,31 @@ int main()
     cerr << "queue1.capacity()                  : "  << queue1.capacity() << "\n";
     cerr << "queue1.size()                      : "  << queue1.size() << "\n";
 
-    // queue1.push_call_void([](){cerr << "Hello from push\n"; });
-    // queue1.call_void(free_function, 12);
-    // queue1.call_void(&Thread1Class::member_function, &thread_1_class, 23);
+    cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
+    cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
+
+    // queue1.callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 40);
+    // queue1.callback<int>(free_callback, &Thread1Class::mul2, &thread_1_class, 41);
+    // queue1.callback<int>([](int val) {cerr << "Lambda callback: " << val << "\n";}, &Thread1Class::mul2, &thread_1_class, 42);
+
+
+
+    while (!queue1.empty()) {
+        queue1.execute_next();
+    }
+
+    std::this_thread::sleep_for(4s);
+    thread_1_class.stop();
+    thread_2_class.stop();
+}
+
+void simple_test()
+{
+    cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
+    cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
+    queue1.push_command([](){cerr << "Hello from push\n"; });
+    queue1.call_void(free_function, 12);
+    queue1.call_void(&Thread1Class::member_function, &thread_1_class, 23);
 
     // auto command_fn = [=]() -> int {
     //     return thread_1_class.mul2(25);
@@ -177,24 +216,23 @@ int main()
 
     // queue1.callback_free<int>(free_callback, &Thread1Class::mul2, &thread_1_class, 30);
     // queue1.callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 40);
-    cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
-    cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
+
+    // command_center.command_cb<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 40);
 
     queue1.callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 40);
+
     queue1.callback<int>(free_callback, &Thread1Class::mul2, &thread_1_class, 41);
     queue1.callback<int>([](int val) {cerr << "Lambda callback: " << val << "\n";}, &Thread1Class::mul2, &thread_1_class, 42);
-
-
-    // queue1.call_test<int>    (free_callback, &Thread1Class::mul2, &thread_1_class, 31);
-    // queue1.call_test<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::mul2, &thread_1_class, 41);
 
     while (!queue1.empty()) {
         queue1.execute_next();
     }
-
-    std::this_thread::sleep_for(4s);
-    // thread_1_class.stop();
-    thread_2_class.stop();
-    return 0;
 }
 
+
+int main()
+{
+    threads_test();
+    // simple_test();
+    return 0;
+}
