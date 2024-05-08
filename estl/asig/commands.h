@@ -74,12 +74,12 @@ public:
 
 
     template<class ReturnType,
-             class ResultMemberCallable,
+             class ResponseMemberCallable,
              class ResponseClassObject,
              class CommandCallable,
              class CommandClassObject,
              typename ... CommandArgs >
-    void send_response ( ResultMemberCallable response_member_fun,
+    void send_response ( ResponseMemberCallable response_member_fun,
                          ResponseClassObject* response_class_obj_ptr,
                          CommandCallable command_member_fun,
                          CommandClassObject* command_class_obj_ptr,
