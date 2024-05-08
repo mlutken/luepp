@@ -13,11 +13,26 @@ struct cmd_queue {
         queue_[size_++] = (std::move(function));
     }
 
-    template<class CommandCallable, typename ... CommandArgs>
-    void send (CommandCallable&& function, const CommandArgs&... args)
+    template<class CommandCallable,
+             typename ... CommandArgs>
+    void send (const CommandCallable& command_fun,
+              const CommandArgs&... args)
     {
         auto cmd = [=]() {
-            std::invoke(function, args...);
+            std::invoke(command_fun, args...);
+        };
+        queue_[size_++] = (std::move(cmd));
+    }
+
+    template<class CommandMemberCallable,
+             class CommandClassObject,
+             typename ... CommandArgs>
+    void send (const CommandMemberCallable& command_member_fun,
+               CommandClassObject* command_class_obj_ptr,
+               const CommandArgs&... args)
+    {
+        auto cmd = [=]() {
+            std::invoke(command_member_fun, command_class_obj_ptr, args...);
         };
         queue_[size_++] = (std::move(cmd));
     }
@@ -26,13 +41,13 @@ struct cmd_queue {
              class CallbackCallable,
              class CommandCallable,
              typename ... CommandArgs >
-    void send_callback(CallbackCallable callback_fun,
-                       CommandCallable command_member_fun,
-                       CommandArgs... command_args
+    void send_callback(const CallbackCallable& callback_fun,
+                       const CommandCallable& command_fun,
+                       const CommandArgs&... command_args
                        )
     {
         auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_member_fun, command_args...);
+            return std::invoke(command_fun, command_args...);
         };
 
         auto to_send_fn = [=](){
@@ -47,14 +62,14 @@ struct cmd_queue {
              class CallbackClassObject,
              class CommandCallable,
              typename ... CommandArgs >
-    void send_callback (CallbackMemberCallable callback_member_fun,
+    void send_callback (const CallbackMemberCallable& callback_member_fun,
                         CallbackClassObject* callback_class_obj_ptr,
-                        CommandCallable command_member_fun,
-                        CommandArgs... command_args
+                        const CommandCallable& command_fun,
+                        const CommandArgs&... command_args
                        )
     {
         auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_member_fun, command_args...);
+            return std::invoke(command_fun, command_args...);
         };
 
         auto to_send_fn = [=](){
@@ -82,26 +97,31 @@ struct MyClass
     explicit MyClass(int num) : num_(num) {}
 
     void foo(int p) {
-        printf("Class[%d] -> (%d)\n", num_, p);
+        printf("MyClass:foo [%d] -> (%d)\n", num_, p);
     }
 
     void bar(int p1, float p2, const std::string& p3) {
-        printf("Class[%d] -> (%d, %f, %s)\n", num_, p1, p2, p3.c_str());
+        printf("MyClass::bar [%d] -> (%d, %f, %s)\n", num_, p1, p2, p3.c_str());
     }
 
     int square_me(int p) const {
         auto res = p*p;
-        printf("square_me(%d) -> %d\n", p, res);
+        printf("MyClas::square_me(%d) -> %d\n", p, res);
         return res;
     }
 
     void square_me_cb_memfun(int squared)
     {
-        printf("square_me_cb_memfun(%d)\n", squared);
+        printf("MyClass::square_me_cb_memfun(%d)\n", squared);
     }
 
     int num_ = 0;
 };
+
+void bar_free_function(int p1, float p2, const std::string& p3) {
+    printf("bar_free_function(%d, %f, %s)\n", p1, p2, p3.c_str());
+}
+
 
 void square_me_cb_free(int squared)
 {
@@ -114,6 +134,7 @@ MyClass mc1(1);
 
 int main() {
     printf ("--- std_fun playground ---\n");
+    q.send(bar_free_function, 6, 1.6f, "Hello 6");
     q.send(&MyClass::foo, &mc1, 11);
     q.send(&MyClass::foo, &mc1, 21);
     q.send(&MyClass::foo, &mc1, 31);
