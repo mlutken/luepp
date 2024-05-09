@@ -61,7 +61,7 @@ private:
     // -----------------------------
     void thread_function()
     {
-        command_center_.register_receiver(this);
+        command_center_.register_command_receiver(this);
         command_queue_ = command_center_.get_receiver_queue();
 
         is_running_ = true;
@@ -128,7 +128,7 @@ private:
     // -----------------------------
     void thread_function()
     {
-        command_center_.register_receiver(this);
+        command_center_.register_command_receiver(this);
         command_queue_ = command_center_.get_receiver_queue();
 
         is_running_ = true;
@@ -180,7 +180,7 @@ void threads_test()
     while (!(thread_1_class.is_running() && thread_2_class.is_running())) {
         this_thread::sleep_for(1ms);
     }
-    command_center.dbg_print_receivers();
+    command_center.dbg_print_command_receivers();
 
     cerr << "--- commands playground, Main thread ID: " << this_thread::get_id() << "---\n";
     cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
@@ -190,15 +190,6 @@ void threads_test()
     cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
     cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
 
-    // queue1.callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::square_me, &thread_1_class, 40);
-    // queue1.callback<int>(free_callback, &Thread1Class::square_me, &thread_1_class, 41);
-    // queue1.callback<int>([](int val) {cerr << "Lambda callback: " << val << "\n";}, &Thread1Class::square_me, &thread_1_class, 42);
-
-
-
-    while (!queue1.empty()) {
-        queue1.execute_next();
-    }
 
     std::this_thread::sleep_for(4s);
     thread_1_class.stop();

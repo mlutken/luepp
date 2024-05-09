@@ -55,6 +55,8 @@ public:
                        CommandArgs... command_args
                        )
     {
+        // std::cerr << "send_response (seq number) : command_class_obj  : " << command_class_obj_ptr << "\n";
+        // std::cerr << "send_response (seq number) : response_class_obj : " << response_class_obj_ptr << "\n";
         auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) {
             return;
@@ -72,6 +74,31 @@ public:
         cmd_queue.push_response<ReturnType>(std::move(cmd), std::move(cb), cb_queue);
     }
 
+    template<typename ReturnType,
+             class CallbackCallable,
+             class CommandCallable,
+             class CommandClassObject,
+             typename ... CommandArgs >
+    void send_callback( CallbackCallable callback_fun,
+                       CommandCallable command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       CommandArgs... command_args
+                       )
+    {
+        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        if (!cmd_queue_ptr) {
+            return;
+        }
+        auto command_fn = [=]() -> ReturnType {
+            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
+        };
+
+        auto result_callback_fn = [=](const ReturnType& cmd_return_value){
+            return std::invoke(callback_fun, cmd_return_value );
+        };
+        command_queue& cmd_queue = *cmd_queue_ptr;
+        cmd_queue.push_callback<ReturnType>(std::move(command_fn), std::move(result_callback_fn));
+    }
 
     template<class ReturnType,
              class ResponseMemberCallable,
@@ -105,41 +132,16 @@ public:
         cmd_queue.push_response<ReturnType>(std::move(cmd), std::move(cb), cb_queue);
     }
 
-    template<typename ReturnType,
-             class CallbackCallable,
-             class CommandCallable,
-             class CommandClassObject,
-             typename ... CommandArgs >
-    void send_callback( CallbackCallable callback_fun,
-                        CommandCallable command_member_fun,
-                        CommandClassObject* command_class_obj_ptr,
-                        CommandArgs... command_args
-                        )
-    {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
-        if (!cmd_queue_ptr) {
-            return;
-        }
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
-        };
 
-        auto result_callback_fn = [=](const ReturnType& cmd_return_value){
-            return std::invoke(callback_fun, cmd_return_value );
-        };
-        command_queue& cmd_queue = *cmd_queue_ptr;
-        cmd_queue.push_callback<ReturnType>(std::move(command_fn), std::move(result_callback_fn));
-    }
+    void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
+    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
+    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
 
-    void        register_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
-    queue_ptr_t get_receiver_queue  (std::thread::id thread_id = std::this_thread::get_id());
-    queue_ptr_t get_receiver_queue  (void* class_instance_ptr);
+    size_t      queues_count                () const;
+    size_t      receivers_count             () const;
+    size_t      queues_size                 () const { return command_queues_size_; }
 
-    size_t      queues_count        () const;
-    size_t      receivers_count     () const;
-    size_t      queues_size         () const { return command_queues_size_; }
-
-    void        dbg_print_receivers () const;
+    void        dbg_print_command_receivers () const;
 
 private:
     using cmd_queues_map_t      = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;

@@ -21,7 +21,7 @@ commands::commands(size_t command_queues_size)
 
 
 
-void commands::register_receiver(void* class_instance_ptr, std::thread::id thread_id)
+void commands::register_command_receiver(void* class_instance_ptr, std::thread::id thread_id)
 {
     std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
 
@@ -69,7 +69,7 @@ size_t commands::receivers_count() const
     return receiver_lookup_.size();
 }
 
-void commands::dbg_print_receivers() const
+void commands::dbg_print_command_receivers() const
 {
     std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
     cerr << "*** Printing all receiver classes, sorted per thread ***\n";
