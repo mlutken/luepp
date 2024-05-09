@@ -79,6 +79,29 @@ struct cmd_queue {
         send(std::move(to_send_fn));
     }
 
+    template<class ReturnType,
+             class CallbackMemberCallable,
+             class CallbackClassObject,
+             class CommandMemberCallable,
+             class CommandClassObject,
+             typename ... CommandArgs>
+    void send_callback (const CallbackMemberCallable& callback_member_fun,
+                       CallbackClassObject* callback_class_obj_ptr,
+                       const CommandMemberCallable& command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       const CommandArgs&... command_args
+                       )
+    {
+        auto command_fn = [=]() -> ReturnType {
+            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
+        };
+
+        auto to_send_fn = [=](){
+            auto cmd_return_value = command_fn();
+            std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value);
+        };
+        send(std::move(to_send_fn));
+    }
 
     void execute_all() {
         for (auto i = 0u; i < size_; ++i) {
