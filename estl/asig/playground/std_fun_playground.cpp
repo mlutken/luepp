@@ -161,7 +161,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_response(cmd_queue* response_queue,
+    void send_response(cmd_queue& response_queue,
                        const CallbackMemberCallable& callback_member_fun,
                        CallbackClassObject* callback_class_obj_ptr,
                        std::int32_t cmd_seq_num,
@@ -170,6 +170,7 @@ public:
                        const CommandArgs&... command_args
                       )
     {
+        cmd_queue* response_queue_ptr = &response_queue;
         auto command_fn = [=]() -> ReturnType {
             return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
         };
@@ -179,7 +180,7 @@ public:
             auto response_cmd_fn = [=]() {
                 std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value, cmd_seq_num);
             };
-            response_queue->push_cmd(response_cmd_fn);
+            response_queue_ptr->push_cmd(response_cmd_fn);
         };
 
         push_cmd(std::move(to_send_fn));
@@ -273,7 +274,7 @@ int main() {
     queue1.send_callback<int>(square_me_cb_free_seqnum, 1, &MyClass::square_me, &mc1, 5);
     queue1.send_callback<int>(&MyClass::square_me_cb_memfun, &mc1, &MyClass::square_me, &mc1, 5);
     queue1.send_callback<int>(&MyClass::square_me_cb_memfun_seqnum, &mc1, 1, &MyClass::square_me, &mc1, 5);
-    queue1.send_response<int>(&queue2, &MyClass::square_me_cb_memfun_seqnum, &mc1, 2, &MyClass::square_me, &mc1, 6);
+    queue1.send_response<int>(queue2, &MyClass::square_me_cb_memfun_seqnum, &mc1, 2, &MyClass::square_me, &mc1, 6);
 
     printf("--- 1 queue1.execute_all(): size: %lu ---\n", queue1.size_);
     queue1.execute_all();
