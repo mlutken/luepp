@@ -188,35 +188,35 @@ void square_me_cb_free(int squared)
     printf("square_me_cb_free(%d)\n", squared);
 }
 
-cmd_queue q;
+cmd_queue queue1;
 
 MyClass mc1(1);
 
 int main() {
     printf ("--- std_fun playground ---\n");
-    q.send(bar_free_function, 6, 1.6f, "Hello 6");
-    q.send(&MyClass::foo, &mc1, 11);
-    q.send(&MyClass::foo, &mc1, 21);
-    q.send(&MyClass::foo, &mc1, 31);
-    q.send(&MyClass::foo, &mc1, 41);
-    q.send(&MyClass::foo, &mc1, 51);
-    q.send(&MyClass::foo, &mc1, 61);
-    q.send(&MyClass::foo, &mc1, 71);
-    q.send(&MyClass::foo, &mc1, 81);
-    q.send(&MyClass::foo, &mc1, 91);
-    q.send(&MyClass::foo, &mc1, 101);
+    queue1.send(bar_free_function, 6, 1.6f, "Hello 6");
+    queue1.send(&MyClass::foo, &mc1, 11);
+    queue1.send(&MyClass::foo, &mc1, 21);
+    queue1.send(&MyClass::foo, &mc1, 31);
+    queue1.send(&MyClass::foo, &mc1, 41);
+    queue1.send(&MyClass::foo, &mc1, 51);
+    queue1.send(&MyClass::foo, &mc1, 61);
+    queue1.send(&MyClass::foo, &mc1, 71);
+    queue1.send(&MyClass::foo, &mc1, 81);
+    queue1.send(&MyClass::foo, &mc1, 91);
+    queue1.send(&MyClass::foo, &mc1, 101);
 
-    q.send(&MyClass::bar, &mc1, 1, 1.1f, "Hello 1");
-    q.send(&MyClass::bar, &mc1, 2, 2.2f, "Hello 2");
-    q.send(&MyClass::bar, &mc1, 3, 1.3f, "Hello 3");
-    q.send(&MyClass::bar, &mc1, 4, 1.4f, "Hello 4");
-    q.send(&MyClass::bar, &mc1, 5, 1.5f, "Hello 5");
+    queue1.send(&MyClass::bar, &mc1, 1, 1.1f, "Hello 1");
+    queue1.send(&MyClass::bar, &mc1, 2, 2.2f, "Hello 2");
+    queue1.send(&MyClass::bar, &mc1, 3, 1.3f, "Hello 3");
+    queue1.send(&MyClass::bar, &mc1, 4, 1.4f, "Hello 4");
+    queue1.send(&MyClass::bar, &mc1, 5, 1.5f, "Hello 5");
 
-    q.send(&MyClass::square_me, &mc1, 5);
-    q.send_callback<int>(square_me_cb_free, &MyClass::square_me, &mc1, 5);
-    q.send_callback<int>(&MyClass::square_me_cb_memfun, &mc1, &MyClass::square_me, &mc1, 5);
+    queue1.send(&MyClass::square_me, &mc1, 5);
+    queue1.send_callback<int>(square_me_cb_free, &MyClass::square_me, &mc1, 5);
+    queue1.send_callback<int>(&MyClass::square_me_cb_memfun, &mc1, &MyClass::square_me, &mc1, 5);
 
-    q.execute_all();
+    queue1.execute_all();
 
     return 0;
 }
