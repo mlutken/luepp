@@ -20,6 +20,23 @@ public:
     commands    ();
     explicit    commands    (size_t command_queues_size);
 
+    template<class EventType>
+    void publish_or_broadcast ( const EventType& evt )
+    {
+        // std::cerr << "publish(): " << evt << "\n";
+        // auto cmd_queue = get_receiver_queue(command_class_obj);
+        // if (!cmd_queue) {
+        //     return;
+        // }
+        // auto cmd = [=]() {
+        //     return std::invoke(command_fun, command_class_obj, command_args...);
+        // };
+
+        // command_queue& cc = *cmd_queue;
+        // cc.push(std::move(cmd));
+    }
+
+
     template<class CommandCallable,
              class CommandClassObject,
              typename ... CommandArgs >
@@ -68,7 +85,7 @@ public:
 
 
         auto cb = [=](const ReturnType& cmd_return_value){
-            return std::invoke(response_member_fun, response_class_obj_ptr, cmd_seq_num, cmd_return_value );
+            return std::invoke(response_member_fun, response_class_obj_ptr, cmd_return_value, cmd_seq_num );
         };
         command_queue& cmd_queue = *cmd_queue_ptr;
         cmd_queue.push_response<ReturnType>(std::move(cmd), std::move(cb), cb_queue);

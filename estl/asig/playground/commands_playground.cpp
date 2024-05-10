@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <typeinfo>
 
 #include <asig/commands.h>
 #include <asig/command_queue.h>
@@ -116,7 +117,7 @@ struct Thread2Class
         cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback_fun1(" << squared_number << ")\n";
     }
 
-    void callback_fun2(int32_t cmd_seq_num, int squared_number)
+    void callback_fun2(int squared_number, int32_t cmd_seq_num)
     {
         cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback_fun2(" << squared_number << ") , cmd_seq_num: " << cmd_seq_num << "\n";
     }
@@ -172,6 +173,20 @@ private:
 
 Thread2Class thread_2_class{command_center, "Thread 2 Class"};
 
+struct CoolEvent {
+    int p1;
+    float p2;
+};
+
+namespace myspace {
+struct CoolEvent {
+    int p1;
+    float p2;
+};
+
+}
+
+
 void threads_test()
 {
 
@@ -181,6 +196,13 @@ void threads_test()
         this_thread::sleep_for(1ms);
     }
     command_center.dbg_print_command_receivers();
+
+    // std::type_info& info = typeid(MyEvent);
+
+    cerr << "typeid(MyEvent).name         : " << typeid(CoolEvent).name() << "\n";
+    cerr << "typeid(MyEvent).hash         : " << typeid(CoolEvent).hash_code() << "\n";
+    cerr << "typeid(myspace::MyEvent).name: " << typeid(myspace::CoolEvent).name() << "\n";
+    cerr << "typeid(myspace::MyEvent).hash: " << typeid(myspace::CoolEvent).hash_code() << "\n";
 
     cerr << "--- commands playground, Main thread ID: " << this_thread::get_id() << "---\n";
     cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
