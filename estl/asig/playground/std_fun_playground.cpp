@@ -2,6 +2,7 @@
 #include <array>
 #include <functional>
 #include <string>
+#include <cstdint>
 
 struct cmd_queue
 {
@@ -11,9 +12,9 @@ struct cmd_queue
     using queue_t = std::array<functor_t,32>;
 private:
     template<class CommandCallable>
-    void push_cmd (CommandCallable&& function)
+    void push_cmd (CommandCallable&& command_fun)
     {
-        queue_[size_++] = std::move(function);
+        queue_[size_++] = std::move(command_fun);
         // printf("'%s' : push_cmd(), size: %lu\n", name_, size_);
     }
 
@@ -52,12 +53,8 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_fun, command_args...);
-        };
-
         auto to_send_fn = [=](){
-            auto cmd_return_value = command_fn();
+            auto cmd_return_value = std::invoke(command_fun, command_args...);
             std::invoke(callback_fun, cmd_return_value);
         };
         push_cmd(std::move(to_send_fn));
@@ -73,12 +70,8 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_fun, command_args...);
-        };
-
         auto to_send_fn = [=](){
-            auto cmd_return_value = command_fn();
+            auto cmd_return_value = std::invoke(command_fun, command_args...);
             std::invoke(callback_fun, cmd_return_value, cmd_seq_num);
         };
         push_cmd(std::move(to_send_fn));
@@ -95,12 +88,8 @@ public:
                         const CommandArgs&... command_args
                        )
     {
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_fun, command_args...);
-        };
-
         auto to_send_fn = [=](){
-            auto cmd_return_value = command_fn();
+            auto cmd_return_value = std::invoke(command_fun, command_args...);
             std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value);
         };
         push_cmd(std::move(to_send_fn));
@@ -119,12 +108,8 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
-        };
-
         auto to_send_fn = [=](){
-            auto cmd_return_value = command_fn();
+            auto cmd_return_value = std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
             std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value);
         };
         push_cmd(std::move(to_send_fn));
@@ -144,26 +129,49 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
-        };
-
         auto to_send_fn = [=](){
-            auto cmd_return_value = command_fn();
+            auto cmd_return_value = std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
             std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value, cmd_seq_num);
         };
         push_cmd(std::move(to_send_fn));
     }
 
     template<class ReturnType,
-             class CallbackMemberCallable,
-             class CallbackClassObject,
+             class ResponseMemberCallable,
+             class ResponseClassObject,
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
     void send_response(cmd_queue& response_queue,
-                       const CallbackMemberCallable& callback_member_fun,
-                       CallbackClassObject* callback_class_obj_ptr,
+                       const ResponseMemberCallable& response_member_fun,
+                       ResponseClassObject* response_class_obj_ptr,
+                       const CommandMemberCallable& command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       const CommandArgs&... command_args
+                       )
+    {
+        cmd_queue* response_queue_ptr = &response_queue;
+
+        auto to_send_fn = [=]() {
+            auto cmd_return_value = std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
+            auto response_cmd_fn = [=]() {
+                std::invoke(response_member_fun, response_class_obj_ptr, cmd_return_value);
+            };
+            response_queue_ptr->push_cmd(response_cmd_fn);
+        };
+
+        push_cmd(std::move(to_send_fn));
+    }
+
+    template<class ReturnType,
+             class ResponseMemberCallable,
+             class ResponseClassObject,
+             class CommandMemberCallable,
+             class CommandClassObject,
+             typename ... CommandArgs>
+    void send_response(cmd_queue& response_queue,
+                       const ResponseMemberCallable& response_member_fun,
+                       ResponseClassObject* response_class_obj_ptr,
                        std::int32_t cmd_seq_num,
                        const CommandMemberCallable& command_member_fun,
                        CommandClassObject* command_class_obj_ptr,
@@ -171,14 +179,11 @@ public:
                       )
     {
         cmd_queue* response_queue_ptr = &response_queue;
-        auto command_fn = [=]() -> ReturnType {
-            return std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
-        };
 
         auto to_send_fn = [=]() {
-            auto cmd_return_value = command_fn();
+            auto cmd_return_value = std::invoke(command_member_fun, command_class_obj_ptr, command_args...);
             auto response_cmd_fn = [=]() {
-                std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value, cmd_seq_num);
+                std::invoke(response_member_fun, response_class_obj_ptr, cmd_return_value, cmd_seq_num);
             };
             response_queue_ptr->push_cmd(response_cmd_fn);
         };
@@ -212,7 +217,7 @@ struct MyClass
 
     int square_me(int p) const {
         auto res = p*p;
-        printf("MyClas::square_me(%d) -> %d\n", p, res);
+        printf("MyClass::square_me(%d) -> %d\n", p, res);
         return res;
     }
 
@@ -223,7 +228,7 @@ struct MyClass
 
     void square_me_cb_memfun_seqnum(int squared, int32_t seq_num)
     {
-        printf("square_me_cb_memfun_seqnum(%d, %d)\n", squared, seq_num);
+        printf("MyClass::square_me_cb_memfun_seqnum(%d, %d)\n", squared, seq_num);
     }
 
     int num_ = 0;
@@ -274,12 +279,12 @@ int main() {
     queue1.send_callback<int>(square_me_cb_free_seqnum, 1, &MyClass::square_me, &mc1, 5);
     queue1.send_callback<int>(&MyClass::square_me_cb_memfun, &mc1, &MyClass::square_me, &mc1, 5);
     queue1.send_callback<int>(&MyClass::square_me_cb_memfun_seqnum, &mc1, 1, &MyClass::square_me, &mc1, 5);
+    queue1.send_response<int>(queue2, &MyClass::square_me_cb_memfun, &mc1, &MyClass::square_me, &mc1, 7);
     queue1.send_response<int>(queue2, &MyClass::square_me_cb_memfun_seqnum, &mc1, 2, &MyClass::square_me, &mc1, 6);
 
     printf("--- 1 queue1.execute_all(): size: %lu ---\n", queue1.size_);
     queue1.execute_all();
 
-    // queue2.send_callback<int>(&MyClass::square_me_cb_memfun_seqnum, &mc1, 3, &MyClass::square_me, &mc1, 7);
     printf("--- 2 queue2.execute_all(): size: %lu ---\n", queue2.size_);
     queue2.execute_all();
 
