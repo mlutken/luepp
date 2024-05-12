@@ -30,7 +30,9 @@ void commands::register_command_receiver(void* class_instance_ptr, std::thread::
         cmd_queues_.emplace(thread_id, std::shared_ptr<command_queue>(new command_queue{command_queues_size_}));
     }
     // Add this class to the class instance -> thread lookup table
-    receiver_lookup_[class_instance_ptr] = thread_id;
+    if (!receiver_lookup_.contains(class_instance_ptr)) {
+        receiver_lookup_[class_instance_ptr] = thread_id;
+    }
 }
 
 commands::queue_ptr_t commands::get_receiver_queue(std::thread::id thread_id)

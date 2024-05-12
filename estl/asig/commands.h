@@ -12,6 +12,7 @@
 
 namespace estl {
 
+
 class commands
 {
 public:
@@ -19,23 +20,6 @@ public:
 
     commands    ();
     explicit    commands    (size_t command_queues_size);
-
-    template<class EventType>
-    void publish_or_broadcast ( const EventType& evt )
-    {
-        // std::cerr << "publish(): " << evt << "\n";
-        // auto cmd_queue = get_receiver_queue(command_class_obj);
-        // if (!cmd_queue) {
-        //     return;
-        // }
-        // auto cmd = [=]() {
-        //     return std::invoke(command_fun, command_class_obj, command_args...);
-        // };
-
-        // command_queue& cc = *cmd_queue;
-        // cc.push(std::move(cmd));
-    }
-
 
     template<class CommandCallable,
              class CommandClassObject,
@@ -161,8 +145,10 @@ public:
     void        dbg_print_command_receivers () const;
 
 private:
-    using cmd_queues_map_t      = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;
-    using receiver_lookup_map_t = std::unordered_map<void*, std::thread::id>;
+    using cmd_queues_map_t          = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;
+
+    using receiver_lookup_map_t     = std::unordered_map<void*, std::thread::id>;
+
     mutable std::mutex      thread_lookup_mutex_;
     size_t                  command_queues_size_ = 128;
     cmd_queues_map_t        cmd_queues_;

@@ -39,6 +39,10 @@ struct Thread1Class
     void stop           () { is_running_ = false; }
     bool is_running     () const { return is_running_; }
 
+    // -------------------------------
+    // --- Event Handler functions ---
+    // -------------------------------
+
     // -------------------------
     // --- Command functions ---
     // --------------------------
