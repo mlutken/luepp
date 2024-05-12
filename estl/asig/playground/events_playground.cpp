@@ -16,6 +16,23 @@ using namespace std::chrono_literals;
 events event_center{64};
 command_queue queue1{256};
 
+struct my_event_t {
+    float           val      = 0;
+    //    std::string     name    {};
+};
+
+struct cool_event_t {
+    int p1;
+    float p2;
+};
+
+namespace myspace {
+struct cool_event_t {
+    int p1;
+    float p2;
+};
+} // namespace myspace
+
 void free_function(int some_number)
 {
     cerr << "Hello free_function(" << some_number << ")\n";;
@@ -27,10 +44,6 @@ void free_callback(int some_number)
 }
 
 
-struct my_event_t {
-    float           val      = 0;
-//    std::string     name    {};
-};
 
 struct Thread1Class
 {
@@ -80,7 +93,7 @@ private:
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(900ms);
-            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
+//            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
 //            while (!command_queue_->empty()) {
 //                command_queue_->execute_next();
 //            }
@@ -146,7 +159,7 @@ private:
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(10ms);
-            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing events\n";
+//            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing events\n";
 //            while (!command_queue_->empty()) {
 //                command_queue_->execute_next();
 //            }
@@ -184,18 +197,6 @@ private:
 
 Thread2Class thread_2_class{event_center, "Thread 2 Class"};
 
-struct CoolEvent {
-    int p1;
-    float p2;
-};
-
-namespace myspace {
-struct CoolEvent {
-    int p1;
-    float p2;
-};
-
-}
 
 
 void threads_test()
@@ -206,6 +207,9 @@ void threads_test()
     while (!(thread_1_class.is_running() && thread_2_class.is_running())) {
         this_thread::sleep_for(1ms);
     }
+
+    this_thread::sleep_for(1s);
+    event_center.publish_event<my_event_t>(my_event_t{12});
 //    command_center.dbg_print_command_receivers();
 
     // std::type_info& info = typeid(MyEvent);

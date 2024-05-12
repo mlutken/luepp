@@ -5,10 +5,12 @@ add_library(${library_name} STATIC "")
 target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/events.h
+    ${CMAKE_CURRENT_LIST_DIR}/events_queue.h
     ${CMAKE_CURRENT_LIST_DIR}/commands.h
     ${CMAKE_CURRENT_LIST_DIR}/command_queue.h
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events_queue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/commands.cpp
     ${CMAKE_CURRENT_LIST_DIR}/command_queue.cpp
 )
