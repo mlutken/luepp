@@ -12,6 +12,9 @@
 // https://en.cppreference.com/w/cpp/utility/functional/invoke
 
 namespace estl {
+using event_id_t        = std::size_t;
+using subscription_id_t = std::size_t;
+
 class event_subscription {
     friend class events;
     event_subscription(std::size_t event_id, std::size_t subscription_id) : event_id_(event_id), subscription_id_(subscription_id) {}
@@ -39,14 +42,16 @@ public:
 
 public:
 
-    events    ();
+                events    ();
     explicit    events    (size_t event_queues_size);
+
+    void        execute_all_for_this_thread ();
 
 
     template<class EventType>
     event_subscription subscribe_to_event (std::function<void (const EventType&)>&& event_handler_fn, std::thread::id thread_id = std::this_thread::get_id())
     {
-        std::shared_ptr<per_thread_evt_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
+        std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
 
         const std::size_t event_id = typeid(EventType).hash_code();
 
@@ -93,9 +98,10 @@ public:
 
 private:
     struct event_executor_base_t {
-        virtual ~event_executor_base_t() = default;
-        virtual std::size_t     event_id   () const = 0;
-        virtual void            execute    (const void* event_data_ptr) const = 0;
+        virtual ~event_executor_base_t      () = default;
+        virtual std::size_t     event_id    () const = 0;
+        virtual const char*     name        () const = 0;
+        virtual void            execute     (const void* event_data_ptr) const = 0;
     };
 
     template <class EventType>
@@ -108,10 +114,16 @@ private:
         }
         ~event_executor_t() override = default;
 
-        std::size_t     event_id   () const override        { return typeid(EventType).hash_code();     }
-        void            execute    (const void* event_data_ptr) const override {
-            if (!event_data_ptr) { return; }
+        std::size_t     event_id    () const override        { return typeid(EventType).hash_code();    }
+        const char*     name        () const override        { return typeid(EventType).name();         }
+
+        void            execute     (const void* event_data_ptr) const override {
+            std::cerr << "FIXMENM Executor for " << name() << "\n";
+            if (!event_data_ptr) {
+                return;
+            }
             const EventType& event_data = *(static_cast<const EventType*>(event_data_ptr));
+            std::cerr << "FIXMENM Executor event_data.val " << event_data.val << "\n";
             event_handler_fn_(event_data);
         }
         std::function<void (const EventType&)>&& event_handler_fn_;
@@ -121,6 +133,7 @@ private:
         void            execute_all     (const void* event_data_ptr) const;
         void            unsubscribe     (std::size_t subscription_id);
         std::size_t     subscribe       (std::unique_ptr<event_executor_base_t> executor);
+        std::size_t     size            () const    { return event_executors_.size(); }
 
         using event_executor_vec_t = std::vector<std::unique_ptr<event_executor_base_t>>;
         event_executor_vec_t    event_executors_        {};
@@ -130,19 +143,19 @@ private:
 
     using publish_data_queue_per_thread_map_t    = std::unordered_map<std::thread::id, std::shared_ptr<events_queue>>;
 
-    using per_thread_evt_subscribers_map_t      = std::unordered_map<std::size_t, std::unique_ptr<executor_list_t>>;
-    using evt_subscribers_lookup_t              = std::unordered_map<std::thread::id, std::shared_ptr<per_thread_evt_subscribers_map_t>>;
+    using event_subscribers_map_t               = std::unordered_map<event_id_t, std::unique_ptr<executor_list_t>>;
+    using evt_subscribers_lookup_t              = std::unordered_map<std::thread::id, std::shared_ptr<event_subscribers_map_t>>;
     using subscriber_count_per_thread_map_t     = std::unordered_map<std::thread::id, std::uint32_t>;
-    using event_id_to_subscriber_count_t        = std::unordered_map<std::size_t, subscriber_count_per_thread_map_t>;
+    using event_id_to_subscriber_count_t        = std::unordered_map<event_id_t, subscriber_count_per_thread_map_t>;
 
 
     std::shared_ptr<events_queue>
                         get_event_data_queue            (std::thread::id thread_id);
 
-    std::shared_ptr<per_thread_evt_subscribers_map_t>
+    std::shared_ptr<event_subscribers_map_t>
                         get_evt_subscribers_for_thread (std::thread::id thread_id);
 
-    executor_list_t*    get_executor_list               (per_thread_evt_subscribers_map_t& thread_subscribers,  std::size_t event_id);
+    executor_list_t*    get_executor_list               (event_subscribers_map_t& thread_subscribers,  std::size_t event_id);
 
     subscriber_count_per_thread_map_t
                         get_subscriber_count_per_thread (std::size_t event_id) const;

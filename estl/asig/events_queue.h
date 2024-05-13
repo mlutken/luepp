@@ -16,6 +16,14 @@ namespace estl {
 class events_queue
 {
 public:
+    struct event_data_base_t {
+        virtual                 ~event_data_base_t  () = default;
+        virtual const void*         data            () const = 0;
+        virtual std::size_t         event_id        () const = 0;
+        virtual const char*         name            () const = 0;
+    };
+
+
     explicit events_queue(size_t queue_size = 128);
 
     template <class EventType>
@@ -58,7 +66,9 @@ public:
 //    }
 
 
-    bool    execute_next    ();
+    std::unique_ptr<event_data_base_t>
+            pop_front       ();
+
 
     size_t  size            () const { return queue_.size();        }
     size_t  capacity        () const { return queue_.capacity();    }
@@ -66,11 +76,6 @@ public:
 
 
 private:
-    struct event_data_base_t {
-        virtual ~event_data_base_t() = default;
-        virtual const void*       data        () const = 0;
-    };
-
     template <class EventType>
     struct event_data_t : public event_data_base_t {
         event_data_t() = delete;
@@ -81,7 +86,9 @@ private:
         }
         ~event_data_t() override = default;
 
-        const void*         data   () const override        { return &event_data_;     }
+        const void*         data        () const override   { return &event_data_;                  }
+        std::size_t         event_id    () const override   { return typeid(EventType).hash_code(); }
+        const char*         name        () const override   { return typeid(EventType).name();      }
 
         EventType   event_data_;
     };

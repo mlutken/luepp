@@ -33,11 +33,34 @@ events::events(size_t command_queues_size) :
 
 }
 
+void events::execute_all_for_this_thread()
+{
+    const std::thread::id thread_id = std::this_thread::get_id();
+    auto events_queue = get_event_data_queue(thread_id);
+    std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
+
+    while ( auto event_data_ptr = events_queue->pop_front()) {
+        const auto event_id = event_data_ptr->event_id();
+        executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, event_id);
+
+        std::cerr << "FIXMENM Executing event name: " << event_data_ptr->name()
+                  << ", id: " << event_id
+                  << ", exe list size: " << executor_list_ptr->size()
+                  << "\n";
+        if (executor_list_ptr) {
+            executor_list_ptr->execute_all(event_data_ptr->data());
+        }
+    }
+
+}
+
 void events::un_subscribe(const event_subscription& subscription, std::thread::id thread_id) {
     if (!subscription.is_valid()) { return; }
-    std::shared_ptr<per_thread_evt_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
+    std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
     executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, subscription.event_id());
     executor_list_ptr->unsubscribe(subscription.subscription_id());
+    remove_subscriber_for_thread(subscription.event_id(), thread_id);
+
 }
 
 
@@ -87,19 +110,19 @@ size_t events::executor_list_t::subscribe(std::unique_ptr<event_executor_base_t>
 // --- events: main class PRIVATE ---
 // ----------------------------------
 
-std::shared_ptr<events::per_thread_evt_subscribers_map_t>
+std::shared_ptr<events::event_subscribers_map_t>
 events::get_evt_subscribers_for_thread(std::thread::id thread_id) {
     std::scoped_lock<std::mutex> lock(subscriber_thread_mutex_);
     auto it = event_subscribers_.find(thread_id);
     if (it != event_subscribers_.end()) {
         return it->second;
     }
-    auto ptr = std::make_shared<per_thread_evt_subscribers_map_t>();
+    auto ptr = std::make_shared<event_subscribers_map_t>();
     event_subscribers_[thread_id] = ptr;
     return ptr;
 }
 
-events::executor_list_t* events::get_executor_list(per_thread_evt_subscribers_map_t& thread_subscribers, std::size_t event_id) {
+events::executor_list_t* events::get_executor_list(event_subscribers_map_t& thread_subscribers, std::size_t event_id) {
     auto it = thread_subscribers.find(event_id);
     if (it == thread_subscribers.end()) {
         auto pair = thread_subscribers.insert_or_assign(event_id, std::make_unique<executor_list_t>());
@@ -125,7 +148,7 @@ void events::add_subscriber_for_thread(std::size_t event_id, std::thread::id thr
  ///    ++subscriber_counts_per_thread[thread_id]; // TODO: Is this enough, instead of the lines below ?
     auto it = subscriber_counts_per_thread.find(thread_id);
     if (it != subscriber_counts_per_thread.end()) {
-        uint32_t& subscriber_count = it->second;
+        auto& subscriber_count = it->second;
         ++subscriber_count;
     }
     else {
@@ -139,7 +162,7 @@ void events::remove_subscriber_for_thread(std::size_t event_id, std::thread::id 
     auto& subscriber_counts_per_thread = event_id_to_subscribed_threads_[event_id];
     auto it = subscriber_counts_per_thread.find(thread_id);
     if (it != subscriber_counts_per_thread.end()) {
-        uint32_t& subscriber_count = it->second;
+        auto& subscriber_count = it->second;
         if (subscriber_count > 0) {
             --subscriber_count;
         }

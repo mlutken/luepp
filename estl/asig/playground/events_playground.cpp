@@ -17,8 +17,9 @@ events event_center{64};
 command_queue queue1{256};
 
 struct my_event_t {
+    std::string     msg     {};
     float           val      = 0;
-    //    std::string     name    {};
+    std::string     to_string () const { return "Msg: " + msg + ", val: " + std::to_string(val); }
 };
 
 struct cool_event_t {
@@ -86,17 +87,17 @@ private:
     // -----------------------------
     void thread_function()
     {
-        auto fun = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "HANDLE::my_event_t{" <<  e.val << "}\n";} );
-        my_event_subscription_ = event_center_.subscribe_to_event(std::move(fun));
+        auto handler1 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 1; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
+        my_event_subscription_1_ = event_center_.subscribe_to_event(std::move(handler1));
+        auto handler2 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 1; Subscriber 2: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
+        my_event_subscription_2_ = event_center_.subscribe_to_event(std::move(handler2));
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(900ms);
-//            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
-//            while (!command_queue_->empty()) {
-//                command_queue_->execute_next();
-//            }
+            // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing events\n";
+            event_center_.execute_all_for_this_thread();
 
             idle_work_function();
         }
@@ -115,7 +116,8 @@ private:
 //    std::shared_ptr<command_queue>  command_queue_      {nullptr};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
-    event_subscription              my_event_subscription_;
+    event_subscription              my_event_subscription_1_;
+    event_subscription              my_event_subscription_2_;
 };
 
 Thread1Class thread_1_class{event_center, "Thread 1 Class"};
@@ -134,19 +136,6 @@ struct Thread2Class
     void stop           () { is_running_ = false; }
     bool is_running     () const { return is_running_; }
 
-    // -----------------
-    // --- Callbacks ---
-    // -----------------
-    void callback_fun1(int squared_number)
-    {
-        cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback_fun1(" << squared_number << ")\n";
-    }
-
-    void callback_fun2(int squared_number, int32_t cmd_seq_num)
-    {
-        cerr << "{" << this_thread::get_id() << "} " << name_ << "::callback_fun2(" << squared_number << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-    }
-
 private:
 
     // -----------------------------
@@ -154,15 +143,15 @@ private:
     // -----------------------------
     void thread_function()
     {
+        auto handler1 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 2; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
+        my_event_subscription_1_ = event_center_.subscribe_to_event(std::move(handler1));
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(10ms);
-//            cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing events\n";
-//            while (!command_queue_->empty()) {
-//                command_queue_->execute_next();
-//            }
+            // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing events\n";
+            event_center_.execute_all_for_this_thread();
 
             idle_work_function();
         }
@@ -170,16 +159,6 @@ private:
 
     void idle_work_function()
     {
-//        static int square_me_parameter = 0;
-//        static int32_t cmd_seq_num = 0;
-//        square_me_parameter += 10;
-//        cmd_seq_num += 1;
-
-//        if (cmd_seq_num < 5) {
-//            cerr << "From {" << this_thread::get_id() << "} / '" << name_ << "'  Calling Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-//            // command_center_.send_response<int>(&Thread2Class::callback_fun1, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-//            command_center_.send_response<int>(&Thread2Class::callback_fun2, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-//        }
     }
 
 
@@ -188,10 +167,9 @@ private:
     // ------------------------
     events&                         event_center_;
     std::string                     name_               {};
-//    std::shared_ptr<command_queue>  command_queue_      {nullptr};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
-    event_subscription              my_event_subscription_;
+    event_subscription              my_event_subscription_1_;
 };
 
 
@@ -209,7 +187,7 @@ void threads_test()
     }
 
     this_thread::sleep_for(1s);
-    event_center.publish_event<my_event_t>(my_event_t{12});
+    event_center.publish_event<my_event_t>(my_event_t{"Hello", 12});
 //    command_center.dbg_print_command_receivers();
 
     // std::type_info& info = typeid(MyEvent);

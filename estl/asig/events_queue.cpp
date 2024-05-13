@@ -9,6 +9,14 @@ events_queue::events_queue(size_t queue_size)
 
 }
 
+std::unique_ptr<events_queue::event_data_base_t> events_queue::pop_front()
+{
+    if (queue_.empty()) { return nullptr; }
+    auto event_data_ptr = std::move(queue_.front());
+    queue_.pop();
+    return event_data_ptr;
+}
+
 //void events_queue::push(std::function<void ()>&& command_fun)
 //{
 //    std::scoped_lock<std::mutex> lock(push_mutex_);
