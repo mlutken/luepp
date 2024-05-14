@@ -118,12 +118,11 @@ private:
         const char*     name        () const override        { return typeid(EventType).name();         }
 
         void            execute     (const void* event_data_ptr) const override {
-            std::cerr << "FIXMENM Executor for " << name() << "\n";
+//            std::cerr << "FIXMENM Executor for " << name() << "\n";
             if (!event_data_ptr) {
                 return;
             }
             const EventType& event_data = *(static_cast<const EventType*>(event_data_ptr));
-            std::cerr << "FIXMENM Executor event_data.val " << event_data.val << "\n";
             event_handler_fn_(event_data);
         }
         std::function<void (const EventType&)>&& event_handler_fn_;
