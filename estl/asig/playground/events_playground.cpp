@@ -60,27 +60,16 @@ struct Thread1Class
     void stop           () { is_running_ = false; }
     bool is_running     () const { return is_running_; }
 
+
+
+private:
     // -------------------------------
     // --- Event Handler functions ---
     // -------------------------------
 
-    // -------------------------
-    // --- Command functions ---
-    // --------------------------
-    void member_function(int some_number)
-    {
-        cerr << name_ << "::member_function(" << some_number << ")\n";
-
+    void my_event_handler(const my_event_t& e)  {
+        cerr << "Thread 1; Subscriber 2: MEM-HANDLE::my_event_t{" <<  e.to_string() << "}\n";
     }
-
-    int square_me(const int& some_number)
-    {
-        const auto squared = some_number*some_number;
-        cerr  << "{" << this_thread::get_id() << "} " << name_ << "::square_me(" << some_number << ") => " << squared << "\n";
-        return squared;
-    }
-
-private:
 
     // -----------------------------
     // --- Thread main functions ---
@@ -88,10 +77,8 @@ private:
     void thread_function()
     {
         auto handler1 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 1; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
-        my_event_subscription_1_ = event_center_.subscribe_to_event(std::move(handler1));
-        auto handler2 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 1; Subscriber 2: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
-        my_event_subscription_2_ = event_center_.subscribe_to_event(std::move(handler2));
-
+        event_center_.subscribe_permanent(std::move(handler1));
+        event_center_.subscribe_permanent<my_event_t>(&Thread1Class::my_event_handler, this);
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
@@ -137,40 +124,12 @@ struct Thread2Class
 
 private:
 
-
-
     // -----------------------------
     // --- Thread main functions ---
     // -----------------------------
     void thread_function()
     {
-        // auto handler2 = std::function<void (const my_event_t&)>(
-        //     [](const my_event_t& e) {
-        //         cerr << "Thread 2; Subscriber 2: HANDLE::my_event_t{" <<  e.to_string() << "}\n";
-        //     });
-        // auto handler2 = [](const my_event_t& e) {
-        //         cerr << "Lambda Thread 2; Subscriber 2: HANDLE::my_event_t{" <<  e.to_string() << "}\n";
-        //     };
-
-        // auto handler1 = std::function<void (const my_event_t&)>(
-        //     [=,this](const my_event_t& e) {
-        //         cerr << "Thread 2; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";
-        //         event_center_.un_subscribe(my_event_subscription_1_);
-        //         // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(std::move(handler2));
-        //     });
-
-        // my_event_subscription_1_ = event_center_.subscribe_to_event(std::move(handler1));
-        // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(std::move(handler2));
-        // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>([=,this](const my_event_t& e) {my_event_handler(e);});
-
-        // auto handler3 = std::function<void (const my_event_t&)>(
-        //     [this](const my_event_t& e) {
-        //         this->my_event_handler(e);
-        //     });
-        // my_event_subscription_3_ = event_center_.subscribe_to_event<my_event_t>(std::move(handler3));
-
-
-        my_event_subscription_1_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler, this);
+        my_event_subscription_a_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler, this);
         // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
 
         is_running_ = true;
@@ -188,12 +147,6 @@ private:
     {
     }
 
-    void test_subscribe_from_const() const
-    {
-        // my_event_subscription_3_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler, this);
-        // my_event_subscription_4_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
-
-    }
 
     static void my_event_handler_static(const my_event_t& e)  {
         cerr << "Thread 2; Subscriber 3 'my_event_handler_static': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
@@ -203,14 +156,14 @@ private:
     // --- Thread event handler functions ---
     // --------------------------------------
     void my_event_handler(const my_event_t& e)  {
-        cerr << "Thread 2; Subscriber 1 'my_event_handler': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
-        event_center_.un_subscribe(my_event_subscription_1_);
-        my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
+        cerr << "Thread 2; Subscriber A 'my_event_handler': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+        event_center_.un_subscribe(my_event_subscription_a_);
+        my_event_subscription_b_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler_const, this);
     }
 
 
     void my_event_handler_const(const my_event_t& e) const {
-        cerr << "Thread 2; Subscriber 2 'my_event_handler_const': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+        cerr << "Thread 2; Subscriber B 'my_event_handler_const': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
     }
 
 
@@ -222,8 +175,8 @@ private:
     std::string                     name_               {};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
-    event_subscription              my_event_subscription_1_;
-    event_subscription              my_event_subscription_2_;
+    event_subscription              my_event_subscription_a_;
+    event_subscription              my_event_subscription_b_;
 };
 
 
@@ -244,12 +197,17 @@ void threads_test()
 
     this_thread::sleep_for(1s);
     // std::cerr << "INFO Subscriber count at 1st publish: " << event_center.subscribers_count() << "\n";
-    event_center.publish_event<my_event_t>(my_event_t{"Hello", 12});
+
+    auto evt = my_event_t{"Hello", 12};
+    std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
+    event_center.publish_event<my_event_t>(evt);
 
     std::this_thread::sleep_for(1s);
 
     // std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.subscribers_count() << "\n";
-    event_center.publish_event<my_event_t>(my_event_t{"Hello Again", 24});
+    evt = my_event_t{"Hello Again!", 33};
+    std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
+    event_center.publish_event<my_event_t>(evt);
     std::this_thread::sleep_for(2s);
     thread_1_class.stop();
     thread_2_class.stop();

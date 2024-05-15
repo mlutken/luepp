@@ -10,16 +10,53 @@ namespace estl {
 // --- event_subscription ---
 // --------------------------
 
+// event_subscription::event_subscription(const event_subscription& rhs) :
+//     event_id_           (rhs.event_id_),
+//     subscription_id_    (rhs.subscription_id_),
+//     events_center_ptr_  (rhs.events_center_ptr_)
+// {
+
+// }
+
+// event_subscription& event_subscription::operator=(const event_subscription& rhs)
+// {
+//     event_id_           = rhs.event_id_;
+//     subscription_id_    = rhs.subscription_id_;
+//     events_center_ptr_  = rhs.events_center_ptr_;
+
+//     return *this;
+// }
+
+event_subscription::event_subscription(event_subscription&& moving)
+{
+    moving.swap(*this);
+}
+
+event_subscription& event_subscription::operator=(event_subscription&& moving)
+{
+    moving.swap(*this);
+    return *this;
+}
+
+event_subscription::~event_subscription()
+{
+    if (events_center_ptr_) {
+        std::cerr << "FIXMENM event_subscription::DESTRUCTOR, events_center_ptr_: " << events_center_ptr_ << "\n";
+        events_center_ptr_->un_subscribe(*this);
+    }
+}
+
 void event_subscription::make_invalid()
 {
     subscription_id_ = invalid_subscription_id;
-
+    events_center_ptr_ = nullptr;
 }
 
 void event_subscription::swap(event_subscription& src) noexcept
 {
     std::swap(event_id_, src.event_id_);
     std::swap(subscription_id_, src.subscription_id_);
+    std::swap(events_center_ptr_, src.events_center_ptr_);
 
 }
 
@@ -61,7 +98,7 @@ void events::execute_all_for_this_thread()
 
 }
 
-void events::un_subscribe(const event_subscription& subscription, std::thread::id thread_id) {
+void events::un_subscribe(event_subscription& subscription, std::thread::id thread_id) {
     if (!subscription.is_valid()) {
         return;
     }
@@ -69,7 +106,7 @@ void events::un_subscribe(const event_subscription& subscription, std::thread::i
     executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, subscription.event_id());
     executor_list_ptr->unsubscribe(subscription.subscription_id());
     remove_subscriber_for_thread(subscription.event_id(), thread_id);
-
+    subscription.make_invalid();
 }
 
 size_t events::subscribers_count() const
@@ -86,7 +123,7 @@ size_t events::subscribers_count() const
     return count;
 }
 
-event_subscription events::do_subscribe_to_event(std::unique_ptr<event_executor_base_t> executor_ptr,
+event_subscription events::do_subscribe_to(std::unique_ptr<event_executor_base_t> executor_ptr,
                                                  std::size_t event_id,
                                                  std::thread::id thread_id)
 {
@@ -95,7 +132,7 @@ event_subscription events::do_subscribe_to_event(std::unique_ptr<event_executor_
     std::size_t subscription_id = executor_list_ptr->subscribe(std::move(executor_ptr));
     add_subscriber_for_thread(event_id, thread_id);
 
-    return event_subscription(event_id, subscription_id);
+    return event_subscription(event_id, subscription_id, this);
 }
 
 // ----------------------------------------------------
