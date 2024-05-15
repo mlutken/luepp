@@ -92,6 +92,7 @@ private:
         auto handler2 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 1; Subscriber 2: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
         my_event_subscription_2_ = event_center_.subscribe_to_event(std::move(handler2));
 
+
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
@@ -136,6 +137,8 @@ struct Thread2Class
 
 private:
 
+
+
     // -----------------------------
     // --- Thread main functions ---
     // -----------------------------
@@ -154,6 +157,16 @@ private:
             });
         my_event_subscription_1_ = event_center_.subscribe_to_event(std::move(handler1));
 
+        // auto handler3 = std::function<void (const my_event_t&)>(
+        //     [this](const my_event_t& e) {
+        //         this->my_event_handler(e);
+        //     });
+        // my_event_subscription_3_ = event_center_.subscribe_to_event<my_event_t>(std::move(handler3));
+
+
+        // my_event_subscription_3_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler, this);
+        my_event_subscription_4_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
+
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
@@ -169,6 +182,25 @@ private:
     {
     }
 
+    void test_subscribe_from_const() const
+    {
+        // my_event_subscription_3_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler, this);
+        my_event_subscription_4_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
+
+    }
+
+    // --------------------------------------
+    // --- Thread event handler functions ---
+    // --------------------------------------
+    void my_event_handler(const my_event_t& e)  {
+        cerr << "Thread 2; Subscriber 3 'my_event_handler': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+    }
+
+    void my_event_handler_const(const my_event_t& e) const {
+        cerr << "Thread 2; Subscriber 4 'my_event_handler_const': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+    }
+
+
 
     // ------------------------
     // --- Member variables ---
@@ -179,6 +211,8 @@ private:
     std::unique_ptr<std::thread>    thread_             {nullptr};
     event_subscription              my_event_subscription_1_;
     event_subscription              my_event_subscription_2_;
+    mutable event_subscription              my_event_subscription_3_;
+    mutable event_subscription              my_event_subscription_4_;
 };
 
 

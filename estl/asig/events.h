@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <mutex>
 #include <functional>
+#include <type_traits>
 
 #include <asig/events_queue.h>
 
@@ -62,8 +63,67 @@ public:
         return do_subscribe_to_event(std::move(executor_ptr), event_id, thread_id);
     }
 
-    void un_subscribe (const event_subscription& subscription, std::thread::id thread_id = std::this_thread::get_id());
+    template<class EventType,
+             class CommandMemberCallable,
+             class CommandClassObject>
+    event_subscription subscribe_to_event(const CommandMemberCallable& command_member_fun,
+                                          CommandClassObject* command_class_obj_ptr,
+                                          std::thread::id thread_id = std::this_thread::get_id())
+    {
+        const std::size_t event_id = typeid(EventType).hash_code();
+        std::cerr << "FIXMENM subscribe_to_event class version 1"
+                  << " memfun: " << command_member_fun
+                  << " class obj: " << command_class_obj_ptr
+                  << " thread_id: " << thread_id
+                  << " event_id: " << event_id
+                  << "\n";
 
+        // const CommandMemberCallable* command_member_fun_ptr = &command_member_fun;
+        // auto handler3 = std::function<void (const EventType&)>(
+        //     [=](const EventType& e) {
+        //         std::invoke(*command_member_fun_ptr, command_class_obj_ptr, e);
+        //     });
+        // return subscribe_to_event<EventType>(std::move(handler3));
+
+        // std::invoke(command_member_fun, command_class_obj_ptr, EventType());
+
+        // auto handler3 = std::function<void (const my_event_t&)>(
+        //     [this](const my_event_t& e) {
+        //         this->my_event_handler(e);
+        //     });
+        // my_event_subscription_3_ = event_center_.subscribe_to_event<my_event_t>(std::move(handler3));
+
+        // auto event_handler_fn = [=](const EventType& event_data) {
+        //     std::invoke(command_member_fun, command_class_obj_ptr, event_data);
+        // };
+        // auto executor_ptr = std_function_executor_t<EventType>::create(std::move(event_handler_fn));
+        // return do_subscribe_to_event(std::move(executor_ptr), event_id, thread_id);
+
+
+        // const CommandMemberCallable* command_member_fun_ptr = &command_member_fun;
+        // static_assert(std::is_member_function_pointer_v<CommandMemberCallable>);
+        // if constexpr (std::is_member_function_pointer_v<CommandMemberCallable>) {
+        //     std::cerr << "FIXMENM is_member_function_pointer_v 1\n";
+
+        // }
+
+        // auto cmd = [=]() {
+
+
+        // void (CommandClassObject::*command_member_fun_ptr)(const EventType&) const = command_member_fun;
+        // (*command_class_obj_ptr.*command_member_fun_ptr)(EventType());
+
+        // (*command_class_obj_ptr.*command_member_fun)(EventType());
+
+        auto executor_ptr = member_function_executor_t<EventType,CommandMemberCallable,CommandClassObject>::create(
+            command_member_fun, command_class_obj_ptr);
+        return do_subscribe_to_event(std::move(executor_ptr), event_id, thread_id);
+
+        // return event_subscription(); // FIXMENM
+    }
+
+
+    void un_subscribe (const event_subscription& subscription, std::thread::id thread_id = std::this_thread::get_id());
 
     template<class EventType>
     void publish_event (const EventType& evt )
@@ -113,6 +173,64 @@ private:
             event_handler_fn_(event_data);
         }
         std::function<void (const EventType&)>&& event_handler_fn_;
+    };
+
+    template<class EventType,
+            class CommandMemberCallable,
+            class CommandClassObject>
+    struct member_function_executor_t : public event_executor_base_t {
+        member_function_executor_t() = delete;
+
+        explicit member_function_executor_t(const CommandMemberCallable& command_member_fun,
+                                            CommandClassObject* command_class_obj_ptr)
+            :   const_mem_fun_ptr_(command_member_fun),
+                command_class_obj_ptr_(command_class_obj_ptr)
+            {}
+
+        static std::unique_ptr<event_executor_base_t> create(const CommandMemberCallable& command_member_fun,
+                                                             CommandClassObject* command_class_obj_ptr)
+        {
+            std::cerr << "FIXMENM create: "
+                      << "  command_class_obj_ptr_: " << command_class_obj_ptr
+                      << "  const_mem_fun_ptr_: " << command_member_fun
+                      << "\n";
+
+            // const_mem_fun_ptr_t mem_fun_ptr = command_member_fun;
+            // (*command_class_obj_ptr.*mem_fun_ptr)(EventType());
+            // (*command_class_obj_ptr.*command_member_fun)(EventType());
+
+            return std::unique_ptr<event_executor_base_t>(
+                new member_function_executor_t<EventType, CommandMemberCallable, CommandClassObject>(command_member_fun, command_class_obj_ptr)
+            );
+        }
+        ~member_function_executor_t() override = default;
+
+        std::size_t     event_id    () const override        { return typeid(EventType).hash_code();    }
+        const char*     name        () const override        { return typeid(EventType).name();         }
+
+        void            execute     (const void* event_data_ptr) const override {
+            if (!event_data_ptr) { return; }
+            std::cerr << "FIXMENM execute event_data_ptr: " << event_data_ptr
+                      << "  command_class_obj_ptr_: " << command_class_obj_ptr_
+                      << "  const_mem_fun_ptr_: " << const_mem_fun_ptr_
+                      << "\n";
+            const EventType& event_data = *(static_cast<const EventType*>(event_data_ptr));
+            // (*command_class_obj_ptr_.*const_mem_fun_ptr_)(EventType());
+            (*command_class_obj_ptr_.*const_mem_fun_ptr_)(event_data);
+
+
+            // const auto* command_member_fun_ptr = &command_member_fun_;
+            // (*command_class_obj_ptr_.*command_member_fun_ptr)(event_data);
+
+            // event_handler_fn_(event_data);
+        }
+        using const_mem_fun_ptr_t = void (CommandClassObject::*)(const EventType&) const;
+        // void (CommandClassObject::*command_member_fun_ptr)(const EventType&) const = command_member_fun;
+        // (*command_class_obj_ptr.*command_member_fun_ptr)(EventType());
+
+        const_mem_fun_ptr_t const_mem_fun_ptr_{nullptr};
+        // const CommandMemberCallable& command_member_fun_;
+        CommandClassObject* command_class_obj_ptr_{nullptr};
     };
 
     struct executor_list_t {
