@@ -155,6 +155,7 @@ private:
         virtual std::size_t     event_id    () const = 0;
         virtual const char*     name        () const = 0;
         virtual void            execute     (const void* event_data_ptr) const = 0;
+        std::size_t             subscription_id_{invalid_subscription_id};
     };
 
     // -------------------------------
@@ -202,10 +203,12 @@ private:
 
 
     struct executor_list_t {
-        void            execute_all     (const void* event_data_ptr);
-        void            unsubscribe     (std::size_t subscription_id);
-        std::size_t     subscribe       (std::unique_ptr<event_executor_base_t> executor);
-        std::size_t     size            () const    { return event_executors_.size(); }
+        void            execute_all         (const void* event_data_ptr);
+        void            unsubscribe         (std::size_t subscription_id);
+        std::size_t     subscribe           (std::unique_ptr<event_executor_base_t> executor);
+        std::size_t     size                () const    { return event_executors_.size(); }
+        std::size_t     next_subscription_id() const;
+
 
     private:
         size_t          do_subscribe    (std::unique_ptr<event_executor_base_t> executor);

@@ -1,6 +1,7 @@
 #include "events.h"
 
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
@@ -155,14 +156,21 @@ void events::executor_list_t::execute_all(const void* event_data_ptr) {
     subscriptions_pending_.clear();
     unsubscriptions_pending_.clear();
     currently_executing_ = true;
+    // std::size_t id = 0;
     for (const auto& evt_exe_ptr: event_executors_) {
+        // assert (id++ == evt_exe_ptr->subscription_id_);
         evt_exe_ptr->execute(event_data_ptr);
     }
     for (auto subscription_id : unsubscriptions_pending_) {
         do_unsubscribe(subscription_id);
     }
     subscription_id_vec_t new_subscriptions;
-    for (auto& executor : subscriptions_pending_) {
+    for (size_t i = 0; i < subscriptions_pending_.size(); ++i) {
+        auto& executor = subscriptions_pending_[i];
+        // We have set an expected subscription id, which really should macth
+        if ( (next_subscription_id() +i) == executor->subscription_id_) {
+            std::cerr << " **** FIXMENM OK subscription ID: " << executor->subscription_id_ << "\n";
+        }
         const auto subscription_id = do_subscribe(std::move(executor));
         new_subscriptions.push_back(subscription_id);
     }
@@ -185,11 +193,18 @@ size_t events::executor_list_t::subscribe(std::unique_ptr<event_executor_base_t>
     return do_subscribe(std::move(executor));
 }
 
+size_t events::executor_list_t::next_subscription_id() const
+{
+    return static_cast<std::size_t>( std::distance(event_executors_.begin(), event_executors_.end()) );
+}
+
 size_t events::executor_list_t::do_subscribe (std::unique_ptr<event_executor_base_t> executor)
 {
+    const auto subscription_id = next_subscription_id();
+    executor->subscription_id_ = subscription_id;
     event_executors_.push_back(std::move(executor));
-    const auto subscription_id = std::distance(event_executors_.begin(), (event_executors_.end() -1));
-    return static_cast<std::size_t>(subscription_id);
+    // const auto subscription_id = static_cast<std::size_t>(std::distance(event_executors_.begin(), (event_executors_.end() -1)));
+    return subscription_id;
 }
 
 void events::executor_list_t::do_unsubscribe(std::size_t subscription_id)
