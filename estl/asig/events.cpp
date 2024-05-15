@@ -54,11 +54,6 @@ void events::execute_all_for_this_thread()
     while ( auto event_data_ptr = events_queue->pop_front()) {
         const auto event_id = event_data_ptr->event_id();
         executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, event_id);
-
-        // std::cerr << "FIXMENM Executing event name: " << event_data_ptr->name()
-        //           << ", id: " << event_id
-        //           << ", exe list size: " << executor_list_ptr->size()
-        //           << "\n";
         if (executor_list_ptr) {
             executor_list_ptr->execute_all(event_data_ptr->data());
         }
@@ -207,35 +202,5 @@ void events::remove_subscriber_for_thread(std::size_t event_id, std::thread::id 
         }
     }
 }
-
-
-//size_t events::queues_count() const
-//{
-//    std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
-//    return cmd_queues_.size();
-//}
-
-//size_t events::receivers_count() const
-//{
-//    std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
-//    return receiver_lookup_.size();
-//}
-
-//void events::dbg_print_command_receivers() const
-//{
-//    std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
-//    cerr << "*** Printing all receiver classes, sorted per thread ***\n";
-//    for (auto& [print_thread_id, queue_ptr]: cmd_queues_) {
-//        cerr << "[thread id: " << print_thread_id << "]\n";
-
-//        for (auto& [class_ptr, look_fo_thread_id] : receiver_lookup_) {
-//            if (print_thread_id == look_fo_thread_id) {
-//                cerr << "   Class: " << class_ptr << "\n";
-//            }
-//        }
-//    }
-//}
-
-
 
 } // END namespace estl

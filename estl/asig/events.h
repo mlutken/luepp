@@ -86,20 +86,7 @@ public:
         }
     }
 
-    //-----------------
-
-
-
-
-//    void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
-//    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
-//    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
-
     size_t      subscribers_count           () const;
-//    size_t      receivers_count             () const;
-//    size_t      queues_size                 () const { return command_queues_size_; }
-
-//    void        dbg_print_command_receivers () const;
 
 private:
     struct event_executor_base_t {
@@ -190,40 +177,3 @@ private:
 
 
 } // END namespace estl
-
-
-//struct executor_list_base_t {
-//    virtual ~executor_list_base_t              () = default;
-//    virtual std::size_t     event_id        () const = 0;
-//    virtual void            execute_all     (const void* event_data_ptr) const = 0;
-//    virtual void            unsubscribe     (std::size_t subscription_id) = 0;
-//};
-
-//template <class EventType>
-//struct executor_list_t : public executor_list_base_t {
-//    ~executor_list_t() override = default;
-//    std::size_t     event_id   () const override        { return typeid(EventType).hash_code();     }
-//    void            execute_all     (const void* event_data_ptr) const override {
-//        currently_executing_ = true;
-//        for (const auto& evt_exe_ptr: event_executors_) {
-//            evt_exe_ptr->execute(event_data_ptr);
-//        }
-//        currently_executing_ = false;
-//    }
-//    void            unsubscribe     (std::size_t subscription_id) {
-//        if (currently_executing_) { return; }
-//        if (subscription_id < event_executors_.size() ) {
-//            event_executors_.erase(event_executors_.begin()+subscription_id);
-//        }
-//    }
-//    std::size_t     subscribe       (std::function<void (const EventType&)>&& event_handler_fn) {
-//        if (currently_executing_)   { return invalid_subscription_id; }
-//        auto executor = std::make_unique<event_executor_t<EventType>>(std::move(event_handler_fn));
-//        event_executors_.push_back(std::move(executor));
-//        return std::distance(event_executors_.begin(), (event_executors_.end() -1));
-//    }
-
-//    using event_executor_vec_t = std::vector<std::unique_ptr<event_executor_t<EventType>>>;
-//    event_executor_vec_t    event_executors_        {};
-//    mutable bool            currently_executing_    {false};
-//};
