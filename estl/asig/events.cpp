@@ -86,6 +86,18 @@ size_t events::subscribers_count() const
     return count;
 }
 
+event_subscription events::do_subscribe_to_event(std::unique_ptr<event_executor_base_t> executor_ptr,
+                                                 std::size_t event_id,
+                                                 std::thread::id thread_id)
+{
+    std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
+    executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, event_id);
+    std::size_t subscription_id = executor_list_ptr->subscribe(std::move(executor_ptr));
+    add_subscriber_for_thread(event_id, thread_id);
+
+    return event_subscription(event_id, subscription_id);
+}
+
 // ----------------------------------------------------
 // --- events::executor_list_t nested class PRIVATE ---
 // ----------------------------------------------------

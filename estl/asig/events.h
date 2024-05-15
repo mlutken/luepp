@@ -58,17 +58,9 @@ public:
                                           std::thread::id thread_id = std::this_thread::get_id())
     {
         auto executor_ptr = std_function_executor_t<EventType>::create(std::move(event_handler_fn));
-        std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
-
         const std::size_t event_id = typeid(EventType).hash_code();
-
-        executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, event_id);
-        std::size_t subscription_id = executor_list_ptr->subscribe(std::move(executor_ptr));
-        add_subscriber_for_thread(event_id, thread_id);
-
-        return event_subscription(event_id, subscription_id);
+        return do_subscribe_to_event(std::move(executor_ptr), event_id, thread_id);
     }
-
 
     void un_subscribe (const event_subscription& subscription, std::thread::id thread_id = std::this_thread::get_id());
 
@@ -89,6 +81,9 @@ public:
     size_t      subscribers_count           () const;
 
 private:
+    // -----------------------------
+    // --- event_executor_base_t ---
+    // -----------------------------
     struct event_executor_base_t {
         virtual ~event_executor_base_t      () = default;
         virtual std::size_t     event_id    () const = 0;
@@ -96,6 +91,9 @@ private:
         virtual void            execute     (const void* event_data_ptr) const = 0;
     };
 
+   // -------------------------------
+   // --- std_function_executor_t ---
+   // -------------------------------
     template <class EventType>
     struct std_function_executor_t : public event_executor_base_t {
         std_function_executor_t() = delete;
@@ -142,6 +140,13 @@ private:
     using subscriber_count_per_thread_map_t     = std::unordered_map<std::thread::id, std::uint32_t>;
     using event_id_to_subscriber_count_t        = std::unordered_map<event_id_t, subscriber_count_per_thread_map_t>;
 
+   // ---------------------------------
+   // --- PRIVATE: Helper functions ---
+   // ---------------------------------
+
+    event_subscription do_subscribe_to_event(std::unique_ptr<event_executor_base_t> executor_ptr,
+                                             std::size_t event_id,
+                                             std::thread::id thread_id);
 
     std::shared_ptr<events_queue>
                         get_event_data_queue            (std::thread::id thread_id);
