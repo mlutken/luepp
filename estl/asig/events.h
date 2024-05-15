@@ -212,10 +212,9 @@ private:
         void            do_unsubscribe  (std::size_t subscription_id);
 
         using subscription_id_vec_t         = std::vector<subscription_id_t>;
-        using subscription_executor_vec_t   = std::vector<std::unique_ptr<event_executor_base_t>>;
         using event_executor_vec_t          = std::vector<std::unique_ptr<event_executor_base_t>>;
         mutable event_executor_vec_t        event_executors_        {};
-        mutable subscription_executor_vec_t subscriptions_pending_  {};
+        mutable event_executor_vec_t        subscriptions_pending_  {};
         mutable subscription_id_vec_t       unsubscriptions_pending_{};
         mutable bool                        currently_executing_    {false};
     };
