@@ -151,11 +151,14 @@ private:
     // --- event_executor_base_t ---
     // -----------------------------
     struct event_executor_base_t {
+                 event_executor_base_t      ();
         virtual ~event_executor_base_t      () = default;
         virtual std::size_t     event_id    () const = 0;
         virtual const char*     name        () const = 0;
         virtual void            execute     (const void* event_data_ptr) const = 0;
-        std::size_t             subscription_id_{invalid_subscription_id};
+        std::size_t             subscription_id_;
+    private:
+        static std::atomic_size_t   id_counter_;
     };
 
     // -------------------------------
@@ -163,7 +166,8 @@ private:
     // -------------------------------
     template<class EventType, class Callable>
     struct lambda_function_executor_t : public event_executor_base_t {
-        explicit lambda_function_executor_t(Callable&& fn) : fn_(std::move(fn)) {}
+        explicit lambda_function_executor_t(Callable&& fn)
+            : event_executor_base_t(), fn_(std::move(fn)) {}
 
         static std::unique_ptr<event_executor_base_t> create(Callable&& fn) {
             return std::unique_ptr<event_executor_base_t>(new lambda_function_executor_t<EventType, Callable>(std::move(fn)) );
@@ -185,7 +189,7 @@ private:
     struct std_function_executor_t : public event_executor_base_t {
         std_function_executor_t() = delete;
         explicit std_function_executor_t(std::function<void (const EventType&)>&& event_handler_fn)
-            : event_handler_fn_(std::move(event_handler_fn)) {}
+            : event_executor_base_t(), event_handler_fn_(std::move(event_handler_fn)) {}
         static std::unique_ptr<event_executor_base_t> create(std::function<void (const EventType&)>&& event_handler_fn) {
             return std::unique_ptr<event_executor_base_t>(new std_function_executor_t<EventType>(std::move(event_handler_fn)) );
         }

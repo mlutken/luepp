@@ -125,8 +125,8 @@ size_t events::subscribers_count() const
 }
 
 event_subscription events::do_subscribe_to(std::unique_ptr<event_executor_base_t> executor_ptr,
-                                                 std::size_t event_id,
-                                                 std::thread::id thread_id)
+                                           std::size_t event_id,
+                                           std::thread::id thread_id)
 {
     std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
     executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, event_id);
@@ -168,9 +168,9 @@ void events::executor_list_t::execute_all(const void* event_data_ptr) {
     for (size_t i = 0; i < subscriptions_pending_.size(); ++i) {
         auto& executor = subscriptions_pending_[i];
         // We have set an expected subscription id, which really should macth
-        if ( (next_subscription_id() +i) == executor->subscription_id_) {
-            std::cerr << " **** FIXMENM OK subscription ID: " << executor->subscription_id_ << "\n";
-        }
+        // if ( (next_subscription_id() +i) == executor->subscription_id_) {
+        //     std::cerr << " **** FIXMENM OK subscription ID: " << executor->subscription_id_ << "\n";
+        // }
         const auto subscription_id = do_subscribe(std::move(executor));
         new_subscriptions.push_back(subscription_id);
     }
@@ -200,6 +200,7 @@ size_t events::executor_list_t::next_subscription_id() const
 
 size_t events::executor_list_t::do_subscribe (std::unique_ptr<event_executor_base_t> executor)
 {
+    std::cerr << " **** FIXMENM executor_list_t::do_subscribe subscription ID: " << executor->subscription_id_ << "\n";
     const auto subscription_id = next_subscription_id();
     executor->subscription_id_ = subscription_id;
     event_executors_.push_back(std::move(executor));
@@ -276,6 +277,17 @@ void events::remove_subscriber_for_thread(std::size_t event_id, std::thread::id 
             --subscriber_count;
         }
     }
+}
+
+// -----------------------------
+// --- event_executor_base_t ---
+// -----------------------------
+std::atomic_size_t events::event_executor_base_t::id_counter_ = 0;
+
+events::event_executor_base_t::event_executor_base_t()
+    : subscription_id_(++id_counter_)
+{
+
 }
 
 } // END namespace estl
