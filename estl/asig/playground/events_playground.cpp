@@ -189,6 +189,7 @@ void threads_test()
 
     Thread1Class thread_1_class{event_center, "Thread 1 Class"};
     Thread2Class thread_2_class{event_center, "Thread 2 Class"};
+    // std::cerr << "INFO Subscriber count at start: " << event_center.subscribers_count() << "\n";
 
     thread_1_class.start();
     thread_2_class.start();
@@ -197,10 +198,12 @@ void threads_test()
     }
 
     this_thread::sleep_for(1s);
+    // std::cerr << "INFO Subscriber count at 1st publish: " << event_center.subscribers_count() << "\n";
     event_center.publish_event<my_event_t>(my_event_t{"Hello", 12});
 
     std::this_thread::sleep_for(1s);
 
+    // std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.subscribers_count() << "\n";
     event_center.publish_event<my_event_t>(my_event_t{"Hello Again", 24});
     std::this_thread::sleep_for(2s);
     thread_1_class.stop();

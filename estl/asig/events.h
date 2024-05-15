@@ -95,7 +95,7 @@ public:
 //    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
 //    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
 
-//    size_t      queues_count                () const;
+    size_t      subscribers_count           () const;
 //    size_t      receivers_count             () const;
 //    size_t      queues_size                 () const { return command_queues_size_; }
 
@@ -123,7 +123,6 @@ private:
         const char*     name        () const override        { return typeid(EventType).name();         }
 
         void            execute     (const void* event_data_ptr) const override {
-            //   std::cerr << "FIXMENM Executor for " << name() << "\n";
             if (!event_data_ptr) {
                 return;
             }
@@ -151,7 +150,7 @@ private:
     };
 
 
-    using publish_data_queue_per_thread_map_t    = std::unordered_map<std::thread::id, std::shared_ptr<events_queue>>;
+    using publish_data_queue_per_thread_map_t   = std::unordered_map<std::thread::id, std::shared_ptr<events_queue>>;
 
     using event_subscribers_map_t               = std::unordered_map<event_id_t, std::unique_ptr<executor_list_t>>;
     using evt_subscribers_lookup_t              = std::unordered_map<std::thread::id, std::shared_ptr<event_subscribers_map_t>>;

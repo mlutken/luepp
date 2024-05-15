@@ -77,7 +77,19 @@ void events::un_subscribe(const event_subscription& subscription, std::thread::i
 
 }
 
+size_t events::subscribers_count() const
+{
+    size_t count = 0;
+    std::scoped_lock<std::mutex> lock(subscriber_thread_mutex_);
+    for (auto [thread_id, evt_subscr_map_ptr] : event_subscribers_) {
+        for (const auto& pair : *evt_subscr_map_ptr) {
+            const std::unique_ptr<executor_list_t>& exe_list_ptr = pair.second;
+            count += exe_list_ptr->size();
+        }
+    }
 
+    return count;
+}
 
 // ----------------------------------------------------
 // --- events::executor_list_t nested class PRIVATE ---
