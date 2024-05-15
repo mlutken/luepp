@@ -114,7 +114,8 @@ std::shared_ptr<events_queue> events::get_event_data_queue(std::thread::id threa
     return queue_ptr;
 }
 
-void events::executor_list_t::execute_all(const void* event_data_ptr) const {
+void events::executor_list_t::execute_all(const void* event_data_ptr) {
+    subscriptions_pending_.clear();
     unsubscriptions_pending_.clear();
     currently_executing_ = true;
     for (const auto& evt_exe_ptr: event_executors_) {
@@ -122,6 +123,11 @@ void events::executor_list_t::execute_all(const void* event_data_ptr) const {
     }
     for (auto subscription_id : unsubscriptions_pending_) {
         do_unsubscribe(subscription_id);
+    }
+    subscription_id_vec_t new_subscriptions;
+    for (auto& executor : subscriptions_pending_) {
+        const auto subscription_id = do_subscribe(std::move(executor));
+        new_subscriptions.push_back(subscription_id);
     }
     currently_executing_ = false;
 }
@@ -134,16 +140,22 @@ void events::executor_list_t::unsubscribe(std::size_t subscription_id) {
     do_unsubscribe(subscription_id);
 }
 
-size_t events::executor_list_t::subscribe(std::unique_ptr<event_executor_base_t> executor) {
+size_t events::executor_list_t::subscribe(std::unique_ptr<event_executor_base_t> executor)  {
     if (currently_executing_)   {
+        subscriptions_pending_.push_back(std::move(executor));
         return invalid_subscription_id;
     }
+    return do_subscribe(std::move(executor));
+}
+
+size_t events::executor_list_t::do_subscribe (std::unique_ptr<event_executor_base_t> executor)
+{
     event_executors_.push_back(std::move(executor));
     const auto subscription_id = std::distance(event_executors_.begin(), (event_executors_.end() -1));
     return static_cast<std::size_t>(subscription_id);
 }
 
-void events::executor_list_t::do_unsubscribe(std::size_t subscription_id) const
+void events::executor_list_t::do_unsubscribe(std::size_t subscription_id)
 {
     if (subscription_id < event_executors_.size() ) {
         const auto erase_it = event_executors_.begin() + static_cast<std::int64_t>(subscription_id);
