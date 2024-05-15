@@ -34,17 +34,25 @@ struct cool_event_t {
 };
 } // namespace myspace
 
-void free_function(int some_number)
+
+struct TestUnsubscribeOnDeletion
 {
-    cerr << "Hello free_function(" << some_number << ")\n";;
-}
+    explicit TestUnsubscribeOnDeletion(events& events_center) {
+        std::cerr << "TestUnsubscribeOnDeletion::CONSTRUCTOR(): Subscribe!\n";
+        subscription_ = events_center.subscribe_to<my_event_t>(&TestUnsubscribeOnDeletion::event_handler, this);
+    }
 
-void free_callback(int some_number)
-{
-    cerr << "Hello free_callback(" << some_number << ")\n";;
-}
+    ~TestUnsubscribeOnDeletion() {
+        std::cerr << "TestUnsubscribeOnDeletion::DESTRUCTOR(): Un-subscribe!!! \n";
+    }
 
+    void event_handler(const my_event_t& e)  {
+        cerr << "Thread 2; TestUnsubscribeOnDeletion::event_handler {" <<  e.to_string() << "} \n";
+    }
 
+    event_subscription subscription_;
+
+};
 
 struct Thread1Class
 {
@@ -119,8 +127,9 @@ struct Thread2Class
         cerr << "Starting thread ' " << name_ << "' ID: " << thread_->get_id() << "\n";
         thread_->detach();
     }
-    void stop           () { is_running_ = false; }
-    bool is_running     () const { return is_running_; }
+    void stop               () { is_running_ = false; }
+    bool is_running         () const { return is_running_; }
+    void delete_test_class  ()  { delete_requested_ = true; }
 
 private:
 
@@ -129,6 +138,7 @@ private:
     // -----------------------------
     void thread_function()
     {
+        test_unsubscribe_on_deletion_ = std::make_unique<TestUnsubscribeOnDeletion>(event_center_);
         my_event_subscription_a_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler, this);
         // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
 
@@ -145,6 +155,10 @@ private:
 
     void idle_work_function()
     {
+        if (delete_requested_) {
+            delete_requested_ = false;
+            test_unsubscribe_on_deletion_.reset();
+        }
     }
 
 
@@ -177,6 +191,8 @@ private:
     std::unique_ptr<std::thread>    thread_             {nullptr};
     event_subscription              my_event_subscription_a_;
     event_subscription              my_event_subscription_b_;
+    std::unique_ptr<TestUnsubscribeOnDeletion> test_unsubscribe_on_deletion_;
+    std::atomic_bool                delete_requested_{false};
 };
 
 
@@ -201,7 +217,7 @@ void threads_test()
     auto evt = my_event_t{"Hello", 12};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
     event_center.publish_event<my_event_t>(evt);
-
+    thread_2_class.delete_test_class();
     std::this_thread::sleep_for(1s);
 
     // std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.subscribers_count() << "\n";
