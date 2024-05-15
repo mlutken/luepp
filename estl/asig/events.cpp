@@ -136,7 +136,6 @@ void events::executor_list_t::do_unsubscribe(std::size_t subscription_id) const
     if (subscription_id < event_executors_.size() ) {
         const auto erase_it = event_executors_.begin() + static_cast<std::int64_t>(subscription_id);
         event_executors_.erase(erase_it);
-        std::cerr << "FIXMENM executor_list_t::do_unsubscribe, num executors after: " << event_executors_.size() << "\n";
     }
 }
 

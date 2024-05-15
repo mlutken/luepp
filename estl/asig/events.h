@@ -54,15 +54,15 @@ public:
 
 
     template<class EventType>
-    event_subscription subscribe_to_event (std::function<void (const EventType&)>&& event_handler_fn, std::thread::id thread_id = std::this_thread::get_id())
+    event_subscription subscribe_to_event(std::function<void (const EventType&)>&& event_handler_fn,
+                                          std::thread::id thread_id = std::this_thread::get_id())
     {
+        auto executor_ptr = std_function_executor_t<EventType>::create(std::move(event_handler_fn));
         std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
 
         const std::size_t event_id = typeid(EventType).hash_code();
 
-
         executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, event_id);
-        auto executor_ptr = event_executor_t<EventType>::create(std::move(event_handler_fn));
         std::size_t subscription_id = executor_list_ptr->subscribe(std::move(executor_ptr));
         add_subscriber_for_thread(event_id, thread_id);
 
@@ -97,22 +97,20 @@ private:
     };
 
     template <class EventType>
-    struct event_executor_t : public event_executor_base_t {
-        event_executor_t() = delete;
-        explicit event_executor_t(std::function<void (const EventType&)>&& event_handler_fn)
+    struct std_function_executor_t : public event_executor_base_t {
+        std_function_executor_t() = delete;
+        explicit std_function_executor_t(std::function<void (const EventType&)>&& event_handler_fn)
             : event_handler_fn_(std::move(event_handler_fn)) {}
         static std::unique_ptr<event_executor_base_t> create(std::function<void (const EventType&)>&& event_handler_fn) {
-            return std::unique_ptr<event_executor_base_t>(new event_executor_t<EventType>(std::move(event_handler_fn)) );
+            return std::unique_ptr<event_executor_base_t>(new std_function_executor_t<EventType>(std::move(event_handler_fn)) );
         }
-        ~event_executor_t() override = default;
+        ~std_function_executor_t() override = default;
 
         std::size_t     event_id    () const override        { return typeid(EventType).hash_code();    }
         const char*     name        () const override        { return typeid(EventType).name();         }
 
         void            execute     (const void* event_data_ptr) const override {
-            if (!event_data_ptr) {
-                return;
-            }
+            if (!event_data_ptr) { return; }
             const EventType& event_data = *(static_cast<const EventType*>(event_data_ptr));
             event_handler_fn_(event_data);
         }
