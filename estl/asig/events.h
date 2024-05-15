@@ -19,8 +19,8 @@ class event_subscription {
     friend class events;
     event_subscription(std::size_t event_id, std::size_t subscription_id) : event_id_(event_id), subscription_id_(subscription_id) {}
 public:
-//    event_subscription(const event_subscription& ) = delete;
-//    event_subscription& operator=(const event_subscription& ) = delete;
+   event_subscription(const event_subscription& ) = default;
+   event_subscription& operator=(const event_subscription& ) = default;
 
     event_subscription() = default;
     static constexpr std::size_t invalid_subscription_id = std::numeric_limits<std::size_t>::max();
@@ -30,6 +30,11 @@ public:
     std::size_t event_id        () const { return event_id_;        }
     std::size_t subscription_id () const { return subscription_id_; }
 private:
+    void        make_invalid    ();
+    void        swap			(event_subscription& src) noexcept;
+
+
+
     std::size_t event_id_           = 0;
     std::size_t subscription_id_    = invalid_subscription_id;
 };
@@ -118,12 +123,11 @@ private:
         const char*     name        () const override        { return typeid(EventType).name();         }
 
         void            execute     (const void* event_data_ptr) const override {
-            std::cerr << "FIXMENM Executor for " << name() << "\n";
+            //   std::cerr << "FIXMENM Executor for " << name() << "\n";
             if (!event_data_ptr) {
                 return;
             }
             const EventType& event_data = *(static_cast<const EventType*>(event_data_ptr));
-            std::cerr << "FIXMENM Executor event_data.val " << event_data.val << "\n";
             event_handler_fn_(event_data);
         }
         std::function<void (const EventType&)>&& event_handler_fn_;
@@ -135,9 +139,15 @@ private:
         std::size_t     subscribe       (std::unique_ptr<event_executor_base_t> executor);
         std::size_t     size            () const    { return event_executors_.size(); }
 
-        using event_executor_vec_t = std::vector<std::unique_ptr<event_executor_base_t>>;
-        event_executor_vec_t    event_executors_        {};
-        mutable bool            currently_executing_    {false};
+    private:
+        void            do_unsubscribe  (std::size_t subscription_id) const;
+
+        using unsubscribe_vec_t     = std::vector<subscription_id_t>;
+        using event_executor_vec_t  = std::vector<std::unique_ptr<event_executor_base_t>>;
+        mutable event_executor_vec_t    event_executors_        {};
+        mutable unsubscribe_vec_t       unsubscriptions_pending_{};
+        mutable bool                    currently_executing_    {false};
+
     };
 
 

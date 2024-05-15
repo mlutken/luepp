@@ -95,7 +95,7 @@ private:
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
-            std::this_thread::sleep_for(900ms);
+            std::this_thread::sleep_for(10ms);
             // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing events\n";
             event_center_.execute_all_for_this_thread();
 
@@ -113,14 +113,12 @@ private:
     // ------------------------
     events&                         event_center_;
     std::string                     name_               {};
-//    std::shared_ptr<command_queue>  command_queue_      {nullptr};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
     event_subscription              my_event_subscription_1_;
     event_subscription              my_event_subscription_2_;
 };
 
-Thread1Class thread_1_class{event_center, "Thread 1 Class"};
 
 struct Thread2Class
 {
@@ -143,13 +141,23 @@ private:
     // -----------------------------
     void thread_function()
     {
-        auto handler1 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 2; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
+        auto handler2 = std::function<void (const my_event_t&)>(
+            [](const my_event_t& e) {
+                cerr << "Thread 2; Subscriber 2: HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+            });
+
+        auto handler1 = std::function<void (const my_event_t&)>(
+            [=,this](const my_event_t& e) {
+                cerr << "Thread 2; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+                this->event_center_.un_subscribe(this->my_event_subscription_1_);
+                // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(std::move(handler2));
+            });
         my_event_subscription_1_ = event_center_.subscribe_to_event(std::move(handler1));
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
-            std::this_thread::sleep_for(10ms);
+            std::this_thread::sleep_for(20ms);
             // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing events\n";
             event_center_.execute_all_for_this_thread();
 
@@ -170,15 +178,17 @@ private:
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
     event_subscription              my_event_subscription_1_;
+    event_subscription              my_event_subscription_2_;
 };
 
-
-Thread2Class thread_2_class{event_center, "Thread 2 Class"};
 
 
 
 void threads_test()
 {
+
+    Thread1Class thread_1_class{event_center, "Thread 1 Class"};
+    Thread2Class thread_2_class{event_center, "Thread 2 Class"};
 
     thread_1_class.start();
     thread_2_class.start();
@@ -188,25 +198,11 @@ void threads_test()
 
     this_thread::sleep_for(1s);
     event_center.publish_event<my_event_t>(my_event_t{"Hello", 12});
-//    command_center.dbg_print_command_receivers();
 
-    // std::type_info& info = typeid(MyEvent);
+    std::this_thread::sleep_for(1s);
 
-//    cerr << "typeid(MyEvent).name         : " << typeid(CoolEvent).name() << "\n";
-//    cerr << "typeid(MyEvent).hash         : " << typeid(CoolEvent).hash_code() << "\n";
-//    cerr << "typeid(myspace::MyEvent).name: " << typeid(myspace::CoolEvent).name() << "\n";
-//    cerr << "typeid(myspace::MyEvent).hash: " << typeid(myspace::CoolEvent).hash_code() << "\n";
-
-//    cerr << "--- commands playground, Main thread ID: " << this_thread::get_id() << "---\n";
-//    cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
-//    cerr << "command_center.queues_count()      : "  << command_center.queues_count() << "\n";
-//    cerr << "command_center.receivers_count()   : "  << command_center.receivers_count() << "\n";
-
-//    cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
-//    cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
-
-
-    std::this_thread::sleep_for(4s);
+    event_center.publish_event<my_event_t>(my_event_t{"Hello Again", 24});
+    std::this_thread::sleep_for(2s);
     thread_1_class.stop();
     thread_2_class.stop();
 }

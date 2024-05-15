@@ -6,10 +6,22 @@ using namespace std;
 
 namespace estl {
 
-// ------------------------------
-// --- events: nested classes ---
-// ------------------------------
+// --------------------------
+// --- event_subscription ---
+// --------------------------
 
+void event_subscription::make_invalid()
+{
+    subscription_id_ = invalid_subscription_id;
+
+}
+
+void event_subscription::swap(event_subscription& src) noexcept
+{
+    std::swap(event_id_, src.event_id_);
+    std::swap(subscription_id_, src.subscription_id_);
+
+}
 
 // ---------------------------------
 // --- events: main class PUBLIC ---
@@ -43,10 +55,10 @@ void events::execute_all_for_this_thread()
         const auto event_id = event_data_ptr->event_id();
         executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, event_id);
 
-        std::cerr << "FIXMENM Executing event name: " << event_data_ptr->name()
-                  << ", id: " << event_id
-                  << ", exe list size: " << executor_list_ptr->size()
-                  << "\n";
+        // std::cerr << "FIXMENM Executing event name: " << event_data_ptr->name()
+        //           << ", id: " << event_id
+        //           << ", exe list size: " << executor_list_ptr->size()
+        //           << "\n";
         if (executor_list_ptr) {
             executor_list_ptr->execute_all(event_data_ptr->data());
         }
@@ -55,7 +67,9 @@ void events::execute_all_for_this_thread()
 }
 
 void events::un_subscribe(const event_subscription& subscription, std::thread::id thread_id) {
-    if (!subscription.is_valid()) { return; }
+    if (!subscription.is_valid()) {
+        return;
+    }
     std::shared_ptr<event_subscribers_map_t> thread_subscribers = get_evt_subscribers_for_thread(thread_id);
     executor_list_t* executor_list_ptr = get_executor_list(*thread_subscribers, subscription.event_id());
     executor_list_ptr->unsubscribe(subscription.subscription_id());
@@ -82,29 +96,42 @@ std::shared_ptr<events_queue> events::get_event_data_queue(std::thread::id threa
 }
 
 void events::executor_list_t::execute_all(const void* event_data_ptr) const {
+    unsubscriptions_pending_.clear();
     currently_executing_ = true;
     for (const auto& evt_exe_ptr: event_executors_) {
         evt_exe_ptr->execute(event_data_ptr);
+    }
+    for (auto subscription_id : unsubscriptions_pending_) {
+        do_unsubscribe(subscription_id);
     }
     currently_executing_ = false;
 }
 
 void events::executor_list_t::unsubscribe(std::size_t subscription_id) {
-    if (currently_executing_) { return; }
-    if (subscription_id < event_executors_.size() ) {
-        const auto erase_it = event_executors_.begin() + static_cast<std::int64_t>(subscription_id);
-        event_executors_.erase(erase_it);
+    if (currently_executing_) {
+        unsubscriptions_pending_.push_back(subscription_id);
+        return;
     }
+    do_unsubscribe(subscription_id);
 }
 
 size_t events::executor_list_t::subscribe(std::unique_ptr<event_executor_base_t> executor) {
-    if (currently_executing_)   { return invalid_subscription_id; }
+    if (currently_executing_)   {
+        return invalid_subscription_id;
+    }
     event_executors_.push_back(std::move(executor));
     const auto subscription_id = std::distance(event_executors_.begin(), (event_executors_.end() -1));
     return static_cast<std::size_t>(subscription_id);
 }
 
-
+void events::executor_list_t::do_unsubscribe(std::size_t subscription_id) const
+{
+    if (subscription_id < event_executors_.size() ) {
+        const auto erase_it = event_executors_.begin() + static_cast<std::int64_t>(subscription_id);
+        event_executors_.erase(erase_it);
+        std::cerr << "FIXMENM executor_list_t::do_unsubscribe, num executors after: " << event_executors_.size() << "\n";
+    }
+}
 
 // ----------------------------------
 // --- events: main class PRIVATE ---
@@ -168,7 +195,6 @@ void events::remove_subscriber_for_thread(std::size_t event_id, std::thread::id 
         }
     }
 }
-
 
 
 //size_t events::queues_count() const
