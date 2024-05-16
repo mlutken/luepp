@@ -57,13 +57,15 @@ struct TestUnsubscribeOnDeletion
 struct Thread1Class
 {
     explicit Thread1Class(events& cc, std::string name) : event_center_(cc), name_ (std::move(name))  {}
-    ~Thread1Class()  { is_running_ = false; }
+    ~Thread1Class()  {
+        is_running_ = false;
+        thread_->join();
+    }
 
     void start  () {
         is_running_ = false;
         thread_ = std::make_unique<std::thread>(&Thread1Class::thread_function, this);
         cerr << "Starting thread ' " << name_ << "' ID: " << thread_->get_id() << "\n";
-        thread_->detach();
     }
     void stop           () { is_running_ = false; }
     bool is_running     () const { return is_running_; }
@@ -107,6 +109,7 @@ private:
     // ------------------------
     // --- Member variables ---
     // ------------------------
+public:
     events&                         event_center_;
     std::string                     name_               {};
     std::atomic<bool>               is_running_         {false};
@@ -119,13 +122,15 @@ private:
 struct Thread2Class
 {
     explicit Thread2Class(events& cc, std::string name) : event_center_(cc), name_ (std::move(name))  {}
-    ~Thread2Class()  { is_running_ = false; }
+    ~Thread2Class()  {
+        is_running_ = false;
+        thread_->join();
+    }
 
     void start  () {
         is_running_ = false;
         thread_ = std::make_unique<std::thread>(&Thread2Class::thread_function, this);
         cerr << "Starting thread ' " << name_ << "' ID: " << thread_->get_id() << "\n";
-        thread_->detach();
     }
     void stop               () { is_running_ = false; }
     bool is_running         () const { return is_running_; }
@@ -140,7 +145,7 @@ private:
     {
         test_unsubscribe_on_deletion_ = std::make_unique<TestUnsubscribeOnDeletion>(event_center_);
         my_event_subscription_a_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler, this);
-        std::cerr << "   !!! FIXMENM my_event_subscription_a_ ID: " << my_event_subscription_a_.subscription_id() << "\n";
+        // std::cerr << "   !!! FIXMENM my_event_subscription_a_ ID: " << my_event_subscription_a_.subscription_id() << "\n";
         // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
 
         is_running_ = true;
@@ -172,7 +177,7 @@ private:
     // --------------------------------------
     void my_event_handler(const my_event_t& e)  {
         cerr << "Thread 2; Subscriber A 'my_event_handler': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
-        std::cerr << "   !!! FIXMENM my_event_subscription_a_ UNSUBSCRIBE ID: " << my_event_subscription_a_.subscription_id() << "\n";
+        // std::cerr << "   !!! FIXMENM my_event_subscription_a_ UNSUBSCRIBE ID: " << my_event_subscription_a_.subscription_id() << "\n";
         event_center_.un_subscribe(my_event_subscription_a_);
         my_event_subscription_b_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler_const, this);
     }
@@ -187,6 +192,7 @@ private:
     // ------------------------
     // --- Member variables ---
     // ------------------------
+public:
     events&                         event_center_;
     std::string                     name_               {};
     std::atomic<bool>               is_running_         {false};
@@ -227,6 +233,16 @@ void threads_test()
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
     event_center.publish_event<my_event_t>(evt);
     std::this_thread::sleep_for(2s);
+
+    event_center.un_subscribe(thread_2_class.my_event_subscription_b_, thread_2_class.thread_->get_id());
+    std::this_thread::sleep_for(1s);
+    std::cerr << "\nINFO Subscriber count at 3rd publish: " << event_center.subscribers_count() << "\n";
+    evt = my_event_t{"Yet an event!", 88};
+    std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
+    event_center.publish_event<my_event_t>(evt);
+    std::this_thread::sleep_for(2s);
+
+
     thread_1_class.stop();
     thread_2_class.stop();
 }

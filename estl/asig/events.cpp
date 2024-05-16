@@ -83,6 +83,7 @@ void events::execute_all_for_this_thread()
 }
 
 void events::un_subscribe(event_subscription& subscription, std::thread::id thread_id) {
+    std::cerr << " ^^^ FIXMENM events::un_subscribe: thread_id: " << thread_id << "  subscription ID: " << subscription.subscription_id() << "\n";
     if (!subscription.is_valid()) {
         return;
     }
@@ -143,14 +144,13 @@ void events::executor_list_t::execute_all(const void* event_data_ptr) {
         evt_exe_ptr->execute(event_data_ptr);
     }
     for (auto subscription_id : unsubscriptions_pending_) {
-        std::cerr << "!!! FIXMENM unsubscriptions_pending_: " << subscription_id << "\n";
+        // std::cerr << "!!! FIXMENM unsubscriptions_pending_: " << subscription_id << "\n";
         do_unsubscribe(subscription_id);
     }
-    // subscription_id_vec_t new_subscriptions;
+
     for (auto& executor : subscriptions_pending_) {
+        // std::cerr << " %%% Add pending subscription: " << executor->subscription_id_ << "\n";
         do_subscribe(std::move(executor));
-        // const auto subscription_id = do_subscribe(std::move(executor));
-        // new_subscriptions.push_back(subscription_id);
     }
     currently_executing_ = false;
 }
@@ -188,7 +188,7 @@ size_t events::executor_list_t::do_subscribe (std::unique_ptr<event_executor_bas
 
 void events::executor_list_t::do_unsubscribe(std::size_t subscription_id)
 {
-    std::cerr << " **** FIXMENM executor_list_t::do_UN-subscribe subscription ID: " << subscription_id << "\n";
+    // std::cerr << " **** FIXMENM executor_list_t::do_UN-subscribe subscription ID: " << subscription_id << "\n";
     event_executors_.erase(subscription_id);
 }
 
