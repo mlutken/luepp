@@ -67,16 +67,13 @@ private:
     void thread_function()
     {
         command_center_.register_command_receiver(this);
-        command_queue_ = command_center_.get_receiver_queue();
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(900ms);
             // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
-            while (!command_queue_->empty()) {
-                command_queue_->execute_next();
-            }
+            command_center_.execute_all_for_this_thread();
 
             idle_work_function();
         }
@@ -92,7 +89,6 @@ private:
     // ------------------------
     commands&                       command_center_;
     std::string                     name_               {};
-    std::shared_ptr<command_queue>  command_queue_      {nullptr};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
 };
@@ -134,16 +130,13 @@ private:
     void thread_function()
     {
         command_center_.register_command_receiver(this);
-        command_queue_ = command_center_.get_receiver_queue();
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
             std::this_thread::sleep_for(10ms);
             // cerr << "{" << this_thread::get_id() << "}  In '" << name_ << "'  Processing commands\n";
-            while (!command_queue_->empty()) {
-                command_queue_->execute_next();
-            }
+            command_center_.execute_all_for_this_thread();
 
             idle_work_function();
         }
@@ -169,7 +162,6 @@ private:
     // ------------------------
     commands&                       command_center_;
     std::string                     name_               {};
-    std::shared_ptr<command_queue>  command_queue_      {nullptr};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
 };

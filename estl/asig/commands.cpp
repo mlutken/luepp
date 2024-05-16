@@ -19,6 +19,16 @@ commands::commands(size_t command_queues_size)
 
 }
 
+void commands::execute_all_for_this_thread()
+{
+    const auto& queue_ptr = get_receiver_queue(std::this_thread::get_id());
+    if (!queue_ptr) {
+        return;
+    }
+
+    queue_ptr->execute_all();
+}
+
 
 
 void commands::register_command_receiver(void* class_instance_ptr, std::thread::id thread_id)

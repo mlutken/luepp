@@ -19,7 +19,8 @@ public:
     using queue_ptr_t = std::shared_ptr<command_queue>;
 
     commands    ();
-    explicit    commands    (size_t command_queues_size);
+    explicit    commands (size_t command_queues_size);
+    void        execute_all_for_this_thread ();
 
     template<class CommandCallable,
              class CommandClassObject,
