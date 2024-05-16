@@ -11,23 +11,6 @@ namespace estl {
 // --- event_subscription ---
 // --------------------------
 
-// event_subscription::event_subscription(const event_subscription& rhs) :
-//     event_id_           (rhs.event_id_),
-//     subscription_id_    (rhs.subscription_id_),
-//     events_center_ptr_  (rhs.events_center_ptr_)
-// {
-
-// }
-
-// event_subscription& event_subscription::operator=(const event_subscription& rhs)
-// {
-//     event_id_           = rhs.event_id_;
-//     subscription_id_    = rhs.subscription_id_;
-//     events_center_ptr_  = rhs.events_center_ptr_;
-
-//     return *this;
-// }
-
 event_subscription::event_subscription(event_subscription&& moving)
 {
     moving.swap(*this);
@@ -42,7 +25,7 @@ event_subscription& event_subscription::operator=(event_subscription&& moving)
 event_subscription::~event_subscription()
 {
     if (events_center_ptr_) {
-        std::cerr << "FIXMENM event_subscription::DESTRUCTOR, events_center_ptr_: " << events_center_ptr_ << "\n";
+        // std::cerr << "FIXMENM event_subscription::DESTRUCTOR, unsubscribe id: " << subscription_id_ << "\n";
         events_center_ptr_->un_subscribe(*this);
     }
 }
@@ -156,29 +139,25 @@ void events::executor_list_t::execute_all(const void* event_data_ptr) {
     subscriptions_pending_.clear();
     unsubscriptions_pending_.clear();
     currently_executing_ = true;
-    // std::size_t id = 0;
-    for (const auto& evt_exe_ptr: event_executors_) {
-        // assert (id++ == evt_exe_ptr->subscription_id_);
+    for (const auto& [evt_id, evt_exe_ptr]: event_executors_) {
         evt_exe_ptr->execute(event_data_ptr);
     }
     for (auto subscription_id : unsubscriptions_pending_) {
+        std::cerr << "!!! FIXMENM unsubscriptions_pending_: " << subscription_id << "\n";
         do_unsubscribe(subscription_id);
     }
-    subscription_id_vec_t new_subscriptions;
-    for (size_t i = 0; i < subscriptions_pending_.size(); ++i) {
-        auto& executor = subscriptions_pending_[i];
-        // We have set an expected subscription id, which really should macth
-        // if ( (next_subscription_id() +i) == executor->subscription_id_) {
-        //     std::cerr << " **** FIXMENM OK subscription ID: " << executor->subscription_id_ << "\n";
-        // }
-        const auto subscription_id = do_subscribe(std::move(executor));
-        new_subscriptions.push_back(subscription_id);
+    // subscription_id_vec_t new_subscriptions;
+    for (auto& executor : subscriptions_pending_) {
+        do_subscribe(std::move(executor));
+        // const auto subscription_id = do_subscribe(std::move(executor));
+        // new_subscriptions.push_back(subscription_id);
     }
     currently_executing_ = false;
 }
 
 void events::executor_list_t::unsubscribe(std::size_t subscription_id) {
     if (currently_executing_) {
+        std::cerr << "!!! FIXMENM executor_list_t push to pending list: " << subscription_id << "\n";
         unsubscriptions_pending_.push_back(subscription_id);
         return;
     }
@@ -187,8 +166,9 @@ void events::executor_list_t::unsubscribe(std::size_t subscription_id) {
 
 size_t events::executor_list_t::subscribe(std::unique_ptr<event_executor_base_t> executor)  {
     if (currently_executing_)   {
+        const auto subscription_id = executor->subscription_id_;
         subscriptions_pending_.push_back(std::move(executor));
-        return invalid_subscription_id;
+        return subscription_id;
     }
     return do_subscribe(std::move(executor));
 }
@@ -200,20 +180,16 @@ size_t events::executor_list_t::next_subscription_id() const
 
 size_t events::executor_list_t::do_subscribe (std::unique_ptr<event_executor_base_t> executor)
 {
-    std::cerr << " **** FIXMENM executor_list_t::do_subscribe subscription ID: " << executor->subscription_id_ << "\n";
-    const auto subscription_id = next_subscription_id();
-    executor->subscription_id_ = subscription_id;
-    event_executors_.push_back(std::move(executor));
-    // const auto subscription_id = static_cast<std::size_t>(std::distance(event_executors_.begin(), (event_executors_.end() -1)));
+    const auto subscription_id = executor->subscription_id_;
+    // std::cerr << " **** FIXMENM executor_list_t::do_subscribe subscription ID: " << subscription_id  << " , name: " << executor->event_name() << "\n";
+    event_executors_.insert_or_assign(subscription_id, std::move(executor));
     return subscription_id;
 }
 
 void events::executor_list_t::do_unsubscribe(std::size_t subscription_id)
 {
-    if (subscription_id < event_executors_.size() ) {
-        const auto erase_it = event_executors_.begin() + static_cast<std::int64_t>(subscription_id);
-        event_executors_.erase(erase_it);
-    }
+    std::cerr << " **** FIXMENM executor_list_t::do_UN-subscribe subscription ID: " << subscription_id << "\n";
+    event_executors_.erase(subscription_id);
 }
 
 // ----------------------------------

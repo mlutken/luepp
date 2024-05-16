@@ -38,12 +38,12 @@ struct cool_event_t {
 struct TestUnsubscribeOnDeletion
 {
     explicit TestUnsubscribeOnDeletion(events& events_center) {
-        std::cerr << "TestUnsubscribeOnDeletion::CONSTRUCTOR(): Subscribe!\n";
         subscription_ = events_center.subscribe_to<my_event_t>(&TestUnsubscribeOnDeletion::event_handler, this);
+        std::cerr << "TestUnsubscribeOnDeletion::CONSTRUCTOR(): Subscribe ID: "  << subscription_.subscription_id() << "!\n";
     }
 
     ~TestUnsubscribeOnDeletion() {
-        std::cerr << "TestUnsubscribeOnDeletion::DESTRUCTOR(): Un-subscribe!!! \n";
+        std::cerr << "TestUnsubscribeOnDeletion::DESTRUCTOR(): Un-subscribe ID: " << subscription_.subscription_id() << " !!! \n";
     }
 
     void event_handler(const my_event_t& e)  {
@@ -140,6 +140,7 @@ private:
     {
         test_unsubscribe_on_deletion_ = std::make_unique<TestUnsubscribeOnDeletion>(event_center_);
         my_event_subscription_a_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler, this);
+        std::cerr << "   !!! FIXMENM my_event_subscription_a_ ID: " << my_event_subscription_a_.subscription_id() << "\n";
         // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
 
         is_running_ = true;
@@ -171,6 +172,7 @@ private:
     // --------------------------------------
     void my_event_handler(const my_event_t& e)  {
         cerr << "Thread 2; Subscriber A 'my_event_handler': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+        std::cerr << "   !!! FIXMENM my_event_subscription_a_ UNSUBSCRIBE ID: " << my_event_subscription_a_.subscription_id() << "\n";
         event_center_.un_subscribe(my_event_subscription_a_);
         my_event_subscription_b_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler_const, this);
     }
@@ -203,7 +205,7 @@ void threads_test()
 
     Thread1Class thread_1_class{event_center, "Thread 1 Class"};
     Thread2Class thread_2_class{event_center, "Thread 2 Class"};
-    // std::cerr << "INFO Subscriber count at start: " << event_center.subscribers_count() << "\n";
+    std::cerr << "INFO Subscriber count at start: " << event_center.subscribers_count() << "\n";
 
     thread_1_class.start();
     thread_2_class.start();
@@ -212,7 +214,7 @@ void threads_test()
     }
 
     this_thread::sleep_for(1s);
-    // std::cerr << "INFO Subscriber count at 1st publish: " << event_center.subscribers_count() << "\n";
+    std::cerr << "INFO Subscriber count at 1st publish: " << event_center.subscribers_count() << "\n";
 
     auto evt = my_event_t{"Hello", 12};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
@@ -220,7 +222,7 @@ void threads_test()
     thread_2_class.delete_test_class();
     std::this_thread::sleep_for(1s);
 
-    // std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.subscribers_count() << "\n";
+    std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.subscribers_count() << "\n";
     evt = my_event_t{"Hello Again!", 33};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
     event_center.publish_event<my_event_t>(evt);

@@ -154,7 +154,8 @@ private:
                  event_executor_base_t      ();
         virtual ~event_executor_base_t      () = default;
         virtual std::size_t     event_id    () const = 0;
-        virtual const char*     name        () const = 0;
+        virtual const char*     event_name  () const = 0;
+        virtual const char*     handler_name() const = 0;
         virtual void            execute     (const void* event_data_ptr) const = 0;
         std::size_t             subscription_id_;
     private:
@@ -174,7 +175,8 @@ private:
         }
 
         std::size_t     event_id    () const override        { return typeid(EventType).hash_code();    }
-        const char*     name        () const override        { return typeid(EventType).name();         }
+        const char*     event_name  () const override        { return typeid(EventType).name();         }
+        const char*     handler_name() const override        { return typeid(Callable).name();          }
 
         void            execute     (const void* event_data_ptr) const override {
             if (!event_data_ptr) { return; }
@@ -195,7 +197,8 @@ private:
         }
 
         std::size_t     event_id    () const override        { return typeid(EventType).hash_code();    }
-        const char*     name        () const override        { return typeid(EventType).name();         }
+        const char*     event_name  () const override        { return typeid(EventType).name();         }
+        const char*     handler_name() const override        { return typeid(std::function<void (const EventType&)>).name();         }
 
         void            execute     (const void* event_data_ptr) const override {
             if (!event_data_ptr) { return; }
@@ -219,8 +222,9 @@ private:
         void            do_unsubscribe  (std::size_t subscription_id);
 
         using subscription_id_vec_t         = std::vector<subscription_id_t>;
+        using event_executor_map_t          = std::unordered_map<std::size_t, std::unique_ptr<event_executor_base_t>>;
         using event_executor_vec_t          = std::vector<std::unique_ptr<event_executor_base_t>>;
-        mutable event_executor_vec_t        event_executors_        {};
+        mutable event_executor_map_t        event_executors_        {};
         mutable event_executor_vec_t        subscriptions_pending_  {};
         mutable subscription_id_vec_t       unsubscriptions_pending_{};
         mutable bool                        currently_executing_    {false};
@@ -268,8 +272,6 @@ private:
     publish_data_queue_per_thread_map_t publish_data_queue_per_thread_  {};
     evt_subscribers_lookup_t            event_subscribers_              {};
     event_id_to_subscriber_count_t      event_id_to_subscribed_threads_ {};
-
-
 };
 
 
