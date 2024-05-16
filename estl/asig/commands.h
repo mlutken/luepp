@@ -10,7 +10,7 @@
 
 // https://en.cppreference.com/w/cpp/utility/functional/invoke
 
-namespace estl {
+namespace estl::asig {
 
 
 class commands
@@ -159,4 +159,4 @@ private:
 };
 
 
-} // END namespace estl
+} // END namespace estl::asig

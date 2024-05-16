@@ -12,7 +12,7 @@
 
 // https://en.cppreference.com/w/cpp/utility/functional/invoke
 
-namespace estl {
+namespace estl::asig {
 class events;
 using event_id_t        = std::size_t;
 using subscription_id_t = std::size_t;
@@ -275,4 +275,4 @@ private:
 };
 
 
-} // END namespace estl
+} // END namespace estl::asig

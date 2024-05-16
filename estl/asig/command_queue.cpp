@@ -1,6 +1,6 @@
 #include "command_queue.h"
 
-namespace estl {
+namespace estl::asig {
 
 command_queue::command_queue(size_t queue_size)
  :  queue_(queue_size),
@@ -31,4 +31,4 @@ bool command_queue::execute_next()
 
 
 
-} // END namespace estl
+} // END namespace estl::asig

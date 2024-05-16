@@ -4,7 +4,7 @@
 
 using namespace std;
 
-namespace estl {
+namespace estl::asig {
 
 commands::commands()
     :   thread_lookup_mutex_()
@@ -88,4 +88,4 @@ void commands::dbg_print_command_receivers() const
 
 
 
-} // END namespace estl
+} // END namespace estl::asig

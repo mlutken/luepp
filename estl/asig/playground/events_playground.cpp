@@ -9,7 +9,7 @@
 #include <asig/command_queue.h>
 
 using namespace std;
-using namespace estl;
+using namespace estl::asig;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
@@ -19,20 +19,14 @@ command_queue queue1{256};
 struct my_event_t {
     std::string     msg     {};
     float           val      = 0;
-    std::string     to_string () const { return "Msg: " + msg + ", val: " + std::to_string(val); }
+    std::string     to_string () const { return "m_event_t: " + msg + ", val: " + std::to_string(val); }
 };
 
 struct cool_event_t {
-    int p1;
-    float p2;
+    int         p1;
+    float       p2;
+    std::string     to_string () const { return "cool_event_t  p1: " + std::to_string(p1) + ", p2: " + std::to_string(p2); }
 };
-
-namespace myspace {
-struct cool_event_t {
-    int p1;
-    float p2;
-};
-} // namespace myspace
 
 
 struct TestUnsubscribeOnDeletion
@@ -71,7 +65,6 @@ struct Thread1Class
     bool is_running     () const { return is_running_; }
 
 
-
 private:
     // -------------------------------
     // --- Event Handler functions ---
@@ -79,6 +72,10 @@ private:
 
     void my_event_handler(const my_event_t& e)  {
         cerr << "Thread 1; Subscriber 2: MEM-HANDLE::my_event_t{" <<  e.to_string() << "}\n";
+    }
+
+    void cool_event_handler(const cool_event_t& e) const {
+        cerr << "Thread 1; Subscriber 1: MEM-HANDLE::cool_event_t{" <<  e.to_string() << "}\n";
     }
 
     // -----------------------------
@@ -89,6 +86,7 @@ private:
         auto handler1 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 1; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
         event_center_.subscribe_permanent(std::move(handler1));
         event_center_.subscribe_permanent<my_event_t>(&Thread1Class::my_event_handler, this);
+        event_center_.subscribe_permanent<cool_event_t>(&Thread1Class::cool_event_handler, this);
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
@@ -224,14 +222,15 @@ void threads_test()
 
     auto evt = my_event_t{"Hello", 12};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
-    event_center.publish_event<my_event_t>(evt);
+    event_center.publish_event(cool_event_t{3, 3.14});
+    event_center.publish_event(evt);
     thread_2_class.delete_test_class();
     std::this_thread::sleep_for(1s);
 
     std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.subscribers_count() << "\n";
     evt = my_event_t{"Hello Again!", 33};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
-    event_center.publish_event<my_event_t>(evt);
+    event_center.publish_event(evt);
     std::this_thread::sleep_for(2s);
 
     event_center.un_subscribe(thread_2_class.my_event_subscription_b_, thread_2_class.thread_->get_id());
@@ -239,7 +238,7 @@ void threads_test()
     std::cerr << "\nINFO Subscriber count at 3rd publish: " << event_center.subscribers_count() << "\n";
     evt = my_event_t{"Yet an event!", 88};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
-    event_center.publish_event<my_event_t>(evt);
+    event_center.publish_event(evt);
     std::this_thread::sleep_for(2s);
 
 

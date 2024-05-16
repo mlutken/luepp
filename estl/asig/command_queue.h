@@ -11,7 +11,7 @@
 // https://stackoverflow.com/questions/46388524/when-to-use-stdinvoke-instead-of-simply-calling-the-invokable
 // https://stackoverflow.com/questions/9831501/how-can-i-have-multiple-parameter-packs-in-a-variadic-template
 
-namespace estl {
+namespace estl::asig {
 
 class command_queue
 {
@@ -74,7 +74,7 @@ private:
 };
 
 
-} // END namespace estl
+} // END namespace estl::asig
 
 
 

@@ -8,7 +8,7 @@
 #include <asig/command_queue.h>
 
 using namespace std;
-using namespace estl;
+using namespace estl::asig;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
