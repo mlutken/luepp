@@ -55,7 +55,7 @@ public:
     template<class CommandCallable,
              typename ... CommandArgs>
     void send (const CommandCallable& command_fun,
-              const CommandArgs&... args)
+               const CommandArgs&... args)
     {
         auto cmd = [=]() {
             std::invoke(command_fun, args...);
@@ -76,56 +76,56 @@ public:
         push_cmd(std::move(cmd));
     }
 
-    template<typename ReturnType,
-             class CallbackCallable,
-             class CommandCallable,
-             typename ... CommandArgs >
-    void send_callback(const CallbackCallable& callback_fun,
-                       const CommandCallable& command_fun,
-                       const CommandArgs&... command_args
-                       )
-    {
-        auto to_send_fn = [=](){
-            auto cmd_return_value = std::invoke(command_fun, command_args...);
-            std::invoke(callback_fun, cmd_return_value);
-        };
-        push_cmd(std::move(to_send_fn));
-    }
+        template<typename ReturnType,
+                 class CallbackCallable,
+                 class CommandCallable,
+                 typename ... CommandArgs >
+        void send_callback(const CallbackCallable& callback_fun,
+                           const CommandCallable& command_fun,
+                           const CommandArgs&... command_args
+                           )
+        {
+            auto to_send_fn = [=](){
+                auto cmd_return_value = std::invoke(command_fun, command_args...);
+                std::invoke(callback_fun, cmd_return_value);
+            };
+            push_cmd(std::move(to_send_fn));
+        }
 
-    template<typename ReturnType,
-             class CallbackCallable,
-             class CommandCallable,
-             typename ... CommandArgs >
-    void send_callback(const CallbackCallable& callback_fun,
-                       std::int32_t cmd_seq_num,
-                       const CommandCallable& command_fun,
-                       const CommandArgs&... command_args
-                       )
-    {
-        auto to_send_fn = [=](){
-            auto cmd_return_value = std::invoke(command_fun, command_args...);
-            std::invoke(callback_fun, cmd_return_value, cmd_seq_num);
-        };
-        push_cmd(std::move(to_send_fn));
-    }
+        template<typename ReturnType,
+                 class CallbackCallable,
+                 class CommandCallable,
+                 typename ... CommandArgs >
+        void send_callback(const CallbackCallable& callback_fun,
+                           std::int32_t cmd_seq_num,
+                           const CommandCallable& command_fun,
+                           const CommandArgs&... command_args
+                           )
+        {
+            auto to_send_fn = [=](){
+                auto cmd_return_value = std::invoke(command_fun, command_args...);
+                std::invoke(callback_fun, cmd_return_value, cmd_seq_num);
+            };
+            push_cmd(std::move(to_send_fn));
+        }
 
-    template<class ReturnType,
-             class CallbackMemberCallable,
-             class CallbackClassObject,
-             class CommandCallable,
-             typename ... CommandArgs >
-    void send_callback (const CallbackMemberCallable& callback_member_fun,
-                        CallbackClassObject* callback_class_obj_ptr,
-                        const CommandCallable& command_fun,
-                        const CommandArgs&... command_args
-                       )
-    {
-        auto to_send_fn = [=](){
-            auto cmd_return_value = std::invoke(command_fun, command_args...);
-            std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value);
-        };
-        push_cmd(std::move(to_send_fn));
-    }
+        template<class ReturnType,
+                 class CallbackMemberCallable,
+                 class CallbackClassObject,
+                 class CommandCallable,
+                 typename ... CommandArgs >
+        void send_callback (const CallbackMemberCallable& callback_member_fun,
+                            CallbackClassObject* callback_class_obj_ptr,
+                            const CommandCallable& command_fun,
+                            const CommandArgs&... command_args
+                           )
+        {
+            auto to_send_fn = [=](){
+                auto cmd_return_value = std::invoke(command_fun, command_args...);
+                std::invoke(callback_member_fun, callback_class_obj_ptr, cmd_return_value);
+            };
+            push_cmd(std::move(to_send_fn));
+        }
 
     template<class ReturnType,
              class CallbackMemberCallable,

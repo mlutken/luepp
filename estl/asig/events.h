@@ -268,7 +268,6 @@ private:
 
     size_t                              queues_size_                    = 128;
 
-
     publish_data_queue_per_thread_map_t publish_data_queue_per_thread_  {};
     evt_subscribers_lookup_t            event_subscribers_              {};
     event_id_to_subscriber_count_t      event_id_to_subscribed_threads_ {};
