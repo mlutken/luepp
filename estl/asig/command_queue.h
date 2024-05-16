@@ -13,6 +13,24 @@
 
 namespace estl::asig {
 
+struct command_base_t {
+    virtual ~command_base_t() = default;
+    virtual void execute() {}
+    void operator()() {
+        execute();
+    }
+};
+
+template<class Callable>
+struct command_t : public command_base_t {
+    explicit command_t(Callable&& fn) : fn_(std::move(fn)) {}
+    virtual void execute() {
+        fn_();
+    }
+    Callable fn_;
+};
+
+
 class command_queue
 {
 public:
@@ -25,7 +43,7 @@ public:
 
     template<class ReturnType>
     void    push_callback(std::function<ReturnType ()>&&  command_fun,
-                             std::function<void (const ReturnType&)>&& result_callback_fun)
+                          std::function<void (const ReturnType&)>&& result_callback_fun)
     {
         auto cmd = [=]() {
             auto cmd_ret_val = command_fun();
