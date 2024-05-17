@@ -48,17 +48,17 @@ struct TestUnsubscribeOnDeletion
 
 };
 
-struct Thread1Class
+struct Thread_A
 {
-    explicit Thread1Class(events& cc, std::string name) : event_center_(cc), name_ (std::move(name))  {}
-    ~Thread1Class()  {
+    explicit Thread_A(events& cc, std::string name) : event_center_(cc), name_ (std::move(name))  {}
+    ~Thread_A()  {
         is_running_ = false;
         thread_->join();
     }
 
     void start  () {
         is_running_ = false;
-        thread_ = std::make_unique<std::thread>(&Thread1Class::thread_function, this);
+        thread_ = std::make_unique<std::thread>(&Thread_A::thread_function, this);
         cerr << "Starting thread ' " << name_ << "' ID: " << thread_->get_id() << "\n";
     }
     void stop           () { is_running_ = false; }
@@ -85,8 +85,8 @@ private:
     {
         auto handler1 = std::function<void (const my_event_t&)>([](const my_event_t& e) { cerr << "Thread 1; Subscriber 1: HANDLE::my_event_t{" <<  e.to_string() << "}\n";} );
         event_center_.subscribe_permanent(std::move(handler1));
-        event_center_.subscribe_permanent<my_event_t>(&Thread1Class::my_event_handler, this);
-        event_center_.subscribe_permanent<cool_event_t>(&Thread1Class::cool_event_handler, this);
+        event_center_.subscribe_permanent<my_event_t>(&Thread_A::my_event_handler, this);
+        event_center_.subscribe_permanent<cool_event_t>(&Thread_A::cool_event_handler, this);
 
         is_running_ = true;
         const auto end_time = steady_clock::now() + 6s;
@@ -117,17 +117,17 @@ public:
 };
 
 
-struct Thread2Class
+struct Thread_B
 {
-    explicit Thread2Class(events& cc, std::string name) : event_center_(cc), name_ (std::move(name))  {}
-    ~Thread2Class()  {
+    explicit Thread_B(events& cc, std::string name) : event_center_(cc), name_ (std::move(name))  {}
+    ~Thread_B()  {
         is_running_ = false;
         thread_->join();
     }
 
     void start  () {
         is_running_ = false;
-        thread_ = std::make_unique<std::thread>(&Thread2Class::thread_function, this);
+        thread_ = std::make_unique<std::thread>(&Thread_B::thread_function, this);
         cerr << "Starting thread ' " << name_ << "' ID: " << thread_->get_id() << "\n";
     }
     void stop               () { is_running_ = false; }
@@ -142,7 +142,7 @@ private:
     void thread_function()
     {
         test_unsubscribe_on_deletion_ = std::make_unique<TestUnsubscribeOnDeletion>(event_center_);
-        my_event_subscription_a_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler, this);
+        my_event_subscription_a_ = event_center_.subscribe_to<my_event_t>(&Thread_B::my_event_handler, this);
         // std::cerr << "   !!! FIXMENM my_event_subscription_a_ ID: " << my_event_subscription_a_.subscription_id() << "\n";
         // my_event_subscription_2_ = event_center_.subscribe_to_event<my_event_t>(&Thread2Class::my_event_handler_const, this);
 
@@ -177,7 +177,7 @@ private:
         cerr << "Thread 2; Subscriber A 'my_event_handler': HANDLE::my_event_t{" <<  e.to_string() << "}\n";
         // std::cerr << "   !!! FIXMENM my_event_subscription_a_ UNSUBSCRIBE ID: " << my_event_subscription_a_.subscription_id() << "\n";
         event_center_.un_subscribe(my_event_subscription_a_);
-        my_event_subscription_b_ = event_center_.subscribe_to<my_event_t>(&Thread2Class::my_event_handler_const, this);
+        my_event_subscription_b_ = event_center_.subscribe_to<my_event_t>(&Thread_B::my_event_handler_const, this);
     }
 
 
@@ -207,8 +207,8 @@ public:
 void threads_test()
 {
 
-    Thread1Class thread_1_class{event_center, "Thread 1 Class"};
-    Thread2Class thread_2_class{event_center, "Thread 2 Class"};
+    Thread_A thread_1_class{event_center, "Thread 1 Class"};
+    Thread_B thread_2_class{event_center, "Thread 2 Class"};
     std::cerr << "INFO Subscriber count at start: " << event_center.subscribers_count() << "\n";
 
     thread_1_class.start();

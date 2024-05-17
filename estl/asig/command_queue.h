@@ -31,7 +31,7 @@ public:
     template<class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send (const CommandMemberCallable& command_member_fun,
+    void call(const CommandMemberCallable& command_member_fun,
               CommandClassObject* command_class_obj_ptr,
               const CommandArgs&... args)
     {
@@ -45,7 +45,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_callback(const std::function<void (const ReturnType&)>& callback_function,
+    void call_callback(const std::function<void (const ReturnType&)>& callback_function,
                        const CommandMemberCallable& command_member_fun,
                        CommandClassObject* command_class_obj_ptr,
                        const CommandArgs&... command_args
@@ -65,7 +65,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_callback (const CallbackMemberCallable& callback_member_fun,
+    void call_callback (const CallbackMemberCallable& callback_member_fun,
                        CallbackClassObject* callback_class_obj_ptr,
                        const CommandMemberCallable& command_member_fun,
                        CommandClassObject* command_class_obj_ptr,
@@ -85,7 +85,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_callback(const CallbackMemberCallable& callback_member_fun,
+    void call_callback(const CallbackMemberCallable& callback_member_fun,
                        CallbackClassObject* callback_class_obj_ptr,
                        std::int32_t cmd_seq_num,
                        const CommandMemberCallable& command_member_fun,
@@ -104,7 +104,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_response(command_queue& response_queue,
+    void call_response(command_queue& response_queue,
                        const std::function<void (const ReturnType&)>& response_function,
                        const CommandMemberCallable& command_member_fun,
                        CommandClassObject* command_class_obj_ptr,
@@ -130,7 +130,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_response(command_queue& response_queue,
+    void call_response(command_queue& response_queue,
                        const ResponseMemberCallable& response_member_fun,
                        ResponseClassObject* response_class_obj_ptr,
                        const CommandMemberCallable& command_member_fun,
@@ -157,7 +157,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_response(command_queue& response_queue,
+    void call_response(command_queue& response_queue,
                        const ResponseMemberCallable& response_member_fun,
                        ResponseClassObject* response_class_obj_ptr,
                        std::int32_t cmd_seq_num,

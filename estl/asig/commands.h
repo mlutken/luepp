@@ -26,14 +26,14 @@ public:
     template<class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send (const CommandMemberCallable& command_member_fun,
+    void call(const CommandMemberCallable& command_member_fun,
               CommandClassObject* command_class_obj_ptr,
               const CommandArgs&... args)
     {
         auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
-        cmd_queue.send<CommandMemberCallable, CommandClassObject, CommandArgs...>
+        cmd_queue.call<CommandMemberCallable, CommandClassObject, CommandArgs...>
             (command_member_fun, command_class_obj_ptr, args...);
     }
 
@@ -41,17 +41,17 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_callback(const std::function<void (const ReturnType&)>& callback_function,
-                        const CommandMemberCallable& command_member_fun,
-                        CommandClassObject* command_class_obj_ptr,
-                        const CommandArgs&... command_args
+    void call_callback(const std::function<void (const ReturnType&)>& callback_function,
+                       const CommandMemberCallable& command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       const CommandArgs&... command_args
                        )
     {
         auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_callback<ReturnType, CommandMemberCallable, CommandClassObject, CommandArgs...>
+        cmd_queue.call_callback<ReturnType, CommandMemberCallable, CommandClassObject, CommandArgs...>
             (callback_function, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
@@ -61,7 +61,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_callback (const CallbackMemberCallable& callback_member_fun,
+    void call_callback(const CallbackMemberCallable& callback_member_fun,
                        CallbackClassObject* callback_class_obj_ptr,
                        const CommandMemberCallable& command_member_fun,
                        CommandClassObject* command_class_obj_ptr,
@@ -72,7 +72,7 @@ public:
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_callback<ReturnType, CallbackMemberCallable, CallbackClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+        cmd_queue.call_callback<ReturnType, CallbackMemberCallable, CallbackClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
             (callback_member_fun, callback_class_obj_ptr, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
@@ -82,7 +82,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_callback(const CallbackMemberCallable& callback_member_fun,
+    void call_callback(const CallbackMemberCallable& callback_member_fun,
                        CallbackClassObject* callback_class_obj_ptr,
                        std::int32_t cmd_seq_num,
                        const CommandMemberCallable& command_member_fun,
@@ -94,7 +94,7 @@ public:
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_callback<ReturnType, CallbackMemberCallable, CallbackClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+        cmd_queue.call_callback<ReturnType, CallbackMemberCallable, CallbackClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
             (callback_member_fun, callback_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
@@ -102,7 +102,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_response(const std::function<void (const ReturnType&)>& response_function,
+    void call_response(const std::function<void (const ReturnType&)>& response_function,
                        const CommandMemberCallable& command_member_fun,
                        CommandClassObject* command_class_obj_ptr,
                        const CommandArgs&... command_args
@@ -114,7 +114,7 @@ public:
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_response<ReturnType, CommandMemberCallable, CommandClassObject, CommandArgs...>
+        cmd_queue.call_response<ReturnType, CommandMemberCallable, CommandClassObject, CommandArgs...>
             (*resp_queue_ptr, response_function, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
@@ -125,7 +125,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_response(const ResponseMemberCallable& response_member_fun,
+    void call_response(const ResponseMemberCallable& response_member_fun,
                        ResponseClassObject* response_class_obj_ptr,
                        const CommandMemberCallable& command_member_fun,
                        CommandClassObject* command_class_obj_ptr,
@@ -138,7 +138,7 @@ public:
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_response<ReturnType, ResponseMemberCallable, ResponseClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+        cmd_queue.call_response<ReturnType, ResponseMemberCallable, ResponseClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
             (*resp_queue_ptr, response_member_fun, response_class_obj_ptr, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
@@ -148,7 +148,7 @@ public:
              class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
-    void send_response(const ResponseMemberCallable& response_member_fun,
+    void call_response(const ResponseMemberCallable& response_member_fun,
                        ResponseClassObject* response_class_obj_ptr,
                        std::int32_t cmd_seq_num,
                        const CommandMemberCallable& command_member_fun,
@@ -162,7 +162,7 @@ public:
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_response<ReturnType, ResponseMemberCallable, ResponseClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+        cmd_queue.call_response<ReturnType, ResponseMemberCallable, ResponseClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
             (*resp_queue_ptr, response_member_fun, response_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
