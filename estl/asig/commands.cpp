@@ -45,29 +45,6 @@ void commands::register_command_receiver(void* class_instance_ptr, std::thread::
     }
 }
 
-commands::queue_ptr_t commands::get_receiver_queue(std::thread::id thread_id)
-{
-    std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
-    const auto it_queue = cmd_queues_.find(thread_id);
-    if (it_queue != cmd_queues_.end()) {
-        return it_queue->second;
-    }
-    return commands::queue_ptr_t(nullptr);
-}
-
-commands::queue_ptr_t commands::get_receiver_queue(void* class_instance_ptr)
-{
-    std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
-    const auto it_rec = receiver_lookup_.find(class_instance_ptr);
-    if (it_rec != receiver_lookup_.end()) {
-        const auto thread_id = it_rec->second;
-        const auto it_queue = cmd_queues_.find(thread_id);
-        if (it_queue != cmd_queues_.end()) {
-            return it_queue->second;
-        }
-    }
-    return commands::queue_ptr_t(nullptr);
-}
 
 size_t commands::queues_count() const
 {
@@ -96,6 +73,29 @@ void commands::dbg_print_command_receivers() const
     }
 }
 
+commands::queue_ptr_t commands::get_receiver_queue(std::thread::id thread_id)
+{
+    std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
+    const auto it_queue = cmd_queues_.find(thread_id);
+    if (it_queue != cmd_queues_.end()) {
+        return it_queue->second;
+    }
+    return commands::queue_ptr_t(nullptr);
+}
+
+commands::queue_ptr_t commands::get_receiver_queue(void* class_instance_ptr)
+{
+    std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
+    const auto it_rec = receiver_lookup_.find(class_instance_ptr);
+    if (it_rec != receiver_lookup_.end()) {
+        const auto thread_id = it_rec->second;
+        const auto it_queue = cmd_queues_.find(thread_id);
+        if (it_queue != cmd_queues_.end()) {
+            return it_queue->second;
+        }
+    }
+    return commands::queue_ptr_t(nullptr);
+}
 
 
 } // END namespace estl::asig

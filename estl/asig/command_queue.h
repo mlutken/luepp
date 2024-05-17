@@ -188,15 +188,12 @@ public:
 private:
     struct command_base_t {
         virtual ~command_base_t() = default;
-        virtual void execute() {}
-        void operator()() {
-            execute();
-        }
+        virtual void execute() = 0;
     };
 
     template<class Callable>
     struct command_t : public command_base_t {
-        explicit command_t(Callable&& fn) : fn_(std::forward(fn)) {}
+        explicit command_t(Callable&& fn) : fn_(std::move(fn)) {}
 
         static std::unique_ptr<command_base_t> create(Callable&& fn) {
             return std::unique_ptr<command_base_t>(new command_t<Callable>(std::move(fn)) );
@@ -208,9 +205,10 @@ private:
             return std::unique_ptr<command_base_t>(new command_t<Callable>(fn) );
         }
 
-        virtual void execute() {
+        void execute() override {
             fn_();
         }
+
         Callable fn_;
     };
 

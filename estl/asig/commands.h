@@ -21,8 +21,47 @@ public:
     commands    ();
     explicit    commands (size_t command_queues_size);
     void        execute_all_for_this_thread ();
+    void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
+    size_t      queues_count                () const;
+    size_t      receivers_count             () const;
+    size_t      queues_size                 () const { return command_queues_size_; }
 
+    // ----------------------------
+    // --- Timer call functions ---
+    // ----------------------------
+    template<class CommandMemberCallable,
+             class CommandClassObject,
+             typename ... CommandArgs>
+    void timer_call_at(std::chrono::steady_clock::time_point call_at_time_point,
+                       const CommandMemberCallable& command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       const CommandArgs&... args)
+    {
+//        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+//        if (!cmd_queue_ptr) { return; }
+//        command_queue& cmd_queue = *cmd_queue_ptr;
+//        cmd_queue.call<CommandMemberCallable, CommandClassObject, CommandArgs...>
+//            (command_member_fun, command_class_obj_ptr, args...);
+    }
 
+    template<class CommandMemberCallable,
+             class CommandClassObject,
+             typename ... CommandArgs>
+    void timer_call_in(std::chrono::milliseconds call_after_ms,
+                       const CommandMemberCallable& command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       const CommandArgs&... args)
+    {
+//        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+//        if (!cmd_queue_ptr) { return; }
+//        command_queue& cmd_queue = *cmd_queue_ptr;
+//        cmd_queue.call<CommandMemberCallable, CommandClassObject, CommandArgs...>
+//            (command_member_fun, command_class_obj_ptr, args...);
+    }
+
+    // ----------------------
+    // --- Call functions ---
+    // ----------------------
     template<class CommandMemberCallable,
              class CommandClassObject,
              typename ... CommandArgs>
@@ -37,6 +76,9 @@ public:
             (command_member_fun, command_class_obj_ptr, args...);
     }
 
+    // ------------------------------------
+    // --- Call with callback functions ---
+    // ------------------------------------
     template<class ReturnType,
              class CommandMemberCallable,
              class CommandClassObject,
@@ -98,6 +140,9 @@ public:
             (callback_member_fun, callback_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
+    // ------------------------------------
+    // --- Call with response functions ---
+    // ------------------------------------
     template<class ReturnType,
              class CommandMemberCallable,
              class CommandClassObject,
@@ -166,15 +211,9 @@ public:
             (*resp_queue_ptr, response_member_fun, response_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
-
-
-    void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
     queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
     queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
 
-    size_t      queues_count                () const;
-    size_t      receivers_count             () const;
-    size_t      queues_size                 () const { return command_queues_size_; }
 
     void        dbg_print_command_receivers () const;
 
