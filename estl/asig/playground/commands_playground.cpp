@@ -45,8 +45,14 @@ void free_function(int some_number)
 
 void free_callback(int some_number)
 {
-    cerr << "{" << thread_name() << "} " << "Hello free_callback(" << some_number << ")\n";;
+    cerr << "{" << thread_name() << "} " << "Hello free_callback(" << some_number << ")\n";
 }
+
+void free_callback_seq_num(int some_number, int32_t cmd_seq_num)
+{
+    cerr << "{" << thread_name() << "} free_callback_seq_num(" << some_number << ") , cmd_seq_num: " << cmd_seq_num << "\n";
+}
+
 
 struct Thread1Class
 {
@@ -194,28 +200,34 @@ private:
         square_me_parameter += 10;
         cmd_seq_num += 1;
 
-        if (cmd_seq_num < 2) {
-            const int sqr_param = square_me_parameter / 2;
-            cerr << "From {" << thread_name() << "} Callback, Response: Thread1Class::square_me(" << sqr_param << ")\n";
-            command_center_.send_callback<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, sqr_param);
-            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, sqr_param);
-        }
-        if (cmd_seq_num < 5) {
-            if (cmd_seq_num < 2) {
-                cerr << "From {" << thread_name() << "} SEQUENCE NUMBER Callback Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-                command_center_.send_callback<int>(&Thread2Class::callback_squared_seq_num, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-            }
-            else {
-                cerr << "From {" << thread_name() << "} SEQUENCE NUMBER Response Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-                command_center_.send_response<int>(&Thread2Class::callback_squared_seq_num, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-            }
-        }
-        if (cmd_seq_num < 2) {
-            const int qube_param = square_me_parameter;
-            cerr << "From {" << thread_name() << "} Callback, Response: Thread1Class::qube_me(" << qube_param << ")\n";
-            command_center_.send_callback_to<int>( &Thread2Class::callback_qubed, this, thread_1_class.thread_id(), qube_me_free_fun, qube_param);
+//        if (cmd_seq_num < 2) {
+//            const int sqr_param = square_me_parameter / 2;
+//            cerr << "From {" << thread_name() << "} Callback, Response: Thread1Class::square_me(" << sqr_param << ")\n";
+//            command_center_.send_callback<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, sqr_param);
 //            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, sqr_param);
+//        }
+        if (cmd_seq_num < 5) {
+                cerr << "From {" << thread_name() << "} SEQUENCE NUMBER Response Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
+            auto lambda_response_squared = [=](const int& squared_number)  {
+                cerr << "{" << thread_name() << "} lambda_response_squared(" << squared_number << ")\n";
+            };
+            command_center.send_response<int>(lambda_response_squared, &Thread1Class::square_me, &thread_1_class, 9);
+
+
+//                command_center_.send_response<int>(&Thread2Class::callback_squared_seq_num, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+
+                // command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+
         }
+//        if (cmd_seq_num < 2) {
+//            const int qube_param = square_me_parameter;
+//            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+////            auto fn_free
+
+//            cerr << "From {" << thread_name() << "} Callback, Response: Thread1Class::qube_me(" << qube_param << ")\n";
+//            command_center_.send_callback<int>(free_callback, &Thread1Class::square_me, &thread_1_class, 12);
+////            command_center_.send_callback<int>(free_callback_seq_num, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, 12);
+//        }
     }
 
 
@@ -242,19 +254,17 @@ void threads_test()
     }
     command_center.dbg_print_command_receivers();
 
-    auto lambda_fn_0 = [=]()  {
-        std::cerr << "{" << thread_name() << "} Calling lambda no parameters ()\n";
-    };
-    auto lambda_fn_1 = [=](float val)  {
-        std::cerr  << "{" << thread_name() << "} Calling lambda(" << val <<  ")\n";
-    };
 
-    command_center.send_to(thread_1_class.thread_id(), lambda_fn_0);
-    command_center.send_to(thread_1_class.thread_id(), lambda_fn_1, 3.14);
-    command_center.send_to(thread_1_class.thread_id(), free_function, 6);
     command_center.send(&Thread1Class::mem_fun_no_params, &thread_1_class);
     command_center.send(&Thread1Class::member_function, &thread_1_class, 12);
+    int32_t cmd_seq_num = 1;
+    command_center.send_callback<int>(&Thread2Class::callback_squared_seq_num, &thread_2_class, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, 7);
+    command_center.send_callback<int>(&Thread2Class::callback_squared, &thread_2_class, &Thread1Class::square_me, &thread_1_class, 8);
 
+    auto lambda_callback_squared = [=](int squared_number)  {
+        cerr << "{" << thread_name() << "} lambda_callback_squared(" << squared_number << ")\n";
+    };
+    command_center.send_callback<int>(lambda_callback_squared, &Thread1Class::square_me, &thread_1_class, 8);
 
     cerr << "\n--- commands playground, Main thread ID: " << thread_name() << "---\n";
     cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
@@ -276,7 +286,7 @@ void simple_test()
     cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
     cerr << "queue1.capacity()    : "  << queue1.capacity() << "\n";
     cerr << "queue1.size()        : "  << queue1.size() << "\n";
-    queue1.push([](){cerr << "Hello from push\n"; });
+//    queue1.push([](){cerr << "Hello from push\n"; });
 
 
     // queue1.send(free_function, 12);

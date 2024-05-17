@@ -22,16 +22,6 @@ public:
     explicit    commands (size_t command_queues_size);
     void        execute_all_for_this_thread ();
 
-    template<class CommandCallable,
-             typename ... CommandArgs>
-    void send_to (std::thread::id thread_id,
-                  const CommandCallable& command_fun,
-                  const CommandArgs&... args)
-    {
-        auto cmd_queue_ptr = get_receiver_queue(thread_id);
-        if (!cmd_queue_ptr) { return; }
-        cmd_queue_ptr->send(command_fun, args...);
-    }
 
     template<class CommandMemberCallable,
              class CommandClassObject,
@@ -42,31 +32,28 @@ public:
     {
         auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
-        cmd_queue_ptr->send(command_member_fun, command_class_obj_ptr, args...);
+        command_queue& cmd_queue = *cmd_queue_ptr;
+        cmd_queue.send<CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (command_member_fun, command_class_obj_ptr, args...);
     }
 
-
-
     template<class ReturnType,
-             class CallbackMemberCallable,
-             class CallbackClassObject,
-             class CommandCallable,
-             typename ... CommandArgs >
-    void send_callback_to (const CallbackMemberCallable& callback_member_fun,
-                           CallbackClassObject* callback_class_obj_ptr,
-                           std::thread::id thread_id,
-                           const CommandCallable& command_fun,
-                           const CommandArgs&... command_args
-                          )
+             class CommandMemberCallable,
+             class CommandClassObject,
+             typename ... CommandArgs>
+    void send_callback(const std::function<void (const ReturnType&)>& callback_function,
+                        const CommandMemberCallable& command_member_fun,
+                        CommandClassObject* command_class_obj_ptr,
+                        const CommandArgs&... command_args
+                       )
     {
-        auto cmd_queue_ptr = get_receiver_queue(thread_id);
-        if (!cmd_queue_ptr) { return; }
+        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_callback<ReturnType>(callback_member_fun, callback_class_obj_ptr, command_fun, command_args...);
+        cmd_queue.send_callback<ReturnType, CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (callback_function, command_member_fun, command_class_obj_ptr, command_args...);
     }
-
 
     template<class ReturnType,
              class CallbackMemberCallable,
@@ -85,7 +72,8 @@ public:
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_callback<ReturnType>(callback_member_fun, callback_class_obj_ptr, command_member_fun, command_class_obj_ptr, command_args...);
+        cmd_queue.send_callback<ReturnType, CallbackMemberCallable, CallbackClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (callback_member_fun, callback_class_obj_ptr, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
     template<class ReturnType,
@@ -106,7 +94,28 @@ public:
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_callback<ReturnType>(callback_member_fun, callback_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
+        cmd_queue.send_callback<ReturnType, CallbackMemberCallable, CallbackClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (callback_member_fun, callback_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
+    }
+
+    template<class ReturnType,
+             class CommandMemberCallable,
+             class CommandClassObject,
+             typename ... CommandArgs>
+    void send_response(const std::function<void (const ReturnType&)>& response_function,
+                       const CommandMemberCallable& command_member_fun,
+                       CommandClassObject* command_class_obj_ptr,
+                       const CommandArgs&... command_args
+                       )
+    {
+        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        if (!cmd_queue_ptr) { return; }
+        auto resp_queue_ptr = get_receiver_queue(std::this_thread::get_id());
+        if (!resp_queue_ptr) { return; }
+        command_queue& cmd_queue = *cmd_queue_ptr;
+
+        cmd_queue.send_response<ReturnType, CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (*resp_queue_ptr, response_function, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
 
@@ -129,7 +138,8 @@ public:
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_response<ReturnType>(*resp_queue_ptr, response_member_fun, response_class_obj_ptr, command_member_fun, command_class_obj_ptr, command_args...);
+        cmd_queue.send_response<ReturnType, ResponseMemberCallable, ResponseClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (*resp_queue_ptr, response_member_fun, response_class_obj_ptr, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
     template<class ReturnType,
@@ -152,8 +162,79 @@ public:
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
-        cmd_queue.send_response<ReturnType>(*resp_queue_ptr, response_member_fun, response_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
+        cmd_queue.send_response<ReturnType, ResponseMemberCallable, ResponseClassObject, CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (*resp_queue_ptr, response_member_fun, response_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
     }
+
+
+
+    void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
+    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
+    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
+
+    size_t      queues_count                () const;
+    size_t      receivers_count             () const;
+    size_t      queues_size                 () const { return command_queues_size_; }
+
+    void        dbg_print_command_receivers () const;
+
+private:
+    using cmd_queues_map_t          = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;
+
+    using receiver_lookup_map_t     = std::unordered_map<void*, std::thread::id>;
+
+    mutable std::mutex      thread_lookup_mutex_;
+    size_t                  command_queues_size_ = 128;
+    cmd_queues_map_t        cmd_queues_;
+    receiver_lookup_map_t   receiver_lookup_;
+};
+
+
+} // END namespace estl::asig
+
+
+//    template<class ReturnType,
+//             class CallbackCallable,
+//             class CommandMemberCallable,
+//             class CommandClassObject,
+//             typename ... CommandArgs>
+//    void send_callback (const CallbackCallable& callback_free_fun,
+//                       const CommandMemberCallable& command_member_fun,
+//                       CommandClassObject* command_class_obj_ptr,
+//                       const CommandArgs&... command_args
+//                       )
+//    {
+//        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+//        if (!cmd_queue_ptr) { return; }
+//        command_queue& cmd_queue = *cmd_queue_ptr;
+
+//        cmd_queue.send_callback<ReturnType, CallbackCallable, CommandMemberCallable, CommandClassObject, CommandArgs...>
+//            (callback_free_fun, command_member_fun, command_class_obj_ptr, command_args...);
+//    }
+
+// --------------
+
+//    template<class ReturnType,
+//             class CallbackCallable,
+//             class CommandMemberCallable,
+//             class CommandClassObject,
+//             typename ... CommandArgs>
+//    void send_callback (const CallbackCallable& callback_free_fun,
+//                        std::int32_t cmd_seq_num,
+//                        const CommandMemberCallable& command_member_fun,
+//                        CommandClassObject* command_class_obj_ptr,
+//                        const CommandArgs&... command_args
+//                       )
+//    {
+//        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+//        if (!cmd_queue_ptr) { return; }
+//        command_queue& cmd_queue = *cmd_queue_ptr;
+
+//        cmd_queue.send_callback<ReturnType, CallbackCallable, CommandMemberCallable, CommandClassObject, CommandArgs...>
+//            (callback_free_fun, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
+//    }
+
+// ##############
 
 //    template<class ReturnType,
 //             class ResultMemberCallable,
@@ -243,29 +324,16 @@ public:
 //    }
 
 
-    void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
-    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
-    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
+// -------------
 
-    size_t      queues_count                () const;
-    size_t      receivers_count             () const;
-    size_t      queues_size                 () const { return command_queues_size_; }
-
-    void        dbg_print_command_receivers () const;
-
-private:
-    using cmd_queues_map_t          = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;
-
-    using receiver_lookup_map_t     = std::unordered_map<void*, std::thread::id>;
-
-    mutable std::mutex      thread_lookup_mutex_;
-    size_t                  command_queues_size_ = 128;
-    cmd_queues_map_t        cmd_queues_;
-    receiver_lookup_map_t   receiver_lookup_;
-
-
-
-};
-
-
-} // END namespace estl::asig
+//    template<class CommandCallable,
+//             typename ... CommandArgs>
+//    void send_to (std::thread::id thread_id,
+//                  const CommandCallable& command_fun,
+//                  const CommandArgs&... args)
+//    {
+//        auto cmd_queue_ptr = get_receiver_queue(thread_id);
+//        if (!cmd_queue_ptr) { return; }
+//        command_queue& cmd_queue = *cmd_queue_ptr;
+//        cmd_queue.send(command_fun, args...);
+//    }
