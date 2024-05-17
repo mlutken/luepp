@@ -199,6 +199,8 @@ private:
         static int32_t cmd_seq_num = 0;
         square_me_parameter += 10;
         cmd_seq_num += 1;
+        const int32_t local_seq_num = cmd_seq_num;
+
 
 //        if (cmd_seq_num < 2) {
 //            const int sqr_param = square_me_parameter / 2;
@@ -207,16 +209,15 @@ private:
 //            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, sqr_param);
 //        }
         if (cmd_seq_num < 5) {
-                cerr << "From {" << thread_name() << "} SEQUENCE NUMBER Response Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-            auto lambda_response_squared = [=](const int& squared_number)  {
-                cerr << "{" << thread_name() << "} lambda_response_squared(" << squared_number << ")\n";
-            };
-            command_center.send_response<int>(lambda_response_squared, &Thread1Class::square_me, &thread_1_class, 9);
+            cerr << "From {" << thread_name() << "} SEQUENCE NUMBER Response Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << local_seq_num << "\n";
 
+//            auto lambda_response_squared = [=](const int& squared_number)  {
+//                cerr << "{" << thread_name() << "} lambda_response_squared(" << squared_number << "), seq number: " << local_seq_num << "\n";
+//            };
+//            command_center.send_response<int>(lambda_response_squared, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
 
-//                command_center_.send_response<int>(&Thread2Class::callback_squared_seq_num, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-
-                // command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+            command_center_.send_response<int>(&Thread2Class::callback_squared_seq_num, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
+//            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
 
         }
 //        if (cmd_seq_num < 2) {
