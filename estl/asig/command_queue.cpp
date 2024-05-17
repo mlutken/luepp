@@ -31,7 +31,7 @@ bool command_queue::execute_next()
 }
 
 
-void command_queue::push_cmd(std::unique_ptr<command_base_t> cmd)
+void command_queue::do_push_command(std::unique_ptr<command_base_t> cmd)
 {
     std::scoped_lock<std::mutex> lock(push_mutex_);
     queue_.push(std::move(cmd));

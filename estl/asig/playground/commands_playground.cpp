@@ -129,7 +129,7 @@ private:
     std::unique_ptr<std::thread>    thread_             {nullptr};
 };
 
-Thread1Class thread_1_class{command_center, "Thread 1"};
+Thread1Class thread_1{command_center, "Thread 1"};
 
 struct Thread2Class
 {
@@ -195,40 +195,38 @@ private:
 
     void idle_work_function()
     {
-        static int square_me_parameter = 0;
-        static int32_t cmd_seq_num = 0;
-        square_me_parameter += 10;
-        cmd_seq_num += 1;
-        const int32_t local_seq_num = cmd_seq_num;
+        static int square_me_param = 0;
+        static int32_t static_cmd_seq_num = 0;
+        square_me_param += 10;
+        static_cmd_seq_num += 1;
+        const int32_t seq_num = static_cmd_seq_num;
 
 
-//        if (cmd_seq_num < 2) {
-//            const int sqr_param = square_me_parameter / 2;
-//            cerr << "From {" << thread_name() << "} Callback, Response: Thread1Class::square_me(" << sqr_param << ")\n";
-//            command_center_.send_callback<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, sqr_param);
-//            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, sqr_param);
-//        }
-        if (cmd_seq_num < 5) {
-            cerr << "From {" << thread_name() << "} SEQUENCE NUMBER Response Thread1Class::square_me(" << square_me_parameter << ") , cmd_seq_num: " << local_seq_num << "\n";
+        if (static_cmd_seq_num < 5) {
+            cerr << "From {" << thread_name() << "} SEQUENCE NUMBER Response Thread1Class::square_me(" << square_me_param << ") , cmd_seq_num: " << seq_num << "\n";
 
-//            auto lambda_response_squared = [=](const int& squared_number)  {
-//                cerr << "{" << thread_name() << "} lambda_response_squared(" << squared_number << "), seq number: " << local_seq_num << "\n";
+            // ---------------------------------------------
+            // --- Normal callback and response examples ---
+            // ---------------------------------------------
+//            command_center_.send_callback<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1, square_me_param);
+//            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1, square_me_param);
+
+
+            // ---------------------------------------------------
+            // --- Using sequence numbers in callback/response ---
+            // ---------------------------------------------------
+//            command_center_.send_callback<int>(&Thread2Class::callback_squared_seq_num, this, seq_num, &Thread1Class::square_me, &thread_1, square_me_param);
+            command_center_.send_response<int>(&Thread2Class::callback_squared_seq_num, this, seq_num, &Thread1Class::square_me, &thread_1, square_me_param);
+
+            // ------------------------------------------------------------------
+            // --- Lambda callback/response (with sequence number in capture) ---
+            // ------------------------------------------------------------------
+//            auto lambda_callback_squared = [=](const int& squared_number)  {
+//                cerr << "{" << thread_name() << "} lambda_callback_squared(" << squared_number << "), seq number: " << seq_num << "\n";
 //            };
-//            command_center.send_response<int>(lambda_response_squared, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-
-            command_center_.send_response<int>(&Thread2Class::callback_squared_seq_num, this, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-//            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-
+//            command_center.send_callback<int>(lambda_callback_squared, &Thread1Class::square_me, &thread_1, square_me_param);
+//            command_center.send_response<int>(lambda_callback_squared, &Thread1Class::square_me, &thread_1, square_me_param);
         }
-//        if (cmd_seq_num < 2) {
-//            const int qube_param = square_me_parameter;
-//            command_center_.send_response<int>(&Thread2Class::callback_squared, this, &Thread1Class::square_me, &thread_1_class, square_me_parameter);
-////            auto fn_free
-
-//            cerr << "From {" << thread_name() << "} Callback, Response: Thread1Class::qube_me(" << qube_param << ")\n";
-//            command_center_.send_callback<int>(free_callback, &Thread1Class::square_me, &thread_1_class, 12);
-////            command_center_.send_callback<int>(free_callback_seq_num, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, 12);
-//        }
     }
 
 
@@ -242,85 +240,48 @@ private:
 };
 
 
-Thread2Class thread_2_class{command_center, "Thread 2"};
+Thread2Class thread_2{command_center, "Thread 2"};
 
 
 void threads_test()
 {
 
-    thread_1_class.start();
-    thread_2_class.start();
-    while (!(thread_1_class.is_running() && thread_2_class.is_running())) {
+    thread_1.start();
+    thread_2.start();
+    while (!(thread_1.is_running() && thread_2.is_running())) {
         this_thread::sleep_for(1ms);
     }
     command_center.dbg_print_command_receivers();
 
 
-    command_center.send(&Thread1Class::mem_fun_no_params, &thread_1_class);
-    command_center.send(&Thread1Class::member_function, &thread_1_class, 12);
+    command_center.send(&Thread1Class::mem_fun_no_params, &thread_1);
+    command_center.send(&Thread1Class::member_function, &thread_1, 12);
     int32_t cmd_seq_num = 1;
-    command_center.send_callback<int>(&Thread2Class::callback_squared_seq_num, &thread_2_class, cmd_seq_num, &Thread1Class::square_me, &thread_1_class, 7);
-    command_center.send_callback<int>(&Thread2Class::callback_squared, &thread_2_class, &Thread1Class::square_me, &thread_1_class, 8);
+    command_center.send_callback<int>(&Thread2Class::callback_squared_seq_num, &thread_2, cmd_seq_num, &Thread1Class::square_me, &thread_1, 7);
+    command_center.send_callback<int>(&Thread2Class::callback_squared, &thread_2, &Thread1Class::square_me, &thread_1, 8);
 
     auto lambda_callback_squared = [=](int squared_number)  {
         cerr << "{" << thread_name() << "} lambda_callback_squared(" << squared_number << ")\n";
     };
-    command_center.send_callback<int>(lambda_callback_squared, &Thread1Class::square_me, &thread_1_class, 8);
+    command_center.send_callback<int>(lambda_callback_squared, &Thread1Class::square_me, &thread_1, 8);
 
     cerr << "\n--- commands playground, Main thread ID: " << thread_name() << "---\n";
     cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
     cerr << "command_center.queues_count()      : "  << command_center.queues_count() << "\n";
     cerr << "command_center.receivers_count()   : "  << command_center.receivers_count() << "\n";
 
-    cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
-    cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
+    cerr << "thread_1_class       : "  << &thread_1  << "\n";
+    cerr << "thread_2_class       : "  << &thread_2  << "\n";
 
 
     std::this_thread::sleep_for(4s);
-    thread_1_class.stop();
-    thread_2_class.stop();
-}
-
-void simple_test()
-{
-    cerr << "thread_1_class       : "  << &thread_1_class  << "\n";
-    cerr << "thread_2_class       : "  << &thread_2_class  << "\n";
-    cerr << "queue1.capacity()    : "  << queue1.capacity() << "\n";
-    cerr << "queue1.size()        : "  << queue1.size() << "\n";
-//    queue1.push([](){cerr << "Hello from push\n"; });
-
-
-    // queue1.send(free_function, 12);
-    // queue1.send(&Thread1Class::member_function, &thread_1_class, 23);
-
-    // auto command_fn = [=]() -> int {
-    //     return thread_1_class.square_me(25);
-    // };
-
-    // auto result_callback_fn = [=](const int& cmd_return_value){
-    //     free_callback(cmd_return_value);
-    // };
-    // queue1.push_call<int>(std::move(command_fn),  std::move(result_callback_fn));
-
-    // queue1.callback_free<int>(free_callback, &Thread1Class::square_me, &thread_1_class, 30);
-    // queue1.callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::square_me, &thread_1_class, 40);
-
-    // command_center.command_cb<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::square_me, &thread_1_class, 40);
-
-    // queue1.send_callback<int>(&Thread2Class::callback_fun, &thread_2_class, &Thread1Class::square_me, &thread_1_class, 40);
-
-    // queue1.send_callback<int>(free_callback, &Thread1Class::square_me, &thread_1_class, 41);
-    // queue1.send_callback<int>([](int val) {cerr << "Lambda callback: " << val << "\n";}, &Thread1Class::square_me, &thread_1_class, 42);
-
-    while (!queue1.empty()) {
-        queue1.execute_next();
-    }
+    thread_1.stop();
+    thread_2.stop();
 }
 
 
 int main()
 {
     threads_test();
-    // simple_test();
     return 0;
 }
