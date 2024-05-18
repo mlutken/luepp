@@ -7,6 +7,7 @@
 #include <typeinfo>
 #include <ranges>
 
+#include <asig/asig.h>
 #include <asig/commands.h>
 #include <asig/command_queue.h>
 
