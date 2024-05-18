@@ -1,6 +1,6 @@
 #include "command_queue.h"
 
-namespace estl::asig {
+namespace lue::asig {
 
 command_queue::command_queue(size_t queue_size):
     queue_(queue_size),
@@ -41,4 +41,4 @@ void command_queue::do_push_command(std::unique_ptr<command_base_t> cmd)
 
 
 
-} // END namespace estl::asig
+} // END namespace lue::asig

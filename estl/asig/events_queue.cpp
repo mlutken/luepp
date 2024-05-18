@@ -1,6 +1,6 @@
 #include "events_queue.h"
 
-namespace estl::asig {
+namespace lue::asig {
 
 events_queue::events_queue(size_t queue_size)
  :  queue_(queue_size),
@@ -18,4 +18,4 @@ std::unique_ptr<events_queue::event_data_base_t> events_queue::pop_front()
 }
 
 
-} // END namespace estl::asig
+} // END namespace lue::asig

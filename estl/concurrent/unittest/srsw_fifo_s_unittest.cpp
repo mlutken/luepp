@@ -12,7 +12,7 @@ class SRSWFifoSUnitTest : public testing::Test
 // ------------------------------
 // --- PUBLIC functions tests ---
 // ------------------------------
-using int_fifo = estl::srsw_fifo_s<int, 4>;
+using int_fifo = lue::srsw_fifo_s<int, 4>;
 
 TEST_F(SRSWFifoSUnitTest, test_basic)
 {

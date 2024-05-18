@@ -56,7 +56,7 @@ using namespace std;
 int main()
 {
 
-    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    using MyMap = lue::sort_map_s<std::string, std::string, 30>;
     MyMap m;
 
     auto s = m["not-preset"];
@@ -71,7 +71,7 @@ int main()
 
 
 //    std::vector<std::string> strings = {"hello", "nihao", "byebye", "yo"};
-//    estl::vector_s<std::string, 20> strings = {"hello", "nihao", "byebye", "yo"};
+//    lue::vector_s<std::string, 20> strings = {"hello", "nihao", "byebye", "yo"};
 
     // cars.sort(std::less<std::string>()); // compiles fine and produce a sorted list
 

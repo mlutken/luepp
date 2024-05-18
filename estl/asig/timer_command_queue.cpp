@@ -1,6 +1,6 @@
 #include "timer_command_queue.h"
 
-namespace estl::asig {
+namespace lue::asig {
 
 timer_command_queue::timer_command_queue(size_t queue_size):
     input_queue_(queue_size),
@@ -82,4 +82,4 @@ void timer_command_queue::put_in_pending_timers(std::unique_ptr<timer_cmd_base_t
 
 
 
-} // END namespace estl::asig
+} // END namespace lue::asig

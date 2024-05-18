@@ -11,7 +11,7 @@
 // https://stackoverflow.com/questions/46388524/when-to-use-stdinvoke-instead-of-simply-calling-the-invokable
 // https://stackoverflow.com/questions/9831501/how-can-i-have-multiple-parameter-packs-in-a-variadic-template
 
-namespace estl::asig {
+namespace lue::asig {
 
 class command_queue
 {
@@ -215,12 +215,12 @@ private:
     void do_push_command     (std::unique_ptr<command_base_t> cmd);
 
 
-    using queue_t       = estl::srsw_fifo<std::unique_ptr<command_base_t>>;
+    using queue_t       = lue::srsw_fifo<std::unique_ptr<command_base_t>>;
 
     queue_t         queue_;
     std::mutex      push_mutex_;
 
 };
 
-} // END namespace estl::asig
+} // END namespace lue::asig
 

@@ -9,7 +9,7 @@
 #include <concurrent/srsw_fifo.hpp>
 
 
-namespace estl::asig {
+namespace lue::asig {
 
 class timer_command_queue
 {
@@ -102,7 +102,7 @@ private:
     void put_in_pending_timers  (std::unique_ptr<timer_cmd_base_t> cmd);
 
 
-    using queue_t       = estl::srsw_fifo<std::unique_ptr<timer_cmd_base_t>>;
+    using queue_t       = lue::srsw_fifo<std::unique_ptr<timer_cmd_base_t>>;
     using map_t         = std::map<time_point, std::unique_ptr<timer_cmd_base_t>>;
 
     queue_t         input_queue_;
@@ -111,5 +111,5 @@ private:
 
 };
 
-} // END namespace estl::asig
+} // END namespace lue::asig
 

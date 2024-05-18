@@ -7,7 +7,7 @@
 #include <string>
 
 using namespace testing;
-using namespace estl;
+using namespace lue;
 
 class SortMapSUnitTest : public testing::Test
 {
@@ -58,14 +58,14 @@ inline bool operator== (const Rect& lhs, const Rect& rhs) {
 
 TEST_F(SortMapSUnitTest, default_constructor)
 {
-    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    using MyMap = lue::sort_map_s<std::string, std::string, 30>;
     MyMap m;
     EXPECT_EQ(static_cast<size_t>(0u), m.size());
 }
 
 TEST_F(SortMapSUnitTest, basic_operations)
 {
-    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    using MyMap = lue::sort_map_s<std::string, std::string, 30>;
     MyMap m;
 
     EXPECT_EQ(static_cast<size_t>(0u), m.size());
@@ -92,7 +92,7 @@ TEST_F(SortMapSUnitTest, basic_operations)
 
 TEST_F(SortMapSUnitTest, insert)
 {
-    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    using MyMap = lue::sort_map_s<std::string, std::string, 30>;
     MyMap m;
 
     {
@@ -115,7 +115,7 @@ TEST_F(SortMapSUnitTest, insert)
 
 TEST_F(SortMapSUnitTest, erase)
 {
-    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    using MyMap = lue::sort_map_s<std::string, std::string, 30>;
     MyMap m;
     m.insert({"key_010", "val_010"});
     m.insert({"key_020", "val_020"});
@@ -220,7 +220,7 @@ TEST_F(SortMapSUnitTest, erase)
 
 TEST_F(SortMapSUnitTest, initializer_construct)
 {
-    using MyMap = estl::sort_map_s<std::string, std::string, 30>;
+    using MyMap = lue::sort_map_s<std::string, std::string, 30>;
 
     MyMap m {
         {"key_010", "val_010"},

@@ -11,7 +11,7 @@
 
 // https://en.cppreference.com/w/cpp/utility/functional/invoke
 
-namespace estl::asig {
+namespace lue::asig {
 
 
 class commands
@@ -240,4 +240,4 @@ private:
 };
 
 
-} // END namespace estl::asig
+} // END namespace lue::asig

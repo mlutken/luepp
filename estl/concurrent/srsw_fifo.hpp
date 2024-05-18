@@ -8,14 +8,14 @@
 // ----------------------------------------------
 // --- srsw_fifo.h ---
 // ----------------------------------------------
-namespace estl {
+namespace lue {
 template <typename T1, size_t BUFFER_SIZE1, size_t ALIGN_SIZE1 >
 class srmw_fifo;
 
 /**
 Single reader, single writer lockless fifo.
 Uses atomics for the read and write indices internally.
-@sa estl::srsw_fifo_s which is the same using the static vector_s as "backend"
+@sa lue::srsw_fifo_s which is the same using the static vector_s as "backend"
 */
 
 template <typename T, class Allocator = std::allocator<T>, size_t ALIGN_SIZE = 128 >
@@ -211,4 +211,4 @@ private:
     alignas(ALIGN_SIZE) atomic_size_type    m_read_index;    // Aligning to avoid "false sharing"
 };
 
-} // END namespace estl
+} // END namespace lue

@@ -60,7 +60,7 @@ void debug_print(const CONTAINER& container)
 
 
 using namespace std;
-using namespace estl;
+using namespace lue;
 
 void main__cpp11();
 void main__constxepr();
@@ -76,8 +76,8 @@ int main()
 
 void main__cpp11()
 {
-    using myvec_t = estl::vector_s<int, 50>;
-    using stringvec_t = estl::vector_s<std::string, 50>;
+    using myvec_t = lue::vector_s<int, 50>;
+    using stringvec_t = lue::vector_s<std::string, 50>;
 //    using stringvec_t = std::vector<std::string>;
 
     myvec_t v{7,3,5,1,20,9,8};
@@ -95,7 +95,7 @@ void main__cpp11()
 
 constexpr size_t N = 10;
 
-using intvec_t = estl::vector_s<size_t, N>;
+using intvec_t = lue::vector_s<size_t, N>;
 
 template<size_t N>
 struct Table
@@ -144,7 +144,7 @@ void main__constxepr()
 //    static_assert(size == (N*(N-1))/2);
 //    std::cout << "sum: " << size << "\n";
 
-//    constexpr auto v = estl::vector_s<int, N>();
+//    constexpr auto v = lue::vector_s<int, N>();
     constexpr auto a = Table<10>();
     for (auto x : a.values) {
         std::cout << "f(" << x[0] << ") = " << x[1] << '\n';

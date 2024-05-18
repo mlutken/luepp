@@ -5,7 +5,7 @@
 #include <functional>
 #include <containers/vector_s.hpp>
 
-namespace estl {
+namespace lue {
 
 /**
  * A static implementation of std::map<KEY,VALUE>
@@ -28,7 +28,7 @@ namespace estl {
 #include <iostream>
 #include <containers/sort_map_s.hpp>
 
-using namespace estl;
+using namespace lue;
 
 void map_s_dictionary_example()
 {
@@ -61,7 +61,7 @@ struct sort_map_s
 {
 private:
     typedef std::pair<Key, T>                           node_t;
-    typedef estl::vector_s<node_t, CAPACITY>            vector_t;
+    typedef lue::vector_s<node_t, CAPACITY>             vector_t;
 public:
     typedef Key                                         key_type;
     typedef std::pair<const Key, T>                     value_type;
@@ -296,4 +296,4 @@ private:
 
 };
 
-} // END namespace estl
+} // END namespace lue

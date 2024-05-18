@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace estl::asig {
+namespace lue::asig {
 
 // --------------------------
 // --- event_subscription ---
@@ -266,4 +266,4 @@ events::event_executor_base_t::event_executor_base_t()
 
 }
 
-} // END namespace estl::asig
+} // END namespace lue::asig

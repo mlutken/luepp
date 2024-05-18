@@ -4,7 +4,7 @@
 
 using namespace std;
 
-namespace estl::asig {
+namespace lue::asig {
 
 commands::commands()
     :   thread_lookup_mutex_()
@@ -117,4 +117,4 @@ commands::timer_queue_ptr_t commands::get_timer_receiver_queue(void* class_insta
     return commands::timer_queue_ptr_t(nullptr);
 }
 
-} // END namespace estl::asig
+} // END namespace lue::asig

@@ -6,7 +6,7 @@
 #include <vector>
 
 using namespace testing;
-using namespace estl;
+using namespace lue;
 
 class VectorSUnitTest : public testing::Test
 {
