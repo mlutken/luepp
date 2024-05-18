@@ -34,15 +34,8 @@ void commands::execute_all_for_this_thread()
 void commands::register_command_receiver(void* class_instance_ptr, std::thread::id thread_id)
 {
     std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
-
-    if (!cmd_queues_.contains(thread_id)) {
-        // Create command queue for this thread
-        cmd_queues_.emplace(thread_id, std::shared_ptr<command_queue>(new command_queue{command_queues_size_}));
-    }
-    // Add this class to the class instance -> thread lookup table
-    if (!receiver_lookup_.contains(class_instance_ptr)) {
-        receiver_lookup_[class_instance_ptr] = thread_id;
-    }
+    cmd_queues_.emplace(thread_id, std::shared_ptr<command_queue>(new command_queue{command_queues_size_}));
+    receiver_lookup_.emplace(class_instance_ptr, thread_id);
 }
 
 
