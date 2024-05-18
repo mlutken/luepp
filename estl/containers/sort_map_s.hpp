@@ -1,7 +1,5 @@
-#ifndef ESTL_SORT_MAP_S_HPP
-#define ESTL_SORT_MAP_S_HPP
+#pragma once
 
-#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
 #include <algorithm>
 #include <functional>
@@ -299,5 +297,3 @@ private:
 };
 
 } // END namespace estl
-
-#endif // ESTL_SORT_MAP_S_HPP

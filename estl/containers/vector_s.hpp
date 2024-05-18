@@ -1,6 +1,4 @@
-#ifndef ESTL_VECTOR_S_HPP
-#define ESTL_VECTOR_S_HPP
-#include <luepp_platform_definitions.h>
+#pragma once
 #include <luepp_default_config.h>
 #include <cstdint>
 #include <utility>
@@ -698,4 +696,3 @@ constexpr bool operator!=( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CA
 
 } // END namespace estl
 
-#endif // ESTL_VECTOR_S_HPP

@@ -1,9 +1,7 @@
-#ifndef ESTL_SRSW_FIFO_S_HPP
-#define ESTL_SRSW_FIFO_S_HPP
+#pragma once
 
-#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
-#include <atomic/atomic_use.hpp>
+#include <atomic>
 #include <containers/vector_s.hpp>
 #include <cstdint>
 
@@ -63,7 +61,7 @@ public:
     // ------------------------
     typedef T                                       value_type;
     typedef std::size_t                             size_type;
-    typedef estl_use::atomic<size_type>             atomic_size_type;
+    typedef std::atomic<size_type>                  atomic_size_type;
     typedef typename queue_vec_t::difference_type   difference_type;
     typedef typename queue_vec_t::reference         reference;
     typedef typename queue_vec_t::const_reference   const_reference;
@@ -203,5 +201,3 @@ private:
 };
 
 } // END namespace estl
-
-#endif // ESTL_SRSW_FIFO_S_HPP

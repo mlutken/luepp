@@ -1,6 +1,0 @@
-add_playground_cpp_exe(state_machine "fsm")
-add_playground_cpp_exe(demostart "fsm")
-add_playground_cpp_exe(demoend "fsm")
-add_playground_cpp_exe(fsm2dot "fsm;boost_program_options")
-add_playground_cpp_exe(spirit1 "fsm;boost_program_options")
-add_playground_cpp_exe(spirit2 "fsm;boost_program_options")

@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef LUEPP_HAS_ATOMIC
-    #define LUEPP_HAS_ATOMIC 1
-#endif
-
 #ifndef ESTL_USE_EXCEPTIONS
     #define ESTL_USE_EXCEPTIONS 1
     // Alternatives 0 : Don't use execptions

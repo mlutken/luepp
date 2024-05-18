@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <concurrent/srsw_fifo.hpp>
-#include <concurrent/srmw_fifo_s.hpp>
 #include <concurrent/srsw_fifo_s.hpp>
 
 using namespace std;
@@ -13,7 +12,7 @@ int main()
 
 //    using my_fifo = estl::srsw_fifo<int>;
 //    using my_fifo = estl::srsw_fifo_s<int,4>;
-    using my_fifo = estl::srmw_fifo_s<int,4>;
+    using my_fifo = estl::srsw_fifo_s<int,4>;
 
 //    my_fifo f(4);
     my_fifo f;
