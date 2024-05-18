@@ -100,7 +100,7 @@ add_compile_options(
 
 # --- Add subdirectories ---
 add_subdirectory(config)
-add_subdirectory(estl)
+add_subdirectory(lue)
 
 # --- Add example files ---
 #add_subdirectory(doc/examples)
