@@ -5,6 +5,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <typeinfo>
+#include <ranges>
 
 #include <asig/commands.h>
 #include <asig/command_queue.h>
@@ -43,6 +44,7 @@
 
 
 using namespace std;
+using namespace std::ranges;
 using namespace estl::asig;
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -50,6 +52,9 @@ using namespace std::chrono_literals;
 commands command_center{64};
 command_queue queue1{256};
 
+// ------------------------------------------
+// --- A quick "hack" to name the threads ---
+// ------------------------------------------
 std::mutex thread_name_map_mutex{};
 std::unordered_map<std::thread::id, std::string> thread_name_map;
 
@@ -63,30 +68,9 @@ std::string thread_name(std::thread::id thread_id = std::this_thread::get_id()) 
     return thread_name_map[thread_id];
 }
 
-
-int qube_me_free_fun(int some_number)
-{
-    const auto qubed = some_number*some_number*some_number;
-    cerr  << "{" << thread_name() << "} qube_me_free_fun(" << some_number << ") => " << qubed << "\n";
-    return qubed;
-}
-
-void free_function(int some_number)
-{
-    cerr << "{" << thread_name() << "} " << "Hello free_function(" << some_number << ")\n";;
-}
-
-void free_callback(int some_number)
-{
-    cerr << "{" << thread_name() << "} " << "Hello free_callback(" << some_number << ")\n";
-}
-
-void free_callback_seq_num(int some_number, int32_t cmd_seq_num)
-{
-    cerr << "{" << thread_name() << "} free_callback_seq_num(" << some_number << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-}
-
-
+// ----------------
+// --- Thread A ---
+// ----------------
 struct Thread_A
 {
     explicit Thread_A(commands& cc, std::string name) : command_center_(cc), name_ (std::move(name))  {}
@@ -106,50 +90,43 @@ struct Thread_A
 
     // -------------------------
     // --- Command functions ---
-    // --------------------------
-    void mem_fun_no_params()
-    {
+    // -------------------------
+
+    void timer_expired(std::chrono::milliseconds ms_time_out) {
+        cerr << "{" << thread_name() << "} " << name_ << "::timer_expired(" << ms_time_out.count() << " ms)\n";
+    }
+
+    void mem_fun_no_params() {
         cerr << "{" << thread_name() << "} " << name_ << "::mem_fun_no_params()\n";
-
     }
 
-    void member_function(int some_number)
-    {
+    void member_function(int some_number) {
         cerr << "{" << thread_name() << "} " << name_ << "::member_function(" << some_number << ")\n";
-
     }
 
-    int square_me(const int& some_number)
-    {
+    int square_me(const int& some_number) {
         const auto squared = some_number*some_number;
         cerr  << "{" << thread_name() << "} " << name_ << "::square_me(" << some_number << ") => " << squared << "\n";
         return squared;
     }
-
-private:
 
     // -----------------------------
     // --- Thread main functions ---
     // -----------------------------
     void thread_function()
     {
+        command_center_.register_command_receiver(this);
+        start_time_ = steady_clock::now();
         add_thread_name("ctx A");
         cerr << "Starting thread {" << thread_name() << "}\n";
-        command_center_.register_command_receiver(this);
 
         is_running_ = true;
-        const auto end_time = steady_clock::now() + 6s;
+        const auto end_time = start_time_ + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
-            std::this_thread::sleep_for(900ms);
+            std::this_thread::sleep_for(1ms);
             // cerr << "{" << thread_name() << "}  In '" << name_ << "'  Processing commands\n";
             command_center_.execute_all_for_this_thread();
-
-            idle_work_function();
         }
-    }
-
-    void idle_work_function()
-    {
     }
 
     // ------------------------
@@ -159,10 +136,14 @@ private:
     std::string                     name_               {};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
+    steady_clock::time_point        start_time_{};
 };
 
 Thread_A thread_a{command_center, "Thread A"};
 
+// ----------------
+// --- Thread B ---
+// ----------------
 struct Thread_B
 {
     explicit Thread_B(commands& cc, std::string name) : command_center_(cc), name_ (std::move(name))  {}
@@ -183,85 +164,67 @@ struct Thread_B
     // -----------------
     // --- Callbacks ---
     // -----------------
-    void callback_squared(int squared_number)
-    {
+    void callback_squared(int squared_number) {
         cerr << "{" << thread_name() << "} " << name_ << "::callback_squared(" << squared_number << ")\n";
     }
 
-    void callback_qubed(int qubed_number)
-    {
-        cerr << "{" << thread_name() << "} " << name_ << "::callback_qubed(" << qubed_number << ")\n";
-    }
-
-    void callback_squared_seq_num(int squared_number, int32_t cmd_seq_num)
-    {
+    void callback_squared_seq_num(int squared_number, int32_t cmd_seq_num) {
         cerr << "{" << thread_name() << "} " << name_ << "::callback_squared_seq_num(" << squared_number << ") , cmd_seq_num: " << cmd_seq_num << "\n";
     }
-
-    void callback_qubed_seq_num(int qubed_number, int32_t cmd_seq_num)
-    {
-        cerr << "{" << thread_name() << "} " << name_ << "::callback_qubed_seq_num(" << qubed_number << ") , cmd_seq_num: " << cmd_seq_num << "\n";
-    }
-
-private:
 
     // -----------------------------
     // --- Thread main functions ---
     // -----------------------------
     void thread_function()
     {
-        add_thread_name("ctx B");
-        std::this_thread::sleep_for(2ms);
-        cerr << "Starting thread {" << thread_name() << "}\n";
         command_center_.register_command_receiver(this);
+        add_thread_name("ctx B");
+        start_time_ = steady_clock::now();
+        std::this_thread::sleep_for(2ms);
+        bool can_run_test_commands = true;
+        cerr << "Starting thread {" << thread_name() << "}\n";
 
         is_running_ = true;
-        const auto end_time = steady_clock::now() + 6s;
+        const auto end_time = start_time_ + 6s;
         while(is_running_ && (steady_clock::now() < end_time) ) {
-            std::this_thread::sleep_for(10ms);
+            std::this_thread::sleep_for(1ms);
             // cerr << "{" << thread_name() << "}  In '" << name_ << "'  Processing commands\n";
             command_center_.execute_all_for_this_thread();
 
-            idle_work_function();
+            if (can_run_test_commands && (steady_clock::now() > start_time_ + 1s)) {
+                can_run_test_commands = false;
+                for (int32_t seq_num : views::iota(1, 5)) {
+                    test_commands(10*seq_num, seq_num);
+                }
+            }
         }
+        cerr << "{" << thread_name() << "}  EXIT!!\n";
     }
 
-    void idle_work_function()
+    void test_commands(int square_me_param, int32_t seq_num)
     {
-        static int square_me_param = 0;
-        static int32_t static_cmd_seq_num = 0;
-        square_me_param += 10;
-        static_cmd_seq_num += 1;
-        const int32_t seq_num = static_cmd_seq_num;
+        cerr << "!!!! {" << thread_name() << "} From " << name_ << " call_response()/_callback() Thread_A::square_me(" << square_me_param << ") , cmd_seq_num: " << seq_num << "\n";
+        // ---------------------------------------------
+        // --- Normal callback and response examples ---
+        // ---------------------------------------------
+        // command_center_.call_callback<int>(&Thread_B::callback_squared, this, &Thread_A::square_me, &thread_a, square_me_param);
+        // command_center_.call_response<int>(&Thread_B::callback_squared, this, &Thread_A::square_me, &thread_a, square_me_param);
 
+        // ---------------------------------------------------
+        // --- Using sequence numbers in callback/response ---
+        // ---------------------------------------------------
+        // command_center_.call_callback<int>(&Thread_B::callback_squared_seq_num, this, seq_num, &Thread_A::square_me, &thread_a, square_me_param);
+        command_center_.call_response<int>(&Thread_B::callback_squared_seq_num, this, seq_num, &Thread_A::square_me, &thread_a, square_me_param);
 
-        if (static_cmd_seq_num < 5) {
-            cerr << "{" << thread_name() << "} From " << name_ << " call_response()/_callback() Thread_A::square_me(" << square_me_param << ") , cmd_seq_num: " << seq_num << "\n";
-
-            // ---------------------------------------------
-            // --- Normal callback and response examples ---
-            // ---------------------------------------------
-//            command_center_.call_callback<int>(&Thread_B::callback_squared, this, &Thread_A::square_me, &thread_a, square_me_param);
-//            command_center_.call_response<int>(&Thread_B::callback_squared, this, &Thread_A::square_me, &thread_a, square_me_param);
-
-
-            // ---------------------------------------------------
-            // --- Using sequence numbers in callback/response ---
-            // ---------------------------------------------------
-//            command_center_.call_callback<int>(&Thread_B::callback_squared_seq_num, this, seq_num, &Thread_A::square_me, &thread_a, square_me_param);
-            command_center_.call_response<int>(&Thread_B::callback_squared_seq_num, this, seq_num, &Thread_A::square_me, &thread_a, square_me_param);
-
-            // ------------------------------------------------------------------
-            // --- Lambda callback/response (with sequence number in capture) ---
-            // ------------------------------------------------------------------
-//            auto lambda_callback_squared = [=](const int& squared_number)  {
-//                cerr << "{" << thread_name() << "} lambda_callback_squared(" << squared_number << "), seq number: " << seq_num << "\n";
-//            };
-//            command_center.call_callback<int>(lambda_callback_squared, &Thread_A::square_me, &thread_a, square_me_param);
-//            command_center.call_response<int>(lambda_callback_squared, &Thread_A::square_me, &thread_a, square_me_param);
-        }
+        // ------------------------------------------------------------------
+        // --- Lambda callback/response (with sequence number in capture) ---
+        // ------------------------------------------------------------------
+        // auto lambda_callback_squared = [=](const int& squared_number)  {
+        //    cerr << "{" << thread_name() << "} lambda_callback_squared(" << squared_number << "), seq number: " << seq_num << "\n";
+        // };
+        // command_center.call_callback<int>(lambda_callback_squared, &Thread_A::square_me, &thread_a, square_me_param);
+        // command_center.call_response<int>(lambda_callback_squared, &Thread_A::square_me, &thread_a, square_me_param);
     }
-
 
     // ------------------------
     // --- Member variables ---
@@ -270,6 +233,7 @@ private:
     std::string                     name_               {};
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
+    steady_clock::time_point        start_time_{};
 };
 
 
@@ -291,6 +255,10 @@ void threads_test()
     // Note: All the below examples are NOT using the call_response() since that requires an active "event loop"
     // like we have in threads 1 and 2. We have not created this for the main thread in this example.
 
+    command_center.timer_call_in(300ms, &Thread_A::timer_expired, &thread_a, 300ms);
+    command_center.timer_call_in(2s, &Thread_A::timer_expired, &thread_a, 2s);
+    command_center.timer_call_in(3s, &Thread_B::test_commands, &thread_b, 12, 5);
+
     command_center.call(&Thread_A::mem_fun_no_params, &thread_a);
     command_center.call(&Thread_A::member_function, &thread_a, 12);
     int32_t cmd_seq_num = 1;
@@ -307,7 +275,7 @@ void threads_test()
     cerr << "command_center.queues_count()      : "  << command_center.command_queues_count() << "\n";
     cerr << "command_center.receivers_count()   : "  << command_center.receivers_count() << "\n";
 
-    std::this_thread::sleep_for(4s);
+    std::this_thread::sleep_for(6s);
     thread_a.stop();
     thread_b.stop();
 }

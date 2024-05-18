@@ -17,7 +17,6 @@ namespace estl::asig {
 class commands
 {
 public:
-    using queue_ptr_t = std::shared_ptr<command_queue>;
 
     commands    ();
     explicit    commands (size_t command_queues_size);
@@ -40,11 +39,11 @@ public:
                        CommandClassObject* command_class_obj_ptr,
                        const CommandArgs&... args)
     {
-//        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
-//        if (!cmd_queue_ptr) { return; }
-//        command_queue& cmd_queue = *cmd_queue_ptr;
-//        cmd_queue.call<CommandMemberCallable, CommandClassObject, CommandArgs...>
-//            (command_member_fun, command_class_obj_ptr, args...);
+        auto timer_queue_ptr = get_timer_receiver_queue(command_class_obj_ptr);
+        if (!timer_queue_ptr) { return; }
+        timer_command_queue& timer_queue = *timer_queue_ptr;
+        timer_queue.call_at<CommandMemberCallable, CommandClassObject, CommandArgs...>
+            (call_at_time_point, command_member_fun, command_class_obj_ptr, args...);
     }
 
     template<class CommandMemberCallable,
@@ -55,11 +54,11 @@ public:
                        CommandClassObject* command_class_obj_ptr,
                        const CommandArgs&... args)
     {
-//        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
-//        if (!cmd_queue_ptr) { return; }
-//        command_queue& cmd_queue = *cmd_queue_ptr;
-//        cmd_queue.call<CommandMemberCallable, CommandClassObject, CommandArgs...>
-//            (command_member_fun, command_class_obj_ptr, args...);
+       auto timer_queue_ptr = get_timer_receiver_queue(command_class_obj_ptr);
+       if (!timer_queue_ptr) { return; }
+       timer_command_queue& timer_queue = *timer_queue_ptr;
+       timer_queue.call_in<CommandMemberCallable, CommandClassObject, CommandArgs...>
+           (call_after_ms, command_member_fun, command_class_obj_ptr, args...);
     }
 
     // ----------------------
@@ -72,7 +71,7 @@ public:
               CommandClassObject* command_class_obj_ptr,
               const CommandArgs&... args)
     {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        auto cmd_queue_ptr = get_command_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
         cmd_queue.call<CommandMemberCallable, CommandClassObject, CommandArgs...>
@@ -92,7 +91,7 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        auto cmd_queue_ptr = get_command_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
@@ -113,7 +112,7 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        auto cmd_queue_ptr = get_command_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
@@ -135,7 +134,7 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        auto cmd_queue_ptr = get_command_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
@@ -156,9 +155,9 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        auto cmd_queue_ptr = get_command_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
-        auto resp_queue_ptr = get_receiver_queue(std::this_thread::get_id());
+        auto resp_queue_ptr = get_command_receiver_queue(std::this_thread::get_id());
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
@@ -180,9 +179,9 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        auto cmd_queue_ptr = get_command_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
-        auto resp_queue_ptr = get_receiver_queue(response_class_obj_ptr);
+        auto resp_queue_ptr = get_command_receiver_queue(response_class_obj_ptr);
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
@@ -204,9 +203,9 @@ public:
                        const CommandArgs&... command_args
                        )
     {
-        auto cmd_queue_ptr = get_receiver_queue(command_class_obj_ptr);
+        auto cmd_queue_ptr = get_command_receiver_queue(command_class_obj_ptr);
         if (!cmd_queue_ptr) { return; }
-        auto resp_queue_ptr = get_receiver_queue(response_class_obj_ptr);
+        auto resp_queue_ptr = get_command_receiver_queue(response_class_obj_ptr);
         if (!resp_queue_ptr) { return; }
         command_queue& cmd_queue = *cmd_queue_ptr;
 
@@ -218,20 +217,25 @@ public:
     void        dbg_print_command_receivers () const;
 
 private:
-    using cmd_queues_map_t          = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;
-    using timer_cmd_queues_map_t    = std::unordered_map<std::thread::id, std::shared_ptr<timer_command_queue>>;
+    using command_queue_ptr_t       = std::shared_ptr<command_queue>;
+    using timer_queue_ptr_t         = std::shared_ptr<timer_command_queue>;
+
+    using cmd_queues_map_t          = std::unordered_map<std::thread::id, command_queue_ptr_t>;
+    using timer_cmd_queues_map_t    = std::unordered_map<std::thread::id, timer_queue_ptr_t>;
 
     using receiver_lookup_map_t     = std::unordered_map<void*, std::thread::id>;
 
-    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
-    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
+    command_queue_ptr_t     get_command_receiver_queue  (std::thread::id thread_id = std::this_thread::get_id());
+    command_queue_ptr_t     get_command_receiver_queue  (void* class_instance_ptr);
 
+    timer_queue_ptr_t       get_timer_receiver_queue    (std::thread::id thread_id = std::this_thread::get_id());
+    timer_queue_ptr_t       get_timer_receiver_queue    (void* class_instance_ptr);
 
     mutable std::mutex      thread_lookup_mutex_;
     size_t                  command_queues_size_ = 128;
     size_t                  timer_command_queues_size_ = 64;
     cmd_queues_map_t        cmd_queues_;
-    timer_cmd_queues_map_t  timer_cmd_queues_;
+    timer_cmd_queues_map_t  timer_queues_;
     receiver_lookup_map_t   receiver_lookup_;
 };
 
