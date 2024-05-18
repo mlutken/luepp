@@ -47,10 +47,8 @@ the 3 forms work like this
                      In general the response will be executed in the context in which the object that holds the
                      Thread_B::callback_squared() member function exists in. Which means from the thread context
                      that class object has originally called cc.register_command_receiver(this);.
-
                      This way you get a completely asynchronous call another thread A's context,
                      while getting the response back in the calling thread B's context.
-
                      Remark: In case you use a lambda/st::function for the response function it will
                      allways use the the calling thread B's context for the response as there is no
                      class object registered that that we can lookup.
