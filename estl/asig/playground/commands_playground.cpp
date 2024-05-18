@@ -303,8 +303,8 @@ void threads_test()
     command_center.call_callback<int>(lambda_callback_squared, &Thread_A::square_me, &thread_a, 8);
 
     cerr << "\n--- commands playground, Main thread ID: " << thread_name() << "---\n";
-    cerr << "command_center.queues_size()       : "  << command_center.queues_size() << "\n";
-    cerr << "command_center.queues_count()      : "  << command_center.queues_count() << "\n";
+    cerr << "command_center.queues_size()       : "  << command_center.command_queues_size() << "\n";
+    cerr << "command_center.queues_count()      : "  << command_center.command_queues_count() << "\n";
     cerr << "command_center.receivers_count()   : "  << command_center.receivers_count() << "\n";
 
     std::this_thread::sleep_for(4s);

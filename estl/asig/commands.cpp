@@ -46,7 +46,7 @@ void commands::register_command_receiver(void* class_instance_ptr, std::thread::
 }
 
 
-size_t commands::queues_count() const
+size_t commands::command_queues_count() const
 {
     std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
     return cmd_queues_.size();

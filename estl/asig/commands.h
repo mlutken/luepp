@@ -7,6 +7,7 @@
 #include <functional>
 
 #include <asig/command_queue.h>
+#include <asig/timer_command_queue.h>
 
 // https://en.cppreference.com/w/cpp/utility/functional/invoke
 
@@ -21,10 +22,12 @@ public:
     commands    ();
     explicit    commands (size_t command_queues_size);
     void        execute_all_for_this_thread ();
+
     void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
-    size_t      queues_count                () const;
+
+    size_t      command_queues_count        () const;
     size_t      receivers_count             () const;
-    size_t      queues_size                 () const { return command_queues_size_; }
+    size_t      command_queues_size         () const { return command_queues_size_; }
 
     // ----------------------------
     // --- Timer call functions ---
@@ -211,20 +214,24 @@ public:
             (*resp_queue_ptr, response_member_fun, response_class_obj_ptr, cmd_seq_num, command_member_fun, command_class_obj_ptr, command_args...);
     }
 
-    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
-    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
-
 
     void        dbg_print_command_receivers () const;
 
 private:
     using cmd_queues_map_t          = std::unordered_map<std::thread::id, std::shared_ptr<command_queue>>;
+    using timer_cmd_queues_map_t    = std::unordered_map<std::thread::id, std::shared_ptr<timer_command_queue>>;
 
     using receiver_lookup_map_t     = std::unordered_map<void*, std::thread::id>;
 
+    queue_ptr_t get_receiver_queue          (std::thread::id thread_id = std::this_thread::get_id());
+    queue_ptr_t get_receiver_queue          (void* class_instance_ptr);
+
+
     mutable std::mutex      thread_lookup_mutex_;
     size_t                  command_queues_size_ = 128;
+    size_t                  timer_command_queues_size_ = 64;
     cmd_queues_map_t        cmd_queues_;
+    timer_cmd_queues_map_t  timer_cmd_queues_;
     receiver_lookup_map_t   receiver_lookup_;
 };
 
