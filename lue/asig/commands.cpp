@@ -9,14 +9,13 @@ namespace lue::asig {
 commands::commands()
     :   thread_lookup_mutex_()
 {
-
 }
 
-commands::commands(size_t command_queues_size)
-    :   thread_lookup_mutex_(),
-        command_queues_size_(command_queues_size)
+commands::commands(size_t command_queues_size, size_t timer_queues_size)
+    :   thread_lookup_mutex_()
+    ,   command_queues_size_(command_queues_size)
+    ,   timer_queues_size_(timer_queues_size)
 {
-
 }
 
 void commands::execute_all_for_this_thread()
@@ -33,11 +32,11 @@ void commands::execute_all_for_this_thread()
 }
 
 
-void commands::register_command_receiver(void* class_instance_ptr, std::thread::id thread_id)
+void commands::register_receiver(void* class_instance_ptr, std::thread::id thread_id)
 {
     std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
     cmd_queues_.emplace(thread_id, std::shared_ptr<command_queue>(new command_queue{command_queues_size_}));
-    timer_queues_.emplace(thread_id, std::shared_ptr<timer_command_queue>(new timer_command_queue{timer_command_queues_size_}));
+    timer_queues_.emplace(thread_id, std::shared_ptr<timer_command_queue>(new timer_command_queue{timer_queues_size_}));
     receiver_lookup_.emplace(class_instance_ptr, thread_id);
 }
 
@@ -48,7 +47,7 @@ size_t commands::command_queues_count() const
     return cmd_queues_.size();
 }
 
-size_t commands::receivers_count() const
+size_t commands::command_receivers_count() const
 {
     std::scoped_lock<std::mutex> lock(thread_lookup_mutex_);
     return receiver_lookup_.size();

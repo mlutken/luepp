@@ -19,14 +19,15 @@ class commands
 public:
 
     commands    ();
-    explicit    commands (size_t command_queues_size);
+    explicit    commands (size_t command_queues_size, size_t timer_queues_size);
     void        execute_all_for_this_thread ();
 
-    void        register_command_receiver   (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
+    void        register_receiver           (void* class_instance_ptr, std::thread::id thread_id = std::this_thread::get_id());
 
     size_t      command_queues_count        () const;
-    size_t      receivers_count             () const;
+    size_t      command_receivers_count     () const;
     size_t      command_queues_size         () const { return command_queues_size_; }
+    size_t      timer_queues_size           () const { return timer_queues_size_; }
 
     // ----------------------------
     // --- Timer call functions ---
@@ -233,7 +234,7 @@ private:
 
     mutable std::mutex      thread_lookup_mutex_;
     size_t                  command_queues_size_ = 128;
-    size_t                  timer_command_queues_size_ = 64;
+    size_t                  timer_queues_size_ = 64;
     cmd_queues_map_t        cmd_queues_;
     timer_cmd_queues_map_t  timer_queues_;
     receiver_lookup_map_t   receiver_lookup_;

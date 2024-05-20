@@ -25,7 +25,6 @@ event_subscription& event_subscription::operator=(event_subscription&& moving)
 event_subscription::~event_subscription()
 {
     if (events_center_ptr_) {
-        // std::cerr << "FIXMENM event_subscription::DESTRUCTOR, unsubscribe id: " << subscription_id_ << "\n";
         events_center_ptr_->un_subscribe(*this);
     }
 }
@@ -83,7 +82,6 @@ void events::execute_all_for_this_thread()
 }
 
 void events::un_subscribe(event_subscription& subscription, std::thread::id thread_id) {
-    std::cerr << " ^^^ FIXMENM events::un_subscribe: thread_id: " << thread_id << "  subscription ID: " << subscription.subscription_id() << "\n";
     if (!subscription.is_valid()) {
         return;
     }
@@ -94,7 +92,7 @@ void events::un_subscribe(event_subscription& subscription, std::thread::id thre
     subscription.make_invalid();
 }
 
-size_t events::subscribers_count() const
+size_t events::event_subscribers_count() const
 {
     size_t count = 0;
     std::scoped_lock<std::mutex> lock(subscriber_thread_mutex_);
@@ -144,12 +142,10 @@ void events::executor_list_t::execute_all(const void* event_data_ptr) {
         evt_exe_ptr->execute(event_data_ptr);
     }
     for (auto subscription_id : unsubscriptions_pending_) {
-        // std::cerr << "!!! FIXMENM unsubscriptions_pending_: " << subscription_id << "\n";
         do_unsubscribe(subscription_id);
     }
 
     for (auto& executor : subscriptions_pending_) {
-        // std::cerr << " %%% Add pending subscription: " << executor->subscription_id_ << "\n";
         do_subscribe(std::move(executor));
     }
     currently_executing_ = false;
@@ -157,7 +153,6 @@ void events::executor_list_t::execute_all(const void* event_data_ptr) {
 
 void events::executor_list_t::unsubscribe(std::size_t subscription_id) {
     if (currently_executing_) {
-        std::cerr << "!!! FIXMENM executor_list_t push to pending list: " << subscription_id << "\n";
         unsubscriptions_pending_.push_back(subscription_id);
         return;
     }
@@ -181,14 +176,12 @@ size_t events::executor_list_t::next_subscription_id() const
 size_t events::executor_list_t::do_subscribe (std::unique_ptr<event_executor_base_t> executor)
 {
     const auto subscription_id = executor->subscription_id_;
-    // std::cerr << " **** FIXMENM executor_list_t::do_subscribe subscription ID: " << subscription_id  << " , name: " << executor->event_name() << "\n";
     event_executors_.insert_or_assign(subscription_id, std::move(executor));
     return subscription_id;
 }
 
 void events::executor_list_t::do_unsubscribe(std::size_t subscription_id)
 {
-    // std::cerr << " **** FIXMENM executor_list_t::do_UN-subscribe subscription ID: " << subscription_id << "\n";
     event_executors_.erase(subscription_id);
 }
 
@@ -231,7 +224,7 @@ void events::add_subscriber_for_thread(std::size_t event_id, std::thread::id thr
 {
     std::scoped_lock<std::mutex> lock(subscribers_per_thread_mutex_);
     auto& subscriber_counts_per_thread = event_id_to_subscribed_threads_[event_id];
- ///    ++subscriber_counts_per_thread[thread_id]; // TODO: Is this enough, instead of the lines below ?
+    ///    ++subscriber_counts_per_thread[thread_id]; // TODO: Is this enough, instead of the lines below ?
     auto it = subscriber_counts_per_thread.find(thread_id);
     if (it != subscriber_counts_per_thread.end()) {
         auto& subscriber_count = it->second;
@@ -263,7 +256,6 @@ std::atomic_size_t events::event_executor_base_t::id_counter_ = 0;
 events::event_executor_base_t::event_executor_base_t()
     : subscription_id_(++id_counter_)
 {
-
 }
 
 } // END namespace lue::asig

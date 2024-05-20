@@ -6,7 +6,6 @@
 
 #include <asig/commands.h>
 #include <asig/events.h>
-#include <asig/command_queue.h>
 
 using namespace std;
 using namespace lue::asig;
@@ -14,7 +13,6 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 events event_center{64};
-command_queue queue1{256};
 
 struct my_event_t {
     std::string     msg     {};
@@ -209,7 +207,7 @@ void threads_test()
 
     Thread_A thread_1_class{event_center, "Thread 1 Class"};
     Thread_B thread_2_class{event_center, "Thread 2 Class"};
-    std::cerr << "INFO Subscriber count at start: " << event_center.subscribers_count() << "\n";
+    std::cerr << "INFO Subscriber count at start: " << event_center.event_subscribers_count() << "\n";
 
     thread_1_class.start();
     thread_2_class.start();
@@ -218,7 +216,7 @@ void threads_test()
     }
 
     this_thread::sleep_for(1s);
-    std::cerr << "INFO Subscriber count at 1st publish: " << event_center.subscribers_count() << "\n";
+    std::cerr << "INFO Subscriber count at 1st publish: " << event_center.event_subscribers_count() << "\n";
 
     auto evt = my_event_t{"Hello", 12};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
@@ -227,7 +225,7 @@ void threads_test()
     thread_2_class.delete_test_class();
     std::this_thread::sleep_for(1s);
 
-    std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.subscribers_count() << "\n";
+    std::cerr << "INFO Subscriber count at 2nd publish: " << event_center.event_subscribers_count() << "\n";
     evt = my_event_t{"Hello Again!", 33};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
     event_center.publish_event(evt);
@@ -235,7 +233,7 @@ void threads_test()
 
     event_center.un_subscribe(thread_2_class.my_event_subscription_b_, thread_2_class.thread_->get_id());
     std::this_thread::sleep_for(1s);
-    std::cerr << "\nINFO Subscriber count at 3rd publish: " << event_center.subscribers_count() << "\n";
+    std::cerr << "\nINFO Subscriber count at 3rd publish: " << event_center.event_subscribers_count() << "\n";
     evt = my_event_t{"Yet an event!", 88};
     std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
     event_center.publish_event(evt);

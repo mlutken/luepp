@@ -8,7 +8,6 @@
 #include <ranges>
 
 #include <asig/commands.h>
-#include <asig/command_queue.h>
 
 // Some basic explanation
 // Given two threads A and B and a commands class instance called cc (command center)
@@ -49,8 +48,7 @@ using namespace lue::asig;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-commands command_center{64};
-command_queue queue1{256};
+commands command_center{64,32};
 
 // ------------------------------------------
 // --- A quick "hack" to name the threads ---
@@ -115,7 +113,7 @@ struct Thread_A
     // -----------------------------
     void thread_function()
     {
-        command_center_.register_command_receiver(this);
+        command_center_.register_receiver(this);
         start_time_ = steady_clock::now();
         add_thread_name("ctx A");
         cerr << "Starting thread {" << thread_name() << "}\n";
@@ -177,7 +175,7 @@ struct Thread_B
     // -----------------------------
     void thread_function()
     {
-        command_center_.register_command_receiver(this);
+        command_center_.register_receiver(this);
         add_thread_name("ctx B");
         start_time_ = steady_clock::now();
         std::this_thread::sleep_for(2ms);
@@ -273,7 +271,7 @@ void threads_test()
     cerr << "\n--- commands playground, Main thread ID: " << thread_name() << "---\n";
     cerr << "command_center.queues_size()       : "  << command_center.command_queues_size() << "\n";
     cerr << "command_center.queues_count()      : "  << command_center.command_queues_count() << "\n";
-    cerr << "command_center.receivers_count()   : "  << command_center.receivers_count() << "\n";
+    cerr << "command_center.receivers_count()   : "  << command_center.command_receivers_count() << "\n";
 
     std::this_thread::sleep_for(6s);
     thread_a.stop();

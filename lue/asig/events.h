@@ -144,7 +144,7 @@ public:
         }
     }
 
-    size_t      subscribers_count           () const;
+    size_t      event_subscribers_count           () const;
 
 private:
     // -----------------------------

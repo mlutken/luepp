@@ -1,3 +1,4 @@
+add_playground_cpp_exe(asig "luepp_asic")
 add_playground_cpp_exe(commands "luepp_asic")
 add_playground_cpp_exe(events "luepp_asic")
 add_playground_cpp_exe(std_fun_lambda "luepp_asic")
