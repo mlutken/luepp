@@ -61,7 +61,7 @@ struct Thread_A
 		thread_ = std::make_unique<std::thread>(&Thread_A::thread_function, this);
 	}
 
-	~Thread_A(½)  {
+	~Thread_A()  {
 		is_running_ = false;
 		thread_->join();
 	}
@@ -149,10 +149,6 @@ you application and in these case you can simply use:
 ```signals.publish_event(my_event_t{"Hello", 15});```
 
 
-
-
-
-
 asig commands explained
 -----------------------
 Given two threads A and B and an asig class instance called signals
@@ -207,19 +203,13 @@ No dependencies other than standard C++17 or newer
 - **asig**: A very "cool" asynchronous signals library. Supports commands, publish/subscribe events and timers. 
 
 
-
 Building
 --------
-# Building on Linux
 $ git clone https://github.com/mlutken/lueppgit
 $ mkdir -p _build/luepp$ cd _build/luepp
 $ cmake ../../luepp$ make -j
 ...
 Or Use QtCreator or any otherway you prefer when dealing with CMake projects.
 
-
-Help wanted
------------
-If you are willing to help please drop me a message.
 
 
