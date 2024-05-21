@@ -1,16 +1,15 @@
 #include <iostream>
+#include <cmath>
 #include <vector>
 #include <string>
 #include <chrono>
 #include <mutex>
 #include <unordered_map>
 #include <typeinfo>
-#include <ranges>
 
 #include <asig/asig.h>
 
 using namespace std;
-using namespace std::ranges;
 using namespace lue::asig;
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -43,6 +42,16 @@ struct my_event_t {
     std::string     to_string () const { return "m_event_t: " + msg + ", val: " + std::to_string(val); }
 };
 
+// Just to show regitering and calling another class instance
+// which we will put asa member in thread A
+struct advanced_math
+{
+  int qube_me(const int& some_number) {
+    const auto qubed = std::pow(some_number,3);
+    cerr  << "{" << thread_name() << "} MemberThread_A::qube_me(" << some_number << ") => " << qubed << "\n";
+    return qubed;
+  }
+};
 
 // ----------------
 // --- Thread A ---
@@ -67,6 +76,7 @@ struct Thread_A
     {
         add_thread_name("ctx A");
         signals_.register_receiver(this);
+        signals_.register_receiver(&advanced_math_);
         signals_.subscribe_permanent<my_event_t>(&Thread_A::my_event_handler, this);
 
         start_time_ = steady_clock::now();
@@ -114,6 +124,7 @@ struct Thread_A
     std::atomic<bool>               is_running_         {false};
     std::unique_ptr<std::thread>    thread_             {nullptr};
     steady_clock::time_point        start_time_         {};
+    advanced_math                   advanced_math_;
 };
 
 Thread_A thread_a{signals, "Thread A"};
@@ -209,6 +220,9 @@ void threads_test()
         this_thread::sleep_for(1ms);
     }
 
+    signals.call(&advanced_math::qube_me, &thread_a.advanced_math_, 5);
+    signals.timer_call_in(2s, &Thread_A::timer_expired, &thread_a, 2s);
+
     // ----------------------------------------------
     // Call function in B after some time out.
     // This function then demonstrates call/response:
@@ -216,7 +230,6 @@ void threads_test()
     // A -> B When square_me is done a new command is send back as response in B's
     //        context with the squared result.
     // ----------------------------------------------------------------------------------------
-    signals.timer_call_in(2s, &Thread_A::timer_expired, &thread_a, 2s);
     signals.timer_call_in(3s, &Thread_B::trigger_squared_calculation, &thread_b, 12, 2);
 
     // --- Test publish events ---
