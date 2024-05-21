@@ -39,6 +39,11 @@ struct Thread_A
     thread_ = std::make_unique<std::thread>(&Thread_A::thread_function, this);
   }
 
+  ~Thread_A()  {
+    is_running_ = false;
+    thread_->join();
+  }
+
   // -----------------------------
   // --- Thread main functions ---
   // -----------------------------
@@ -58,8 +63,8 @@ struct Thread_A
   // --- Command functions ---
   // -------------------------
 
-  void timer_expired(std::chrono::milliseconds ms_time_out) {
-    std::cerr << "Thread_A::timer_expired(" << ms_time_out.count() << " ms)\n";
+  void timer_expired() {
+    std::cerr << "Thread_A::timer_expired() called\n";
   }
 
   void set_engine_speed(int speed) {
@@ -166,7 +171,7 @@ void threads_test()
   // A -> B When square_me is done a new command is send back as response in B's
   //        context with the squared result.
   // ----------------------------------------------------------------------------------------
-  signals.timer_call_in(2s, &Thread_A::timer_expired, thread_a.get(), 2s);
+  signals.timer_call_in(2s, &Thread_A::timer_expired, thread_a.get());
   signals.timer_call_in(3s, &Thread_B::trigger_squared_calculation, thread_b.get(), 12);
 
   // --- Test publish events ---
@@ -179,6 +184,10 @@ void threads_test()
   std::this_thread::sleep_for(6s);
   thread_a->is_running_ = false;
   thread_b->is_running_ = false;
+  while ((thread_a->is_running_ && thread_b->is_running_)) {
+    std::this_thread::sleep_for(1ms);
+  }
+  std::cerr << "--- EXIT --- \n";
 }
 
 

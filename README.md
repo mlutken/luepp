@@ -2,7 +2,18 @@ C++ library for async / multithreaded C++
 ==========================================
 The current most "cool" part is the asynchronous signals library "lue::asig".
 
-It provides 3 main features:
+For example:
+
+```signals.call_response<int>(&Thread_B::callback_squared, this, &Thread_A::square_me, thread_a.get(), number_to_square); ```
+
+This will trigger the `Thread_A::square_me()` to be called with the agument 12 in thread A's context. 
+Then, when that function returns with the result (144) a new command back to Thread_B will be queued. 
+So a little later, back in Thread_B's context the `Thread_B::callback_squared()` member function will be 
+called with the result (144).
+
+
+
+asig provides 3 main features:
  - Async Command / reponse: Call a member function in another threads context and get the response back 
  - Async timed commands: Call any function at a given time point in the receiving threads context.
  - Async publish/subscribe: Publish events, which will be sent to any entity that has subscribed.  
@@ -48,6 +59,11 @@ struct Thread_A
 {
 	Thread_A() {
 		thread_ = std::make_unique<std::thread>(&Thread_A::thread_function, this);
+	}
+
+	~Thread_A(½)  {
+		is_running_ = false;
+		thread_->join();
 	}
 
 	void thread_function()
@@ -98,6 +114,37 @@ immediately in the context of Thread_A, then you simpy use the `asig::call_callb
 like this:
 
 ```signals.call_callback<int>(&Thread_B::callback_squared, this, &Thread_A::square_me, thread_a.get(), number_to_square); ```
+
+
+#### Call an function after a timeout
+
+```signals.timer_call_in(2s, &Thread_A::timer_expired, thread_a.get());```
+
+
+#### Subscribe to an event
+To subscribe to the struct my_event_t:
+
+```subscription_ = signals.subscribe_to<my_event_t>(&Thread_B::my_event_handler, this);```
+
+The lue::asig::subscription object can be used to unsubscribe to the event. Also it 
+will unsubscribe automatically if it's destructor is called. 
+This also means that you can't ignore this return value (but see subscribe_permant), 
+as the subscription will be cancelled immediately if you do.
+
+To unsubscribe "manually", simply call:
+
+```signals.un_subscribe(subscription_);``` 
+
+from within the thread context where you subscribed.
+
+In some cases you might not need to ever unsbscribe for the duration of 
+you application and in these case you can simply use:
+
+
+```signals.subscribe_permanent<my_event_t>(&Thread_B::my_event_handler, this);```
+
+
+
 
 
 

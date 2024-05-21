@@ -29,4 +29,9 @@ void asig::register_receiver(void* class_instance_ptr, std::thread::id thread_id
     commands_.register_receiver(class_instance_ptr, thread_id);
 }
 
+void asig::un_subscribe(event_subscription& subscription, std::thread::id thread_id)
+{
+  events_.un_subscribe(subscription, thread_id);
+}
+
 } // END namespace lue::asig
