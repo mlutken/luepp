@@ -144,6 +144,11 @@ you application and in these case you can simply use:
 ```signals.subscribe_permanent<my_event_t>(&Thread_B::my_event_handler, this);```
 
 
+#### Publish an event
+
+```signals.publish_event(my_event_t{"Hello", 15});```
+
+
 
 
 

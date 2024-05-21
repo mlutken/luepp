@@ -180,7 +180,6 @@ void threads_test()
   std::cerr << "---publish(): " << typeid(my_event_t).name() << " " << evt.to_string() << " --- \n";
   signals.publish_event(evt);
 
-
   std::this_thread::sleep_for(6s);
   thread_a->is_running_ = false;
   thread_b->is_running_ = false;
