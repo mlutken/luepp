@@ -4,11 +4,6 @@ include(cmake/CPM.cmake)
 # CMAKE_CXX_FLAGS don't propagate out to other
 # targets
 function(myproject_setup_dependencies)
-
-# if(NOT TARGET GTest::gtest)
-# 	cpmaddpackage("gh:googletest/googletest/tag#v1.14.0")
-# endif()
-
 	# if(NOT TARGET fmtlib::fmtlib)
 	#   cpmaddpackage("gh:fmtlib/fmt#9.1.0")
 	# endif()
