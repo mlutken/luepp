@@ -7,13 +7,13 @@ include(cmake/PreventInSourceBuilds.cmake)
 include(ProjectOptions.cmake)
 
 
-myproject_setup_options()
+#myproject_setup_options()
+#myproject_global_options()
 
-myproject_global_options()
 include(Dependencies.cmake)
 myproject_setup_dependencies()
 
-myproject_local_options()
+#myproject_local_options()
 
 
 # Emscripten CMake CMD: .../_build/luepp$ cmake  -DCMAKE_SYSTEM_NAME=Emscripten -DCMAKE_BUILD_TYPE=Release -DCONAN_PROFILE=emscripten -DCMAKE_C_COMPILER=/opt/user/emsdk/upstream/emscripten/emcc -DCMAKE_CXX_COMPILER=/opt/user/emsdk/upstream/emscripten/em++ -DCMAKE_AR=/opt/user/emsdk/upstream/emscripten/emar -DCMAKE_RANLIB=/opt/user/emsdk/upstream/emscripten/emranlib ../../luepp
@@ -44,7 +44,7 @@ if (LUEPP_IS_TOP_LEVEL_PROJECT)
 			)
 
 			message("INFO: Find GTest as we are NOT cross compiling!")
-			find_package(GTest REQUIRED)
+#			find_package(GTest REQUIRED)
     endif()
 endif()
 
