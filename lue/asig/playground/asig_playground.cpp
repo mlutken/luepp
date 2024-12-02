@@ -213,13 +213,14 @@ Thread_B thread_b{signals, "Thread B"};
 
 void threads_test()
 {
-
+    // Start threads and wait for them to be running and ready!
     thread_a.start();
     thread_b.start();
     while (!(thread_a.is_running() && thread_b.is_running())) {
         this_thread::sleep_for(1ms);
     }
 
+    // Now we can start communicating....
     signals.call(&advanced_math::qube_me, &thread_a.advanced_math_, 5);
     signals.timer_call_in(2s, &Thread_A::timer_expired, &thread_a, 2s);
 
