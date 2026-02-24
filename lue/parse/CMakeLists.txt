@@ -5,8 +5,10 @@ add_library(${library_name} STATIC "")
 target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/parser.h
-    # PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/parse_numbers.h
+    PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/parser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/parse_numbers.cpp
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)

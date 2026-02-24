@@ -11,8 +11,7 @@ using namespace std;
 
 int main()
 {
-
-    cout << "Pase playground\n";
+    cout << "Parse playground\n";
     cout << endl;
 
 
