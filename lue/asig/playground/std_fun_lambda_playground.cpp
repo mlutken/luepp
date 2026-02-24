@@ -3,7 +3,6 @@
 #include <array>
 #include <memory>
 #include <string>
-#include <iostream>
 #include <cstdint>
 
 struct command_base_t {

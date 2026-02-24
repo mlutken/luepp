@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
-
-
-#include "../srsw_fifo.hpp"
+#include <concurrent/srsw_fifo.hpp>
 
 using namespace testing;
 

@@ -1,9 +1,6 @@
 #include <iostream>
-#include <vector>
 #include <string>
 #include <chrono>
-#include <mutex>
-#include <unordered_map>
 #include <typeinfo>
 
 #include <asig/asig.h>

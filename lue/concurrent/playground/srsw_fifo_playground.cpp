@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <concurrent/srsw_fifo.hpp>
 #include <concurrent/srsw_fifo_s.hpp>
 

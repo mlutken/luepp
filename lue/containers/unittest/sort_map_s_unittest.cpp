@@ -1,10 +1,6 @@
-#include <stdexcept>
-#include <gtest/gtest.h>
-
-
-#include "../sort_map_s.hpp"
-#include <vector>
 #include <string>
+#include <gtest/gtest.h>
+#include <containers/sort_map_s.hpp>
 
 using namespace testing;
 using namespace lue;

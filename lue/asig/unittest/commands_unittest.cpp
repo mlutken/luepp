@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../commands.h"
-
+#include <asig/commands.h>
 
 using namespace testing;
 

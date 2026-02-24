@@ -1,9 +1,7 @@
 #include <stdexcept>
-#include <gtest/gtest.h>
-
-
-#include "../vector_s.hpp"
 #include <vector>
+#include <gtest/gtest.h>
+#include <containers/vector_s.hpp>
 
 using namespace testing;
 using namespace lue;
