@@ -1,4 +1,7 @@
+add_subdirectory(math)
 add_subdirectory(containers)
 add_subdirectory(concurrent)
 add_subdirectory(asig)
 add_subdirectory(parse)
+add_subdirectory(data)
+add_subdirectory(gui)
