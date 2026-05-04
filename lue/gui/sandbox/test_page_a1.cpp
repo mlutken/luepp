@@ -3,8 +3,7 @@
 #include <qpushbutton.h>
 #include <QLabel>
 
-test_page_a1::test_page_a1(data_source_base& data_source, QWidget* parent) :
-    page_type_a{data_source, parent}
+test_page_a1::test_page_a1(lue::data::data_source_base& data_source, QWidget* parent) : page_type_a{data_source, parent}
 {
     build_page();
     // build_page_qt_way();

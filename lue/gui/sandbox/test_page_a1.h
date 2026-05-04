@@ -5,7 +5,7 @@
 class test_page_a1 : public page_type_a
 {
 public:
-    explicit test_page_a1(data_source_base& data_source, QWidget* parent = nullptr);
+    explicit test_page_a1(lue::data::data_source_base& data_source, QWidget* parent = nullptr);
 
 private:
     void    build_page_qt_way   ();

@@ -6,6 +6,8 @@
 using namespace std;
 using namespace std::string_view_literals;
 
+namespace lue::data {
+
 template<class... Ts>
 struct visit_overload_t : Ts... {
     using Ts::operator()...;
@@ -156,11 +158,11 @@ string data_source::do_to_string() const
     s += "{" + path() + "}\n";
     for (const auto& [path, val]: string_data_map_) {
         s += path + " : ";
-        s += ::to_string(val) + "\n";
+        s += lue::data::to_string(val) + "\n";
     }
     for (const auto& [path, vec]: string_vec_map_) {
         s += "[" + path + "]: ";
-        s += ::to_string(vec) + "\n";
+        s += lue::data::to_string(vec) + "\n";
     }
 
     return s;
@@ -201,3 +203,5 @@ data_source create_demo_1()
     ds.set("stars", 4);
     return ds;
 }
+
+} // namespace lue::data

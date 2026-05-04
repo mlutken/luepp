@@ -12,6 +12,9 @@
 // --- data_object_base ---
 // ------------------------
 
+namespace lue::data {
+
+
 /// @todo Make real class using std::filesystem::path internally. Must support network paths as well.
 using data_path = std::string;
 
@@ -144,3 +147,5 @@ private:
 
 void        data_source_playground_1();
 data_source create_demo_1           ();
+
+} // namespace lue::data

@@ -6,6 +6,8 @@
 #include <QHBoxLayout>
 #include <qpushbutton.h>
 
+
+
 template<class... Ts>
 struct visit_overload_t : Ts... {
     using Ts::operator()...;
@@ -15,11 +17,11 @@ visit_overload_t(Ts...) -> visit_overload_t<Ts...>; // Deduction guide
 
 using namespace std;
 
-page_type_a::page_type_a(data_source_base& data_source, QWidget* parent)
+page_type_a::page_type_a(lue::data::data_source_base& data_source, QWidget* parent)
     : QWidget{parent},
       data_source_ref_ptr_{&data_source}
 {
-    this->data_source().connect([this](const data_path& path) { on_data_changed(path);});
+    this->data_source().connect([this](const lue::data::data_path& path) { on_data_changed(path);});
 }
 
 page_type_a& page_type_a::layout_h()
@@ -40,7 +42,7 @@ page_type_a& page_type_a::layout_pop()
     return *this;
 }
 
-page_type_a& page_type_a::label(const data_path& path)
+page_type_a& page_type_a::label(const lue::data::data_path& path)
 {
     auto label = new QLabel(QString::fromUtf8(data_source().as_string(path).c_str()));
     label->setWordWrap(true);
@@ -49,7 +51,7 @@ page_type_a& page_type_a::label(const data_path& path)
     return *this;
 }
 
-page_type_a& page_type_a::button(const data_path& path)
+page_type_a& page_type_a::button(const lue::data::data_path& path)
 {
     auto button = new QPushButton(QString::fromUtf8(data_source().as_string(path).c_str()));
     add_widget_helper(button);
@@ -58,19 +60,19 @@ page_type_a& page_type_a::button(const data_path& path)
 }
 
 
-data_source_base& page_type_a::data_source()
+lue::data::data_source_base& page_type_a::data_source()
 {
     if (data_source_ref_ptr_) { return *data_source_ref_ptr_; }
     return *data_source_sp_;
 }
 
-const data_source_base& page_type_a::data_source() const
+const lue::data::data_source_base& page_type_a::data_source() const
 {
     if (data_source_ref_ptr_) { return *data_source_ref_ptr_; }
     return *data_source_sp_;
 }
 
-void page_type_a::on_data_changed(const data_path& path)
+void page_type_a::on_data_changed(const lue::data::data_path& path)
 {
     cerr << "FIXMENM on_data_changed: " << path << "\n";
 }

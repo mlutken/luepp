@@ -10,6 +10,7 @@
 
 
 using namespace std;
+// using namespace std;
 
 
 int main(int argc, char *argv[])
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    data_source ds1 = create_demo_1();
+    lue::data::data_source ds1 = lue::data::create_demo_1();
     test_page_a1 w(ds1);
 
     // QWidget w;
