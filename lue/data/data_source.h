@@ -8,27 +8,17 @@
 #include <variant>
 #include <functional>
 
+#include "data/data_path.h"
+#include "data/data_object_base.h"
+#include "data/data_value.h"
+
 // ------------------------
 // --- data_object_base ---
 // ------------------------
 
 namespace lue::data {
 
-
-/// @todo Make real class using std::filesystem::path internally. Must support network paths as well.
-using data_path = std::string;
-
-using data_changed_cb = std::function<void (const data_path&)>;
-
-struct data_object_base
-{
-    using id_t = size_t;
-    virtual ~data_object_base() = default;
-    virtual id_t            id          () const = 0;
-    virtual std::string     to_string   () const = 0;
-};
-
-using data_object_sp = std::shared_ptr<data_object_base>;
+// class data_value;
 
 // ----------------
 // --- my_point ---
@@ -52,17 +42,17 @@ struct my_point : public data_object_base
 
 };
 
-// ------------------
-// --- data_value ---
-// ------------------
-class data_source_base;
-using data_source_base_sp   = std::shared_ptr<data_source_base>;
-using data_value            = std::variant<int32_t, int64_t, float, double, bool, std::string,
-                                           data_object_sp, data_source_base_sp>;
-using data_value_vec        = std::vector<data_value>;
+// // ------------------
+// // --- data_value ---
+// // ------------------
+// class data_source_base;
+// using data_source_base_sp   = std::shared_ptr<data_source_base>;
+// using data_value            = std::variant<int32_t, int64_t, float, double, bool, std::string,
+//                                            data_object_sp, data_source_base_sp>;
+// using data_value_vec        = std::vector<data_value>;
 
-std::string     to_string   (const data_value& val);
-std::string     to_string   (const data_value_vec& val);
+// std::string     to_string   (const data_value& val);
+// std::string     to_string   (const data_value_vec& val);
 
 // ------------------------
 // --- data_source_base ---

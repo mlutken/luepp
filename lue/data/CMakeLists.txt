@@ -4,9 +4,14 @@ add_library(${library_name} STATIC "")
 
 target_sources(${library_name}
     PUBLIC
+    data_object_base.h
+    data_path.h
     data_source.h
+    data_value.h
     PRIVATE
+    data_path.cpp
     data_source.cpp
+    data_value.cpp
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
