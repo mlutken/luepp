@@ -1,0 +1,9 @@
+{
+    "dependencies": [
+        "nlohmann-json",
+        "gtest"
+    ]
+    ,
+    "overrides": [
+    ]
+}
