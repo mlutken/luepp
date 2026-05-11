@@ -25,7 +25,9 @@ class page_type_a : public QWidget
     Q_OBJECT
 public:
     explicit page_type_a(lue::data::data_source_base& data_source, QWidget* parent = nullptr);
-
+    
+    ~page_type_a() override = default;
+    
     page_type_a&                layout_h    ();
     page_type_a&                layout_v    ();
     page_type_a&                layout_pop  ();

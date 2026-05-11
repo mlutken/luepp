@@ -1,13 +1,10 @@
 #include "app.h"
 
-namespace lue
+namespace lue::gui {
+
+app::app()
 {
-    namespace gui
-    {
+}
 
-        app::app()
-        {
-        }
+} // namespace lue::gui
 
-    } // namespace gui
-} // namespace lue

@@ -1,16 +1,14 @@
 #pragma once
 
-namespace lue
+#include "system/app.h"
+
+namespace lue::gui {
+class app : public system::app
 {
-    namespace gui
-    {
+public:
+    app();
+    ~app() override;
 
-        class app
-        {
-        public:
-            app();
+};
 
-        };
-
-    } // namespace gui
-} // namespace lue
+} // namespace lue::gui
