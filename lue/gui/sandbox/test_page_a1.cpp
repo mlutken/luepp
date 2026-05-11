@@ -26,6 +26,7 @@ void test_page_a1::build_page_qt_way()
     // palette.setColor(QPalette::WindowText, Qt::red);
     title_lb->setPalette(palette);
 
+
     // QFont font = title_lb->font();
     // font.setPointSize(24);
     // font.setBold(true);

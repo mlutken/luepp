@@ -190,9 +190,6 @@ void data_source_playground_1()
     ds_root.set("/leaf", ds_leaf);
 
     ds_root.dbg_print();
-
-
-
 }
 
 data_source create_demo_1()
