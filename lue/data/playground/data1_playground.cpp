@@ -16,6 +16,40 @@ int main()
     return 0; 
 }
 
+// ----------------
+// --- my_point ---
+// ----------------
+
+struct my_point : public data_object_base
+{
+    my_point() = default;
+    ~my_point() override = default;
+    my_point(const my_point&) = default;
+    my_point(my_point&&) = default;
+    my_point& operator=(const my_point&) = default;
+    my_point& operator=(my_point&&) = default;
+    
+    explicit my_point(uint32_t xval, uint32_t yval) : x(xval), y(yval) {}
+    
+    uint32_t x  {};
+    uint32_t y  {};
+    id_t            id          () const override;
+    std::string     to_string   () const override;
+    
+};
+
+
+data_object_base::id_t my_point::id() const { return __COUNTER__; }
+
+string my_point::to_string() const
+{
+    return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+}
+
+
+// --------------------------------
+// --- data_source_playground_1 ---
+// --------------------------------
 
 void data_source_playground_1()
 {
