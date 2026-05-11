@@ -5,18 +5,17 @@
 #include <stack>
 #include <variant>
 
+#include "data/data_source_base.h"
 
-namespace lue::data {
-    class data_source_base;
-}
-
-#include "data/data_source.h"
 
 class QLabel;
 class QButton;
 class QVBoxLayout;
 class QVBoxLayout;
 class QHBoxLayout;
+
+
+
 
 
 

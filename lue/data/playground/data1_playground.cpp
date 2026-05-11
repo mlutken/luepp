@@ -1,5 +1,5 @@
 #include <iostream>
-#include "data/data_source.h"
+#include "data/data_source_memory.h"
 
 
 using namespace std;
@@ -55,14 +55,14 @@ void data_source_playground_1()
 {
     cerr << " --- data_source_playground_1() ---\n";
     data_value_vec ds_vec {1, 2, 3};
-    auto ds_leaf = make_shared<data_source>("/leaf");
+    auto ds_leaf = make_shared<data_source_memory>("/leaf");
     ds_leaf->set("title", "Cpp Weekly - ep 500"s);
     ds_leaf->set("stars", 3);
     ds_leaf->set("vec", ds_vec);
     
     // ds_leaf->dbg_print();
     
-    data_source ds_root{"/"};
+    data_source_memory ds_root{"/"};
     ds_root.set("title", "The Trump Report - ep 345"s);
     ds_root.set("stars", 4);
     ds_root.set("ai_generated", false);

@@ -20,11 +20,11 @@
 namespace lue::data {
 
 
-class data_source : public data_source_base
+class data_source_memory : public data_source_base
 {
 public:
     using data_source_base::data_source_base;
-    data_source() = default;
+    data_source_memory() = default;
 
 
 protected:

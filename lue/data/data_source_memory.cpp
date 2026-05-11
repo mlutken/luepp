@@ -1,4 +1,4 @@
-#include "data_source.h"
+#include "data_source_memory.h"
 #include <ranges>
 #include <sstream>
 #include <iostream>
@@ -58,7 +58,7 @@ namespace lue::data {
 // --- data_source ---
 // -------------------
 
-const data_value& data_source::do_as_data_value(const data_path& path) const
+const data_value& data_source_memory::do_as_data_value(const data_path& path) const
 {
     static const data_value default_value{""s};
     const auto it = string_data_map_.find(path);
@@ -68,22 +68,22 @@ const data_value& data_source::do_as_data_value(const data_path& path) const
     return it != string_data_map_.end() ? it->second : default_value;
 }
 
-void data_source::do_set(const data_path& path, data_value val)
+void data_source_memory::do_set(const data_path& path, data_value val)
 {
     string_data_map_[path] = std::move(val);
 }
 
-void data_source::do_set_data_vec(const data_path& path, data_value_vec val)
+void data_source_memory::do_set_data_vec(const data_path& path, data_value_vec val)
 {
     string_vec_map_[path] = std::move(val);
 }
 
-void data_source::do_set_data_source(const data_path& path, data_source_base_sp val)
+void data_source_memory::do_set_data_source(const data_path& path, data_source_base_sp val)
 {
     string_data_map_[path] = std::move(val);
 }
 
-string data_source::do_to_string() const
+string data_source_memory::do_to_string() const
 {
     string s;
     s += "{" + path() + "}\n";
