@@ -1,8 +1,12 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <map>
+#include <vector>
 #include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace lue::concepts {
 
@@ -11,39 +15,73 @@ A versatile C++ class for representing and manipulating both file system paths a
 */
 class uri {
 public:
-    using path_t = std::filesystem::path;
+    std::filesystem::path m_p;
+    // --- Constructors ---
+    uri();
+    explicit uri(const std::string& uri_str);
+    explicit uri(const fs::path& path);
 
-    uri() = default;
-    explicit uri(const std::string& uri);
+    // --- Scheme ---
+    std::string scheme() const;
+    uri& scheme(const std::string& new_scheme);
 
-    uri&                operator/=      (const uri& p);
-    uri&                operator/=      (const std::string_view& p);
+    // --- Authority (User Info + Host + Port) ---
+    std::optional<std::string> user_info() const;
+    uri& user_info(const std::string& user, const std::string& pass = "");
 
-    std::string         string          () const;
-    std::string         parameter_string() const;
+    std::string host() const;
+    uri& host(const std::string& new_host);
 
-    const std::string&  scheme          () const;
-    void                scheme          (const std::string& scheme);
+    std::optional<uint16_t> port() const;
+    uri& port(uint16_t new_port);
 
-    const std::string&  host            () const;
-    void                host            (const std::string& host_name);
+    // --- Path ---
+    fs::path path() const;
+    uri& path(const fs::path& new_path);
 
-    uint16_t            port            () const;
-    void                port            (std::uint16_t port);
+    uri& operator/=(const std::string& segment);
+    uri operator/(const std::string& segment) const;
 
-    const path_t&       path            () const;
-    void                path            (const path_t& path);
+    // --- Query Parameters ---
+    using query_params_t = std::vector<std::pair<std::string, std::string>>;
+    query_params_t query_params() const;
+    uri& add_query_param(const std::string& key, const std::string& value);
+    uri& remove_query_param(const std::string& key);
 
-    std::string         parameter       (const std::string& key) const;
-    void                parameter       (const std::string& key, const std::string& value);
+    // --- Fragment ---
+    std::optional<std::string> fragment() const;
+    uri& fragment(const std::string& new_fragment);
+
+    // --- Conversion ---
+    std::string string() const;
+    fs::path to_filesystem_path() const;
+
+    // --- Comparison ---
+    bool operator==(const uri& other) const;
+    bool operator!=(const uri& other) const;
+
+    // --- Utility ---
+    bool is_local() const;
+    bool is_remote() const;
+    uri resolve(const uri& relative) const;
 
 private:
-    using parameters_map_t = std::map<std::string, std::string>;
-    std::filesystem::path   path_           {};
-    std::string             host_           {};
-    std::string             scheme_       {};
-    parameters_map_t        parameters_     {};
-    uint16_t                port_           {};
+    // --- Internal Representation ---
+    std::string m_scheme;
+    std::optional<std::string> m_user_info;
+    std::string m_host;
+    std::optional<uint16_t> m_port;
+    fs::path m_path;
+    query_params_t m_query_params;
+    std::optional<std::string> m_fragment;
+
+    // --- Helper Functions ---
+    static std::string percent_encode(const std::string& str);
+    static std::string percent_decode(const std::string& str);
+    static std::map<std::string, std::string> parse_query(const std::string& query_str);
+    static std::string build_query(const query_params_t& params);
+    void parse_uri(const std::string& uri_str);
+    static fs::path normalize_path(const fs::path& path);
 };
 
 } // namespace lue::concepts
