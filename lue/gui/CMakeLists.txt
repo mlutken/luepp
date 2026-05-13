@@ -8,6 +8,7 @@ set(CMAKE_AUTOUIC ON)
 
 add_library(${library_name} STATIC ""
     app.h app.cpp
+    label.h label.cpp
     widget.h widget.cpp
     sandbox/page_type_a.h sandbox/page_type_a.cpp
     sandbox/test_page_a1.h sandbox/test_page_a1.cpp

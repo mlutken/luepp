@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     
-    // lue::data::data_source_playground_1();
     lue::data::data_source_memory ds1 = create_demo_1();
     test_page_a1 w(ds1);
 
