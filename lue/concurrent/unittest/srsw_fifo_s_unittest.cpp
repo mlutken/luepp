@@ -6,7 +6,6 @@ using namespace testing;
 class SRSWFifoSUnitTest : public testing::Test
 {
 };
-
 // ------------------------------
 // --- PUBLIC functions tests ---
 // ------------------------------
