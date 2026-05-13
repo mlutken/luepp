@@ -17,6 +17,7 @@ public:
     uri&                operator/=      (const std::string_view& p);
 
     std::string         string          () const;
+    std::string         parameter_string() const;
 
     const std::string&  protocol        () const;
     void                protocol_set    (const std::string& protocol);
@@ -28,7 +29,7 @@ public:
     void                path_set        (const path_t& path);
 
     std::string         parameter       (const std::string& key) const;
-    std::string         parameter_set   (const std::string& key, const std::string& value);
+    void                parameter_set   (const std::string& key, const std::string& value);
 
 private:
     using parameters_map_t = std::map<std::string, std::string>;
