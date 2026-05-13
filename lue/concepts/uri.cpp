@@ -40,10 +40,10 @@ uri::uri(const std::string& uri_str) {
     parse_uri(uri_str);
 }
 
-uri::uri(const fs::path& path) {
-    m_scheme = "file";
-    m_path = normalize_path(path);
-}
+// uri::uri(const fs::path& path) {
+//     m_scheme = "file";
+//     m_path = normalize_path(path);
+// }
 
 std::string uri::scheme() const {
     return m_scheme;
