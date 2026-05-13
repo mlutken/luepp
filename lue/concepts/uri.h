@@ -19,7 +19,7 @@ public:
     // --- Constructors ---
     uri();
     explicit uri(const std::string& uri_str);
-    explicit uri(const fs::path& path);
+    // explicit uri(const fs::path& path);
 
     // --- Scheme ---
     std::string scheme() const;
@@ -67,13 +67,13 @@ public:
 
 private:
     // --- Internal Representation ---
-    std::string m_scheme;
-    std::optional<std::string> m_user_info;
-    std::string m_host;
-    std::optional<uint16_t> m_port;
-    fs::path m_path;
-    query_params_t m_query_params;
-    std::optional<std::string> m_fragment;
+    std::string                 m_scheme;
+    std::optional<std::string>  m_user_info;
+    std::string                 m_host;
+    std::optional<uint16_t>     m_port;
+    fs::path                    m_path;
+    query_params_t              m_query_params;
+    std::optional<std::string>  m_fragment;
 
     // --- Helper Functions ---
     static std::string percent_encode(const std::string& str);
