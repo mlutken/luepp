@@ -1,6 +1,7 @@
 set (library_name luepp_strings)
 
 add_library(${library_name} STATIC ""
+    split.h split.cpp
     trim.h trim.cpp
 )
 

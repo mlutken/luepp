@@ -2,8 +2,6 @@
 // #include <ranges>
 
 // https://cppscripts.com/trim-in-cpp/
-// https://stackoverflow.com/questions/216823/how-to-trim-a-stdstring
-// https://stackoverflow.com/questions/25829143/trim-whitespace-from-a-string
 
 
 using namespace std;
