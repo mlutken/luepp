@@ -12,6 +12,7 @@ add_library(${library_name} STATIC ""
     widget.h widget.cpp
     sandbox/page_type_a.h sandbox/page_type_a.cpp
     sandbox/test_page_a1.h sandbox/test_page_a1.cpp
+    container.h container.cpp
 )
 
 

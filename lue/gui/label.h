@@ -1,24 +1,21 @@
 #pragma once
+#include <memory>
 
 #include "data/data_source_base.h"
-
-// PLATFORM_HEADER_INCLUDE_BEGIN
-class QLabel;
-// PLATFORM_HEADER_INCLUDE_END
-
+#include "gui/widget.h"
 
 namespace lue::gui {
 
-class label
+class label : public widget
 {
 public:
-    explicit label(lue::data::data_source_base& data_source);
+    explicit label(data::data_source_base& data_source, const concepts::uri& path);
 
 private:
-    lue::data::data_source_base& m_data_source;
-    // PLATFORM_HEADER_CLASS_BEGIN
-    QLabel*  m_label_ptr{nullptr};
-// PLATFORM_HEADER_CLASS_END
+    class impl;
+    data::data_source_base& data_source_;
+    concepts::uri           path_;
+    std::unique_ptr<impl>   pimpl_;
 };
 
 } // namespace lue::gui

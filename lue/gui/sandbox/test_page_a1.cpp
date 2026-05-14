@@ -7,8 +7,13 @@ using namespace lue::litterals;
 
 test_page_a1::test_page_a1(lue::data::data_source_base& data_source, QWidget* parent) : page_type_a{data_source, parent}
 {
-    build_page();
+    build_page_proto_way();
     // build_page_qt_way();
+}
+
+void test_page_a1::build_page()
+{
+
 }
 
 void test_page_a1::build_page_qt_way()
@@ -46,7 +51,7 @@ void test_page_a1::build_page_qt_way()
 
 }
 
-void test_page_a1::build_page()
+void test_page_a1::build_page_proto_way()
 {
     layout_v().label("title"_uri).label("description"_uri);
     // layout_h().button("H1").button("h2");

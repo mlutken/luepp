@@ -8,6 +8,7 @@ public:
     explicit test_page_a1(lue::data::data_source_base& data_source, QWidget* parent = nullptr);
 
 private:
-    void    build_page_qt_way   ();
-    void    build_page          ();
+    void    build_page              ();
+    void    build_page_qt_way       ();
+    void    build_page_proto_way    ();
 };
