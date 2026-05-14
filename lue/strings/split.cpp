@@ -33,15 +33,5 @@ std::vector<string> split(std::string_view s, string_view delimiter)
     return tokens;
 }
 
-std::vector<std::string_view> split_view(std::string_view s, std::string_view delimiter) {
-    std::vector<std::string_view> tokens;
-    auto ranges_result = s | std::views::split(delimiter);
-
-    for (auto token : ranges_result) {
-        tokens.push_back(std::string(token.begin(), token.end()));
-    }
-
-    return tokens;
-}
 
 } // namespace lue::strings

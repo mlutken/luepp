@@ -3,46 +3,32 @@
 #include <regex>
 #include <cassert>
 
+#include "strings/split.h"
+
 using namespace std;
 using namespace std::string_view_literals;
+using namespace lue::strings;
 
 namespace lue::concepts {
-
-namespace {
-    // Helper: Trim whitespace from a string
-    // std::string trim(const std::string& str) {
-    //     auto start = str.begin();
-    //     while (start != str.end() && std::isspace(*start)) start++;
-    //     auto end = str.end();
-    //     do {
-    //         end--;
-    //     } while (std::distance(start, end) > 0 && std::isspace(*end));
-    //     return std::string(start, end + 1);
-    // }
-
-    // Helper: Split a string by a delimiter
-    std::vector<std::string> split(const std::string& str, char delim) {
-        std::vector<std::string> tokens;
-        std::string token;
-        std::istringstream token_stream(str);
-        while (std::getline(token_stream, token, delim)) {
-            if (!token.empty()) tokens.push_back(token);
-        }
-        return tokens;
-    }
-}
 
 uri::uri()
     : m_scheme(""), m_host(""), m_path(""), m_fragment(std::nullopt) {}
 
-uri::uri(const std::string& uri_str) {
-    parse_uri(uri_str);
+/// \note This constructor is not used as it is ambiguous with the one that takes a std::filesystem::path
+/// uri::uri(const std::string& uri_str) {
+///     parse_uri(uri_str);
+/// }
+
+uri::uri(const fs::path& path)
+{
+    parse_uri(path.string());
 }
 
-// uri::uri(const fs::path& path) {
-//     m_scheme = "file";
-//     m_path = normalize_path(path);
-// }
+uri& uri::operator=(const std::filesystem::path& path)
+{
+    parse_uri(path.string());
+    return *this;
+}
 
 std::string uri::scheme() const {
     return m_scheme;

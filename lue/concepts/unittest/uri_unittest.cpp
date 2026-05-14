@@ -17,16 +17,6 @@ public:
 // -------------------
 // -- Constructors --
 // -------------------
-TEST_F(UriUnitTest, construct_from_http_uri_with_user_info)
-{
-    uri u{"http://user:password@example.com/path"};
-    EXPECT_EQ("http://user:password@example.com/path", u.string());
-    EXPECT_EQ("http", u.scheme());
-    EXPECT_TRUE(u.user_info().has_value());
-    EXPECT_EQ("user:password", u.user_info().value());
-    EXPECT_EQ("example.com", u.host());
-}
-
 TEST_F(UriUnitTest, default_constructor)
 {
     uri u{};
@@ -35,6 +25,27 @@ TEST_F(UriUnitTest, default_constructor)
     EXPECT_EQ("", u.host());
     EXPECT_FALSE(u.port().has_value());
     EXPECT_EQ("", u.path().string());
+}
+
+TEST_F(UriUnitTest, assign_from_string)
+{
+    uri u{};
+    EXPECT_EQ("", u.string());
+    u = "/some/path/to/file";
+    EXPECT_EQ("/some/path/to/file", u.string());
+    EXPECT_EQ("", u.scheme());
+    EXPECT_EQ("/some/path/to/file", u.path().string());
+}
+
+
+TEST_F(UriUnitTest, assign_from_path)
+{
+    uri u{};
+    EXPECT_EQ("", u.string());
+    u = fs::path{"/some/path/to/file"};
+    EXPECT_EQ("/some/path/to/file", u.string());
+    EXPECT_EQ("", u.scheme());
+    EXPECT_EQ("/some/path/to/file", u.path().string());
 }
 
 TEST_F(UriUnitTest, construct_from_path)
@@ -88,6 +99,15 @@ TEST_F(UriUnitTest, construct_from_http_uri_with_port)
     EXPECT_EQ("/path", u.path().string());
 }
 
+TEST_F(UriUnitTest, construct_from_http_uri_with_user_info)
+{
+    uri u{"http://user:password@example.com/path"};
+    EXPECT_EQ("http://user:password@example.com/path", u.string());
+    EXPECT_EQ("http", u.scheme());
+    EXPECT_TRUE(u.user_info().has_value());
+    EXPECT_EQ("user:password", u.user_info().value());
+    EXPECT_EQ("example.com", u.host());
+}
 
 TEST_F(UriUnitTest, construct_from_uri_with_fragment)
 {

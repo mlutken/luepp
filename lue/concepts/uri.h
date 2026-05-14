@@ -18,8 +18,8 @@ public:
     std::filesystem::path m_p;
     // --- Constructors ---
     uri();
-    explicit uri(const std::string& uri_str);
-    // explicit uri(const fs::path& path);
+    explicit uri(const fs::path& path);
+    uri& operator=(const fs::path& path);
 
     // --- Scheme ---
     std::string scheme() const;
