@@ -16,10 +16,6 @@ data_source_base::data_source_base(data_path path) :
 {
 }
 
-// void data_source_base::set(const std::string_view& path, data_value val)
-// {
-//     set(data_path{path}, std::move(val));
-// }
 
 void data_source_base::set(const data_path& path, data_value val)
 {
@@ -27,10 +23,20 @@ void data_source_base::set(const data_path& path, data_value val)
     call_on_changed(path);
 }
 
+void data_source_base::set(string_view path, data_value val)
+{
+    set(data_path{path}, std::move(val));
+}
+
 void data_source_base::set(const data_path& path, data_value_vec val)
 {
     do_set_data_vec(path, std::move(val));
     call_on_changed(path);
+}
+
+void data_source_base::set(std::string_view path, data_value_vec val)
+{
+    set(data_path{path}, std::move(val));
 }
 
 void data_source_base::set_data_source(const data_path& path, data_source_base_sp val)

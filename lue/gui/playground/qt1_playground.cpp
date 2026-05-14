@@ -10,7 +10,7 @@
 
 
 using namespace std;
-// using namespace std;
+using namespace lue::litterals;
 
 lue::data::data_source_memory create_demo_1();
 
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 lue::data::data_source_memory create_demo_1()
 {
     using namespace lue::data;
-    data_source_memory ds{"/"};
+    data_source_memory ds{"/"_uri};
     ds.set("title", "Harry Potter and the Philosopher's Stone"s);
     ds.set("description", "Orphaned as a baby, Harry Potter is entrusted to his only living relatives, the Dursley family that wasn't related to the wizardry world, by Professor Albus Dumbledore, Professor Minerva McGonagall, and key keeper Rubeus Hagrid from Hogwarts School of Witchcraft and Wizardry."s);
     ds.set("stars", 4);

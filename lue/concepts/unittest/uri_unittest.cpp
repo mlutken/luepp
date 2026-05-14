@@ -171,6 +171,10 @@ TEST_F(UriUnitTest, scheme_getter_setter)
     u.scheme("https");
     EXPECT_EQ("https", u.scheme());
     EXPECT_EQ("https://example.com/", u.string());
+
+    u.scheme("magnet");
+    EXPECT_EQ("magnet", u.scheme());
+    EXPECT_EQ("magnet://example.com/", u.string());
 }
 
 // -------

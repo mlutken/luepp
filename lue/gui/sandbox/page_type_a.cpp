@@ -74,7 +74,7 @@ const lue::data::data_source_base& page_type_a::data_source() const
 
 void page_type_a::on_data_changed(const lue::data::data_path& path)
 {
-    cerr << "FIXMENM on_data_changed: " << path << "\n";
+    cerr << "FIXMENM on_data_changed: " << path.string() << "\n";
 }
 
 // -----------------------

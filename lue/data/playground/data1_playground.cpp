@@ -37,7 +37,6 @@ struct my_point : public data_object_base
     uint32_t y  {};
     id_t            id          () const override;
     std::string     to_string   () const override;
-    
 };
 
 
@@ -57,14 +56,14 @@ void data_source_playground_1()
 {
     cerr << " --- data_source_playground_1() ---\n";
     data_value_vec ds_vec {1, 2, 3};
-    auto ds_leaf = make_shared<data_source_memory>("/leaf");
-    ds_leaf->set("title", "Cpp Weekly - ep 500"s);
+    auto ds_leaf = make_shared<data_source_memory>("/leaf"_uri);
+    ds_leaf->set("title"_uri, "Cpp Weekly - ep 500"s);
     ds_leaf->set("stars", 3);
     ds_leaf->set("vec", ds_vec);
     
     // ds_leaf->dbg_print();
     
-    data_source_memory ds_root{"/"};
+    data_source_memory ds_root{"/"_uri};
     ds_root.set("title", "The Trump Report - ep 345"s);
     ds_root.set("stars", 4);
     ds_root.set("ai_generated", false);

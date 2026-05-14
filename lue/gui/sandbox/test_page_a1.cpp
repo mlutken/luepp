@@ -3,6 +3,8 @@
 #include <qpushbutton.h>
 #include <QLabel>
 
+using namespace lue::litterals;
+
 test_page_a1::test_page_a1(lue::data::data_source_base& data_source, QWidget* parent) : page_type_a{data_source, parent}
 {
     build_page();
@@ -14,9 +16,9 @@ void test_page_a1::build_page_qt_way()
     setLayout(new QVBoxLayout{});
 
     QFont f( "Arial", 20, QFont::Bold);
-    auto title_lb = new QLabel(data_source().as_string("title").c_str());
+    auto title_lb = new QLabel(data_source().as_string("title"_uri).c_str());
     title_lb->setAutoFillBackground(true);
-    auto description_lb = new QLabel(data_source().as_string("description").c_str());
+    auto description_lb = new QLabel(data_source().as_string("description"_uri).c_str());
     description_lb->setAutoFillBackground(true);
     description_lb->setWordWrap(true);
     QPalette palette = title_lb->palette();
@@ -46,6 +48,6 @@ void test_page_a1::build_page_qt_way()
 
 void test_page_a1::build_page()
 {
-    layout_v().label("title").label("description");
+    layout_v().label("title"_uri).label("description"_uri);
     // layout_h().button("H1").button("h2");
 }
