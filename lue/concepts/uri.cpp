@@ -210,20 +210,6 @@ fs::path uri::to_filesystem_path() const {
     throw std::runtime_error("Cannot convert remote URI to filesystem path: " + this->string());
 }
 
-bool uri::operator==(const uri& other) const {
-    return m_scheme == other.m_scheme &&
-           m_user_info == other.m_user_info &&
-           m_host == other.m_host &&
-           m_port == other.m_port &&
-           m_path == other.m_path &&
-           m_query_params == other.m_query_params &&
-           m_fragment == other.m_fragment;
-}
-
-bool uri::operator!=(const uri& other) const {
-    return !(*this == other);
-}
-
 bool uri::empty() const
 {
     return this->string().empty();

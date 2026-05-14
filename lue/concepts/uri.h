@@ -58,8 +58,7 @@ public:
     fs::path to_filesystem_path() const;
 
     // --- Comparison ---
-    bool operator==(const uri& other) const;
-    bool operator!=(const uri& other) const;
+    auto operator<=>(const uri&) const = default;
 
     // --- Utility ---
     bool empty      () const;
@@ -86,4 +85,30 @@ private:
     static fs::path normalize_path(const fs::path& path);
 };
 
+
+
 } // namespace lue::concepts
+
+/// @see User-Defined Literals in C++: https://gist.github.com/MangaD/14780c2c092c4ea5fa466ae2d474e9c0
+namespace lue::litterals {
+// --- User-defined Literal to create uri from string literal ---
+constexpr lue::concepts::uri operator""_uri(const char* str, size_t len)
+{
+    return lue::concepts::uri{std::string(str, len)};
+}
+
+} // namespace lue::litterals
+
+
+
+namespace std {
+template<>
+struct hash<lue::concepts::uri>
+{
+    std::size_t operator()(const lue::concepts::uri& uri) const noexcept
+    {
+        return std::hash<std::string>{}(uri.string());
+    }
+};
+
+} // namespace std
