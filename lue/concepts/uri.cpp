@@ -215,7 +215,7 @@ fs::path uri::to_filesystem_path() const {
             return fs::path(path_str);
         }
     }
-    throw std::runtime_error("Cannot convert remote URI to filesystem path: " + string());
+    throw std::runtime_error("Cannot convert remote URI to filesystem path: " + this->string());
 }
 
 bool uri::operator==(const uri& other) const {
@@ -337,76 +337,83 @@ void uri::parse_uri(const std::string& uri_str) {
     m_user_info = std::nullopt;
     m_host.clear();
     m_port = std::nullopt;
-    m_path = "";
+    m_path = "/";
     m_query_params.clear();
     m_fragment = std::nullopt;
 
-    // Regex to parse URI components
-    std::regex uri_regex(
-        R"regex(([a-zA-Z][a-zA-Z0-9+\-.]*):\/\/)?)regex"  // Scheme
-        R"regex(([^:@\/?#]+)(?::([^@\/?#]*))?@)?)regex"    // User info (user:pass@)
-        R"regex(([^\/?#:]*)(?::(\d+))?)?)regex"           // Host and port
-        R"regex((\/[^\?#]*)?)?)regex"                     // Path
-        R"regex(\?([^#]*))?)regex"                        // Query
-        R"regex(#(.*))?)regex"                           // Fragment
-        );
+    // Regex to parse URI components (RFC 3986)
+    // Note: Escaped properly for C++ string literals
+    std::string regex_str =
+        "([a-zA-Z][a-zA-Z0-9+\\-.]*):\\/\\/"  // Scheme (e.g., http:)
+        "([^:@\\/?#]+(?::[^@\\/?#]*)?@)?"     // User info (e.g., user:pass@)
+        "([^\\/?#:]+(?::\\d+)?)?"             // Host and port (e.g., example.com:8080)
+        "(\\/[^\\?#]*)?"                      // Path (e.g., /path/to/resource)
+        "(\\?[^#]*)?"                         // Query (e.g., ?q=12&sort=asc)
+        "(#.*)?";                             // Fragment (e.g., #header)
+
+    std::regex uri_regex(regex_str);
 
     std::smatch matches;
-    if (!std::regex_match(uri_str, matches, uri_regex)) {
-        throw std::invalid_argument("Invalid URI: " + uri_str);
-    }
-
-    // Extract scheme
-    if (matches[1].matched) {
-        m_scheme = matches[1].str();
-    }
-
-    // Extract user info
-    if (matches[3].matched) {
-        std::string user = matches[3].str();
-        std::string pass = matches[4].matched ? matches[4].str() : "";
-        user_info(user, pass);
-    }
-
-    // Extract host and port
-    if (matches[5].matched) {
-        m_host = matches[5].str();
-    }
-    if (matches[6].matched) {
-        m_port = static_cast<uint16_t>(std::stoi(matches[6].str()));
-    }
-
-    // Extract path
-    if (matches[7].matched) {
-        std::string path_str = matches[7].str();
-        if (path_str.empty()) {
-            m_path = "/";
-        } else {
-            m_path = normalize_path(fs::path(path_str));
+    if (std::regex_match(uri_str, matches, uri_regex)) {
+        // Extract scheme
+        if (matches[1].matched) {
+            m_scheme = matches[1].str();
         }
-    }
 
-    // Extract query
-    if (matches[8].matched) {
-        std::string query_str = matches[8].str();
-        auto params = parse_query(query_str);
-        for (const auto& [key, value] : params) {
-            m_query_params.emplace_back(key, value);
+        // Extract user info
+        if (matches[2].matched) {
+            std::string user_info_str = matches[2].str();
+            size_t colon_pos = user_info_str.find(':');
+            if (colon_pos != std::string::npos) {
+                std::string user = user_info_str.substr(0, colon_pos);
+                std::string pass = user_info_str.substr(colon_pos + 1);
+                user_info(user, pass);
+            } else {
+                user_info(user_info_str, "");
+            }
         }
-    }
 
-    // Extract fragment
-    if (matches[9].matched) {
-        m_fragment = matches[9].str();
+        // Extract host and port
+        if (matches[3].matched) {
+            std::string host_port_str = matches[3].str();
+            size_t colon_pos = host_port_str.find(':');
+            if (colon_pos != std::string::npos) {
+                m_host = host_port_str.substr(0, colon_pos);
+                m_port = static_cast<uint16_t>(std::stoi(host_port_str.substr(colon_pos + 1)));
+            } else {
+                m_host = host_port_str;
+            }
+        }
+
+        // Extract path
+        if (matches[4].matched) {
+            std::string path_str = matches[4].str();
+            m_path = path_str.empty() ? "/" : normalize_path(fs::path(path_str));
+        }
+
+        // Extract query
+        if (matches[5].matched) {
+            std::string query_str = matches[5].str().substr(1); // Remove leading '?'
+            auto params = parse_query(query_str);
+            for (const auto& [key, value] : params) {
+                m_query_params.emplace_back(key, value);
+            }
+        }
+
+        // Extract fragment
+        if (matches[6].matched) {
+            m_fragment = matches[6].str().substr(1); // Remove leading '#'
+        }
+    } else {
+        // Fallback for local paths (no scheme, no host)
+        m_path = normalize_path(fs::path(uri_str));
     }
 
     // Handle local paths (no scheme, no host)
     if (m_scheme.empty() && m_host.empty()) {
-        // Treat as a local file path
         m_path = normalize_path(fs::path(uri_str));
     }
 }
-
 
 fs::path uri::normalize_path(const fs::path& path) {
     fs::path normalized;
