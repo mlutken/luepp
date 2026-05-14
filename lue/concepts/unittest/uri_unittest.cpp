@@ -20,6 +20,7 @@ public:
 TEST_F(UriUnitTest, construct_from_http_uri_with_user_info)
 {
     uri u{"http://user:password@example.com/path"};
+    EXPECT_EQ("http://user:password@example.com/path", u.string());
     EXPECT_EQ("http", u.scheme());
     EXPECT_TRUE(u.user_info().has_value());
     EXPECT_EQ("user:password", u.user_info().value());
@@ -39,6 +40,7 @@ TEST_F(UriUnitTest, default_constructor)
 TEST_F(UriUnitTest, construct_from_path)
 {
     uri u{fs::path{"/some/path/to/file"}};
+    EXPECT_EQ("/some/path/to/file", u.string());
     EXPECT_EQ("", u.scheme());
     EXPECT_EQ("/some/path/to/file", u.path().string());
 }
@@ -46,6 +48,7 @@ TEST_F(UriUnitTest, construct_from_path)
 TEST_F(UriUnitTest, construct_from_local_path_string)
 {
     uri u{"some/local/path"};
+    EXPECT_EQ("some/local/path", u.string());
     EXPECT_EQ("", u.scheme());
     EXPECT_EQ("some/local/path", u.path().string());
 }
@@ -53,6 +56,7 @@ TEST_F(UriUnitTest, construct_from_local_path_string)
 TEST_F(UriUnitTest, construct_from_file_uri)
 {
     uri u{"file:///absolute/path/to/file"};
+    EXPECT_EQ("file:///absolute/path/to/file", u.string());
     EXPECT_EQ("file", u.scheme());
     EXPECT_EQ("", u.host());
     EXPECT_EQ("/absolute/path/to/file", u.path().string());
@@ -61,6 +65,7 @@ TEST_F(UriUnitTest, construct_from_file_uri)
 TEST_F(UriUnitTest, construct_from_http_uri)
 {
     uri u{"http://example.com/path?key=value"};
+    EXPECT_EQ("http://example.com/path?key=value", u.string());
     EXPECT_EQ("http", u.scheme());
     EXPECT_EQ("example.com", u.host());
     EXPECT_EQ("/path", u.path().string());
@@ -75,6 +80,7 @@ TEST_F(UriUnitTest, construct_from_http_uri)
 TEST_F(UriUnitTest, construct_from_http_uri_with_port)
 {
     uri u{"http://example.com:8080/path"};
+    EXPECT_EQ("http://example.com:8080/path", u.string());
     EXPECT_EQ("http", u.scheme());
     EXPECT_EQ("example.com", u.host());
     EXPECT_TRUE(u.port().has_value());
@@ -86,6 +92,7 @@ TEST_F(UriUnitTest, construct_from_http_uri_with_port)
 TEST_F(UriUnitTest, construct_from_uri_with_fragment)
 {
     uri u{"http://example.com/path#section"};
+    EXPECT_EQ("http://example.com/path#section", u.string());
     EXPECT_EQ("http", u.scheme());
     EXPECT_EQ("example.com", u.host());
     EXPECT_EQ("/path", u.path().string());
@@ -96,6 +103,7 @@ TEST_F(UriUnitTest, construct_from_uri_with_fragment)
 TEST_F(UriUnitTest, construct_from_https_uri)
 {
     uri u{"https://secure.example.com/api/v1/data"};
+    EXPECT_EQ("https://secure.example.com/api/v1/data", u.string());
     EXPECT_EQ("https", u.scheme());
     EXPECT_EQ("secure.example.com", u.host());
     EXPECT_EQ("/api/v1/data", u.path().string());
@@ -111,6 +119,7 @@ TEST_F(UriUnitTest, path_getter_setter)
     u.scheme("file");
     u.path("/new/path");
     EXPECT_EQ("/new/path", u.path().string());
+    EXPECT_EQ("file:///new/path", u.string());
 }
 
 TEST_F(UriUnitTest, operator_slash_equals)
@@ -118,6 +127,7 @@ TEST_F(UriUnitTest, operator_slash_equals)
     uri u{"file:///base"};
     u /= "subdir";
     EXPECT_EQ("/base/subdir", u.path().string());
+    EXPECT_EQ("file:///base/subdir", u.string());
 }
 
 TEST_F(UriUnitTest, operator_slash)
@@ -135,10 +145,12 @@ TEST_F(UriUnitTest, operator_slash)
 TEST_F(UriUnitTest, scheme_getter_setter)
 {
     uri u{"http://example.com"};
+    EXPECT_EQ("http://example.com/", u.string());
     EXPECT_EQ("http", u.scheme());
     
     u.scheme("https");
     EXPECT_EQ("https", u.scheme());
+    EXPECT_EQ("https://example.com/", u.string());
 }
 
 // -------
@@ -148,10 +160,20 @@ TEST_F(UriUnitTest, scheme_getter_setter)
 TEST_F(UriUnitTest, host_getter_setter)
 {
     uri u;
-    EXPECT_EQ("", u.host());
-    
+    EXPECT_EQ("", u.string());
+    EXPECT_TRUE(u.empty());
+
     u.host("example.com");
     EXPECT_EQ("example.com", u.host());
+    EXPECT_EQ("example.com/", u.string());
+
+    u.host("");
+    EXPECT_EQ("", u.host());
+    EXPECT_EQ("", u.string());
+
+    u.host("example.com");
+    EXPECT_EQ("example.com", u.host());
+    EXPECT_EQ("example.com/", u.string());
 }
 
 // -------
@@ -166,10 +188,17 @@ TEST_F(UriUnitTest, port_getter_setter)
     u.port(8080);
     EXPECT_TRUE(u.port().has_value());
     EXPECT_EQ(8080, u.port().value());
+    EXPECT_EQ(":8080", u.string());
+
     
     u.port(0);
     EXPECT_TRUE(u.port().has_value());
     EXPECT_EQ(0, u.port().value());
+    EXPECT_EQ(":0", u.string());
+
+    u.port(std::nullopt);
+    EXPECT_FALSE(u.port().has_value());
+    EXPECT_EQ("", u.string());
 }
 
 // ----------------
@@ -188,6 +217,9 @@ TEST_F(UriUnitTest, user_info_getter_setter)
     u.user_info("username");
     EXPECT_TRUE(u.user_info().has_value());
     EXPECT_EQ("username", u.user_info().value());
+
+    u.user_info("");
+    EXPECT_FALSE(u.user_info().has_value());
 }
 
 // -------------------
@@ -197,12 +229,14 @@ TEST_F(UriUnitTest, user_info_getter_setter)
 TEST_F(UriUnitTest, query_params_empty)
 {
     uri u{"http://example.com/path"};
+    EXPECT_EQ("http://example.com/path", u.string());
     EXPECT_TRUE(u.query_params().empty());
 }
 
 TEST_F(UriUnitTest, add_query_param)
 {
     uri u{"http://example.com/path"};
+    EXPECT_EQ("http://example.com/path", u.string());
     u.add_query_param("key1", "value1");
     u.add_query_param("key2", "value2");
     
@@ -217,6 +251,7 @@ TEST_F(UriUnitTest, add_query_param)
 TEST_F(UriUnitTest, remove_query_param)
 {
     uri u{"http://example.com/path?key1=value1&key2=value2"};
+    EXPECT_EQ("http://example.com/path?key1=value1&key2=value2", u.string());
     u.remove_query_param("key1");
     
     auto params = u.query_params();
@@ -227,6 +262,7 @@ TEST_F(UriUnitTest, remove_query_param)
 TEST_F(UriUnitTest, query_params_from_constructor)
 {
     uri u{"http://example.com/path?a=1&b=2&c=3"};
+    EXPECT_EQ("http://example.com/path?a=1&b=2&c=3", u.string());
     auto params = u.query_params();
     ASSERT_EQ(3, params.size());
 }
@@ -243,6 +279,7 @@ TEST_F(UriUnitTest, fragment_getter_setter)
     u.fragment("section1");
     EXPECT_TRUE(u.fragment().has_value());
     EXPECT_EQ("section1", u.fragment().value());
+    EXPECT_EQ("#section1", u.string());
 }
 
 // ---------------
@@ -284,6 +321,7 @@ TEST_F(UriUnitTest, string_http_uri_full)
     EXPECT_TRUE(str.find("/api/data") != std::string::npos);
     EXPECT_TRUE(str.find("format=json") != std::string::npos);
     EXPECT_TRUE(str.find("#results") != std::string::npos);
+    EXPECT_EQ("http://example.com:8080/api/data?format=json#results", str);
 }
 
 // -----------------------
@@ -337,10 +375,11 @@ TEST_F(UriUnitTest, resolve_relative_uri)
     uri base{"http://example.com/base/path/"};
     uri relative{"subdir/file"};
     uri resolved = base.resolve(relative);
-    
+
     EXPECT_EQ("http", resolved.scheme());
     EXPECT_EQ("example.com", resolved.host());
     EXPECT_EQ("/base/path/subdir/file", resolved.path().string());
+    EXPECT_EQ("http://example.com/base/path/subdir/file", resolved.string());
 }
 
 // -----------------------

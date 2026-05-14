@@ -96,6 +96,12 @@ uri& uri::port(uint16_t new_port) {
     return *this;
 }
 
+uri& uri::port(std::optional<uint16_t> new_port)
+{
+    m_port = new_port;
+    return *this;
+}
+
 fs::path uri::path() const {
     return m_path;
 }
@@ -230,6 +236,11 @@ bool uri::operator==(const uri& other) const {
 
 bool uri::operator!=(const uri& other) const {
     return !(*this == other);
+}
+
+bool uri::empty() const
+{
+    return this->string().empty();
 }
 
 bool uri::is_local() const {

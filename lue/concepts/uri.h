@@ -34,6 +34,7 @@ public:
 
     std::optional<uint16_t> port() const;
     uri& port(uint16_t new_port);
+    uri& port(std::optional<uint16_t> new_port);
 
     // --- Path ---
     fs::path path() const;
@@ -61,9 +62,10 @@ public:
     bool operator!=(const uri& other) const;
 
     // --- Utility ---
-    bool is_local() const;
-    bool is_remote() const;
-    uri resolve(const uri& relative) const;
+    bool empty      () const;
+    bool is_local   () const;
+    bool is_remote  () const;
+    uri resolve     (const uri& relative) const;
 
 private:
     // --- Internal Representation ---
