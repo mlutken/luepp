@@ -17,6 +17,14 @@ public:
 // -------------------
 // -- Constructors --
 // -------------------
+TEST_F(UriUnitTest, construct_from_http_uri_with_user_info)
+{
+    uri u{"http://user:password@example.com/path"};
+    EXPECT_EQ("http", u.scheme());
+    EXPECT_TRUE(u.user_info().has_value());
+    EXPECT_EQ("user:password", u.user_info().value());
+    EXPECT_EQ("example.com", u.host());
+}
 
 TEST_F(UriUnitTest, default_constructor)
 {
@@ -74,14 +82,6 @@ TEST_F(UriUnitTest, construct_from_http_uri_with_port)
     EXPECT_EQ("/path", u.path().string());
 }
 
-TEST_F(UriUnitTest, construct_from_http_uri_with_user_info)
-{
-    uri u{"http://user:pass@example.com/path"};
-    EXPECT_EQ("http", u.scheme());
-    EXPECT_TRUE(u.user_info().has_value());
-    EXPECT_EQ("user:pass", u.user_info().value());
-    EXPECT_EQ("example.com", u.host());
-}
 
 TEST_F(UriUnitTest, construct_from_uri_with_fragment)
 {
@@ -349,12 +349,12 @@ TEST_F(UriUnitTest, resolve_relative_uri)
 
 TEST_F(UriUnitTest, complex_uri_parsing)
 {
-    // ftp://user:pass@host:21/path/to/file?mode=binary#top
-    uri u{"ftp://user:pass@host:21/path/to/file?mode=binary#top"};
+    // ftp://user:password@host:21/path/to/file?mode=binary#top
+    uri u{"ftp://user:password@host:21/path/to/file?mode=binary#top"};
     
     EXPECT_EQ("ftp", u.scheme());
     EXPECT_TRUE(u.user_info().has_value());
-    EXPECT_EQ("user:pass", u.user_info().value());
+    EXPECT_EQ("user:password", u.user_info().value());
     EXPECT_EQ("host", u.host());
     EXPECT_TRUE(u.port().has_value());
     EXPECT_EQ(21, u.port().value());

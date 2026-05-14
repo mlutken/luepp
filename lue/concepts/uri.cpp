@@ -366,7 +366,9 @@ void uri::parse_uri(const std::string& uri_str) {
             size_t colon_pos = user_info_str.find(':');
             if (colon_pos != std::string::npos) {
                 std::string user = user_info_str.substr(0, colon_pos);
-                std::string pass = user_info_str.substr(colon_pos + 1);
+                const auto pass_pos = colon_pos + 1;
+                const auto pass_len = user_info_str.size() - pass_pos - 1;
+                std::string pass = user_info_str.substr(pass_pos , pass_len);
                 user_info(user, pass);
             } else {
                 user_info(user_info_str, "");
