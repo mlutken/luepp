@@ -16,6 +16,11 @@ data_source_base::data_source_base(data_path path) :
 {
 }
 
+// void data_source_base::set(const std::string_view& path, data_value val)
+// {
+//     set(data_path{path}, std::move(val));
+// }
+
 void data_source_base::set(const data_path& path, data_value val)
 {
     do_set(path, std::move(val));

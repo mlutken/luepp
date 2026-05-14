@@ -36,8 +36,8 @@ protected:
     std::string                 do_to_string       () const override;
 
 private:
-    using map_string_data_t     = std::unordered_map<std::string, data_value>;
-    using map_string_vec_t      = std::unordered_map<std::string, data_value_vec>;
+    using map_string_data_t     = std::unordered_map<data_path, data_value>;
+    using map_string_vec_t      = std::unordered_map<data_path, data_value_vec>;
 
     map_string_data_t           string_data_map_        {};
     map_string_vec_t            string_vec_map_         {};

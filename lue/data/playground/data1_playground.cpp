@@ -3,7 +3,9 @@
 
 
 using namespace std;
+using namespace std::string_view_literals;
 using namespace lue::data;
+using namespace lue::litterals;
 
 void data_source_playground_1();
 

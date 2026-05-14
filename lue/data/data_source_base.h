@@ -30,6 +30,7 @@ public:
     explicit data_source_base   (data_path);
 
 
+    // void                        set                 (const std::string_view& path, data_value val);
     void                        set                 (const data_path& path, data_value val);
     void                        set                 (const data_path& path, data_value_vec val);
     void                        set_data_source     (const data_path& path, data_source_base_sp val);

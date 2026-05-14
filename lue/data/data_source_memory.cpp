@@ -86,13 +86,13 @@ void data_source_memory::do_set_data_source(const data_path& path, data_source_b
 string data_source_memory::do_to_string() const
 {
     string s;
-    s += "{" + path() + "}\n";
+    s += "{" + path().string() + "}\n";
     for (const auto& [path, val]: string_data_map_) {
-        s += path + " : ";
+        s += path.string() + " : ";
         s += lue::data::to_string(val) + "\n";
     }
     for (const auto& [path, vec]: string_vec_map_) {
-        s += "[" + path + "]: ";
+        s += "[" + path.string() + "]: ";
         s += lue::data::to_string(vec) + "\n";
     }
 
