@@ -22,59 +22,59 @@ public:
     uri& operator=(const fs::path& path);
 
     // --- Scheme ---
-    std::string scheme() const;
-    uri& scheme(const std::string& new_scheme);
+    std::string                 scheme              () const;
+    uri&                        scheme              (const std::string& new_scheme);
 
     // --- Authority (User Info + Host + Port) ---
-    std::optional<std::string> user_info() const;
-    uri& user_info(const std::string& user, const std::string& pass = "");
+    std::optional<std::string>  user_info           () const;
+    uri&                        user_info           (const std::string& user, const std::string& pass = "");
 
-    std::string host() const;
-    uri& host(const std::string& new_host);
+    std::string                 host                () const;
+    uri&                        host                (const std::string& new_host);
 
-    std::optional<uint16_t> port() const;
-    uri& port(uint16_t new_port);
-    uri& port(std::optional<uint16_t> new_port);
+    std::optional<uint16_t>     port                () const;
+    uri&                        port                (uint16_t new_port);
+    uri&                        port                (std::optional<uint16_t> new_port);
 
     // --- Path ---
-    fs::path path() const;
-    uri& path(const fs::path& new_path);
+    fs::path                    path                () const;
+    uri&                        path                (const fs::path& new_path);
 
-    uri& operator/=(const std::string& segment);
-    uri operator/(const std::string& segment) const;
+    uri&                        operator/=          (const std::string& segment);
+    uri                         operator/           (const std::string& segment) const;
 
     // --- Query Parameters ---
     using query_params_t = std::vector<std::pair<std::string, std::string>>;
-    query_params_t query_params() const;
-    uri& add_query_param(const std::string& key, const std::string& value);
-    uri& remove_query_param(const std::string& key);
+    query_params_t              query_params        () const;
+    uri&                        add_query_param     (const std::string& key, const std::string& value);
+    uri&                        remove_query_param  (const std::string& key);
 
     // --- Fragment ---
-    std::optional<std::string> fragment() const;
-    uri& fragment(const std::string& new_fragment);
+    std::optional<std::string>  fragment            () const;
+    uri&                        fragment            (const std::string& new_fragment);
 
     // --- Conversion ---
-    std::string string() const;
-    fs::path to_filesystem_path() const;
+    std::string                 string              () const;
+    fs::path                    to_filesystem_path  () const;
 
     // --- Comparison ---
-    auto operator<=>(const uri&) const = default;
+    auto                        operator<=>         (const uri&) const = default;
 
     // --- Utility ---
-    bool empty      () const;
-    bool is_local   () const;
-    bool is_remote  () const;
-    uri resolve     (const uri& relative) const;
+    bool                        empty               () const;
+    bool                        is_local            () const;
+    bool                        is_remote           () const;
+    uri                         resolve             (const uri& relative) const;
 
 private:
     // --- Internal Representation ---
-    std::string                 m_scheme;
-    std::optional<std::string>  m_user_info;
-    std::string                 m_host;
-    std::optional<uint16_t>     m_port;
-    fs::path                    m_path;
-    query_params_t              m_query_params;
-    std::optional<std::string>  m_fragment;
+    std::string                 scheme_;
+    std::optional<std::string>  user_info_;
+    std::string                 host_;
+    std::optional<uint16_t>     port_;
+    fs::path                    path_;
+    query_params_t              query_params_;
+    std::optional<std::string>  fragment_;
 
     // --- Helper Functions ---
     static std::string percent_encode(const std::string& str);
@@ -92,7 +92,7 @@ private:
 /// @see User-Defined Literals in C++: https://gist.github.com/MangaD/14780c2c092c4ea5fa466ae2d474e9c0
 namespace lue::litterals {
 // --- User-defined Literal to create uri from string literal ---
-constexpr lue::concepts::uri operator""_uri(const char* str, size_t len)
+inline lue::concepts::uri operator""_uri(const char* str, size_t len)
 {
     return lue::concepts::uri{std::string(str, len)};
 }

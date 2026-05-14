@@ -12,7 +12,7 @@ using namespace lue::strings;
 namespace lue::concepts {
 
 uri::uri()
-    : m_scheme(""), m_host(""), m_path(""), m_fragment(std::nullopt) {}
+    : scheme_(""), host_(""), path_(""), fragment_(std::nullopt) {}
 
 /// \note This constructor is not used as it is ambiguous with the one that takes a std::filesystem::path
 /// uri::uri(const std::string& uri_str) {
@@ -31,7 +31,7 @@ uri& uri::operator=(const std::filesystem::path& path)
 }
 
 std::string uri::scheme() const {
-    return m_scheme;
+    return scheme_;
 }
 
 uri& uri::scheme(const std::string& new_scheme) {
@@ -41,25 +41,25 @@ uri& uri::scheme(const std::string& new_scheme) {
             throw std::invalid_argument("Invalid scheme: " + new_scheme);
         }
     }
-    m_scheme = new_scheme;
+    scheme_ = new_scheme;
     return *this;
 }
 
 std::optional<std::string> uri::user_info() const {
-    return m_user_info;
+    return user_info_;
 }
 
 uri& uri::user_info(const std::string& user, const std::string& pass) {
     if (user.empty() && pass.empty()) {
-        m_user_info = std::nullopt;
+        user_info_ = std::nullopt;
     } else {
-        m_user_info = user + (pass.empty() ? "" : ":" + pass);
+        user_info_ = user + (pass.empty() ? "" : ":" + pass);
     }
     return *this;
 }
 
 std::string uri::host() const {
-    return m_host;
+    return host_;
 }
 
 uri& uri::host(const std::string& new_host) {
@@ -69,37 +69,37 @@ uri& uri::host(const std::string& new_host) {
             throw std::invalid_argument("Invalid host: " + new_host);
         }
     }
-    m_host = new_host;
+    host_ = new_host;
     return *this;
 }
 
 std::optional<uint16_t> uri::port() const {
-    return m_port;
+    return port_;
 }
 
 uri& uri::port(uint16_t new_port) {
-    m_port = new_port;
+    port_ = new_port;
     return *this;
 }
 
 uri& uri::port(std::optional<uint16_t> new_port)
 {
-    m_port = new_port;
+    port_ = new_port;
     return *this;
 }
 
 fs::path uri::path() const {
-    return m_path;
+    return path_;
 }
 
 uri& uri::path(const fs::path& new_path) {
-    m_path = normalize_path(new_path);
+    path_ = normalize_path(new_path);
     return *this;
 }
 
 uri& uri::operator/=(const std::string& segment) {
-    m_path /= segment;
-    m_path = normalize_path(m_path);
+    path_ /= segment;
+    path_ = normalize_path(path_);
     return *this;
 }
 
@@ -110,41 +110,41 @@ uri uri::operator/(const std::string& segment) const {
 }
 
 uri::query_params_t uri::query_params() const {
-    return m_query_params;
+    return query_params_;
 }
 
 uri& uri::add_query_param(const std::string& key, const std::string& value) {
     // Remove existing param with the same key
-    m_query_params.erase(
+    query_params_.erase(
         std::remove_if(
-            m_query_params.begin(),
-            m_query_params.end(),
+            query_params_.begin(),
+            query_params_.end(),
             [&key](const auto& param) { return param.first == key; }
         ),
-        m_query_params.end()
+        query_params_.end()
     );
-    m_query_params.emplace_back(key, value);
+    query_params_.emplace_back(key, value);
     return *this;
 }
 
 uri& uri::remove_query_param(const std::string& key) {
-    m_query_params.erase(
+    query_params_.erase(
         std::remove_if(
-            m_query_params.begin(),
-            m_query_params.end(),
+            query_params_.begin(),
+            query_params_.end(),
             [&key](const auto& param) { return param.first == key; }
         ),
-        m_query_params.end()
+        query_params_.end()
     );
     return *this;
 }
 
 std::optional<std::string> uri::fragment() const {
-    return m_fragment;
+    return fragment_;
 }
 
 uri& uri::fragment(const std::string& new_fragment) {
-    m_fragment = new_fragment.empty() ? std::nullopt : std::optional<std::string>(new_fragment);
+    fragment_ = new_fragment.empty() ? std::nullopt : std::optional<std::string>(new_fragment);
     return *this;
 }
 
@@ -152,24 +152,24 @@ std::string uri::string() const {
     std::ostringstream oss;
 
     // Scheme
-    if (!m_scheme.empty()) {
-        oss << m_scheme << "://";
+    if (!scheme_.empty()) {
+        oss << scheme_ << "://";
     }
 
     // Authority (user info, host, port)
-    if (!m_host.empty() || m_user_info || m_port) {
-        if (m_user_info) {
-            oss << *m_user_info << "@";
+    if (!host_.empty() || user_info_ || port_) {
+        if (user_info_) {
+            oss << *user_info_ << "@";
         }
-        oss << m_host;
-        if (m_port) {
-            oss << ":" << *m_port;
+        oss << host_;
+        if (port_) {
+            oss << ":" << *port_;
         }
     }
 
     // Path
-    std::string path_str = m_path.string();
-    if (m_scheme.empty() && m_host.empty()) {
+    std::string path_str = path_.string();
+    if (scheme_.empty() && host_.empty()) {
         // Local path: preserve as-is (e.g., "/home/user" or "C:\path")
         oss << path_str;
     } else {
@@ -181,13 +181,13 @@ std::string uri::string() const {
     }
 
     // Query
-    if (!m_query_params.empty()) {
-        oss << "?" << build_query(m_query_params);
+    if (!query_params_.empty()) {
+        oss << "?" << build_query(query_params_);
     }
 
     // Fragment
-    if (m_fragment) {
-        oss << "#" << percent_encode(*m_fragment);
+    if (fragment_) {
+        oss << "#" << percent_encode(*fragment_);
     }
 
     return oss.str();
@@ -195,10 +195,10 @@ std::string uri::string() const {
 
 fs::path uri::to_filesystem_path() const {
     if (is_local()) {
-        return m_path;
-    } else if (m_scheme == "file") {
+        return path_;
+    } else if (scheme_ == "file") {
         // Convert "file:///path/to/file" to "/path/to/file"
-        std::string path_str = m_path.string();
+        std::string path_str = path_.string();
         if (path_str.size() >= 3 && path_str.substr(0, 3) == "/:/") {
             // Windows: "file:///C:/path" -> "C:/path"
             return fs::path(path_str.substr(2));
@@ -216,34 +216,34 @@ bool uri::empty() const
 }
 
 bool uri::is_local() const {
-    return m_scheme.empty() || m_scheme == "file";
+    return scheme_.empty() || scheme_ == "file";
 }
 
 bool uri::is_remote() const {
-    return !is_local() && !m_scheme.empty();
+    return !is_local() && !scheme_.empty();
 }
 
 uri uri::resolve(const uri& relative) const {
-    if (relative.m_scheme.empty() && relative.m_host.empty()) {
+    if (relative.scheme_.empty() && relative.host_.empty()) {
         // Relative URI: resolve against this URI
         uri result = *this;
 
-        if (relative.m_path.string().starts_with("/")) {
+        if (relative.path_.string().starts_with("/")) {
             // Absolute path: replace path
-            result.m_path = relative.m_path;
+            result.path_ = relative.path_;
         } else {
             // Relative path: append to current path
-            result.m_path = normalize_path(result.m_path / relative.m_path);
+            result.path_ = normalize_path(result.path_ / relative.path_);
         }
 
         // Merge query params (relative overrides base)
-        for (const auto& [key, value] : relative.m_query_params) {
+        for (const auto& [key, value] : relative.query_params_) {
             result.add_query_param(key, value);
         }
 
         // Override fragment
-        if (relative.m_fragment) {
-            result.m_fragment = relative.m_fragment;
+        if (relative.fragment_) {
+            result.fragment_ = relative.fragment_;
         }
 
         return result;
@@ -316,13 +316,13 @@ std::string uri::build_query(const query_params_t& params) {
 
 void uri::parse_uri(const std::string& uri_str) {
     // Reset all members
-    m_scheme.clear();
-    m_user_info = std::nullopt;
-    m_host.clear();
-    m_port = std::nullopt;
-    m_path = "/";
-    m_query_params.clear();
-    m_fragment = std::nullopt;
+    scheme_.clear();
+    user_info_ = std::nullopt;
+    host_.clear();
+    port_ = std::nullopt;
+    path_ = "/";
+    query_params_.clear();
+    fragment_ = std::nullopt;
 
     // Regex to parse URI components (RFC 3986)
     // Note: Escaped properly for C++ string literals
@@ -340,7 +340,7 @@ void uri::parse_uri(const std::string& uri_str) {
     if (std::regex_match(uri_str, matches, uri_regex)) {
         // Extract scheme
         if (matches[1].matched) {
-            m_scheme = matches[1].str();
+            scheme_ = matches[1].str();
         }
 
         // Extract user info
@@ -363,17 +363,17 @@ void uri::parse_uri(const std::string& uri_str) {
             std::string host_port_str = matches[3].str();
             size_t colon_pos = host_port_str.find(':');
             if (colon_pos != std::string::npos) {
-                m_host = host_port_str.substr(0, colon_pos);
-                m_port = static_cast<uint16_t>(std::stoi(host_port_str.substr(colon_pos + 1)));
+                host_ = host_port_str.substr(0, colon_pos);
+                port_ = static_cast<uint16_t>(std::stoi(host_port_str.substr(colon_pos + 1)));
             } else {
-                m_host = host_port_str;
+                host_ = host_port_str;
             }
         }
 
         // Extract path
         if (matches[4].matched) {
             std::string path_str = matches[4].str();
-            m_path = path_str.empty() ? "/" : normalize_path(fs::path(path_str));
+            path_ = path_str.empty() ? "/" : normalize_path(fs::path(path_str));
         }
 
         // Extract query
@@ -381,22 +381,22 @@ void uri::parse_uri(const std::string& uri_str) {
             std::string query_str = matches[5].str().substr(1); // Remove leading '?'
             auto params = parse_query(query_str);
             for (const auto& [key, value] : params) {
-                m_query_params.emplace_back(key, value);
+                query_params_.emplace_back(key, value);
             }
         }
 
         // Extract fragment
         if (matches[6].matched) {
-            m_fragment = matches[6].str().substr(1); // Remove leading '#'
+            fragment_ = matches[6].str().substr(1); // Remove leading '#'
         }
     } else {
         // Fallback for local paths (no scheme, no host)
-        m_path = normalize_path(fs::path(uri_str));
+        path_ = normalize_path(fs::path(uri_str));
     }
 
     // Handle local paths (no scheme, no host)
-    if (m_scheme.empty() && m_host.empty()) {
-        m_path = normalize_path(fs::path(uri_str));
+    if (scheme_.empty() && host_.empty()) {
+        path_ = normalize_path(fs::path(uri_str));
     }
 }
 
