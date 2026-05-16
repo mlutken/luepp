@@ -16,14 +16,15 @@ public:
 
     container(const container&) = delete;
     container& operator=(const container&) = delete;
-    container(container&&) = default;
+    container(container&&);
     container& operator=(container&&) = delete;
+
+    void        show();
 
     void        add_widget          (const concepts::uri& path, std::unique_ptr<widget_base> w);
 
 private:
-    // std::unique_ptr<container_impl> pimpl_;
-    container_impl* pimpl_{nullptr};
+    std::unique_ptr<container_impl> pimpl_;
     std::unordered_map<concepts::uri, std::unique_ptr<widget_base>> widgets_;
 };
 

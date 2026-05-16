@@ -13,9 +13,11 @@ add_library(${library_name} STATIC ""
     sandbox/page_type_a.h sandbox/page_type_a.cpp
     sandbox/test_page_a1.h sandbox/test_page_a1.cpp
     container.h container.cpp
+
     qt/app_impl.h qt/app_impl.cpp
     qt/container_impl.h qt/container_impl.cpp
     qt/label_impl.h qt/label_impl.cpp
+    qt/widget_base_impl.h qt/widget_base_impl.cpp
     qt/widget_impl.h qt/widget_impl.cpp
     qt/qt_utils.h qt/qt_utils.cpp
 )

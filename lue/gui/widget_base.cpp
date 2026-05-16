@@ -9,5 +9,9 @@ widget_base::widget_base(data::data_source_base& data_source, const concepts::ur
 
 }
 
+widget_base::~widget_base() = default;
+
+widget_base::widget_base(widget_base&&) = default;
+
 
 } // namespace lue::gui

@@ -10,6 +10,11 @@ container_impl::container_impl(QObject* parent)
 {
 }
 
+void container_impl::show()
+{
+    q_widget_ptr_->show();
+}
+
 void container_impl::on_data_changed(const data::data_source_base& /*data_source*/,
                                      const concepts::uri& /*path*/)
 {

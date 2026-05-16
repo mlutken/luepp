@@ -13,5 +13,9 @@ label::label(data::data_source_base& data_source, const concepts::uri& path):
 {
 
 }
+label::~label() = default;
+
+label::label(label&&) = default;
+
 
 } // namespace lue::gui

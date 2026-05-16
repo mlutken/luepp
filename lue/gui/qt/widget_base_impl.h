@@ -5,18 +5,16 @@
 
 namespace lue::gui {
 
-class container_impl : public QObject
+class widget_base_impl : public QObject
 {
     Q_OBJECT
 public:
-    explicit container_impl(QObject* parent = nullptr);
+    explicit widget_base_impl(QObject* parent = nullptr);
 
-    void show();
     void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
 
 signals:
 private:
-    QWidget* q_widget_ptr_{nullptr};
 };
 
 } // namespace lue::gui
