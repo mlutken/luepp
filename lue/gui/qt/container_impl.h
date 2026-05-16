@@ -16,7 +16,7 @@ public:
 
     void set_widget(QWidget* q_widget_ptr);
     void show();
-    void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
+    void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path) override;
     void add_widget         (widget_base& w);
 
 signals:

@@ -12,7 +12,7 @@ public:
     explicit widget_impl(QObject* parent = nullptr);
     ~widget_impl() override;
 
-    void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
+    void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path) override;
 
 signals:
 private:

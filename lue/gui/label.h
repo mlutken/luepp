@@ -19,6 +19,10 @@ public:
     label(label&&);
     label& operator=(label&&) = delete;
 
+    void word_wrap(bool wrap);
+
+    void text       (const std::string& text);
+
     widget_base_impl* impl() override;
     // const widget_base_impl* impl() const override;
 

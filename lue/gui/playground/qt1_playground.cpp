@@ -53,6 +53,7 @@ std::unique_ptr<lue::gui::container> create_demo_2(lue::data::data_source_base& 
     using namespace lue::gui;
     auto c = make_unique<container>(data_source, "/"_uri);
     std::unique_ptr<label> l = std::make_unique<label>(data_source, "description"_uri);
+    l->word_wrap(true);
     c->add_widget("description"_uri, std::move(l));
     return c;
 }

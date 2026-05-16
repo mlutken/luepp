@@ -13,7 +13,7 @@ public:
     explicit widget_base_impl(QObject* parent = nullptr);
     ~widget_base_impl() override;
 
-    void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
+    virtual void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
 
     virtual QWidget* widget() { return nullptr; }
     // virtual const QWidget* widget() const{ return nullptr; }

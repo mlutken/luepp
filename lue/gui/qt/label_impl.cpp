@@ -19,6 +19,16 @@ void label_impl::on_data_changed(const data::data_source_base& data_source,
     q_widget_ptr_->setText(to_qstring(data_source.as_string(path)));
 }
 
+void label_impl::text(const std::string& text)
+{
+    q_widget_ptr_->setText(to_qstring(text));
+}
+
+void label_impl::word_wrap(bool wrap)
+{
+    q_widget_ptr_->setWordWrap(wrap);
+}
+
 QWidget* label_impl::widget()
 {
     return q_widget_ptr_;

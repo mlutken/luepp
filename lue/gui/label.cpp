@@ -18,11 +18,23 @@ label::label(data::data_source_base& data_source, const concepts::uri& path):
     cerr << "FIXMENM label::CONSTRUCTOR, " << path << ": '" << data_source.as_string(path) << "'\n";
     cerr << data_source.to_string() << "'\n";
     // pimpl_->setText(data_source.as_string(path).c_str());
+    pimpl_->on_data_changed(data_source, path);
 }
 
 label::~label() = default;
 
 label::label(label&&) = default;
+
+void label::word_wrap(bool wrap)
+{
+    pimpl_->word_wrap(wrap);
+}
+
+void label::text(const std::string& text)
+{
+    pimpl_->text(text);
+}
+
 
 widget_base_impl* label::impl() {
     return pimpl_.get();

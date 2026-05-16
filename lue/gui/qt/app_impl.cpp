@@ -9,9 +9,9 @@ app_impl::app_impl(QObject* parent)
 {
 }
 
-void app_impl::on_data_changed(const data::data_source_base& /*data_source*/,
-                                     const concepts::uri& /*path*/)
-{
-}
+// void app_impl::on_data_changed(const data::data_source_base& /*data_source*/,
+//                                      const concepts::uri& /*path*/)
+// {
+// }
 
 } // namespace lue::gui

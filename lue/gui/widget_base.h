@@ -20,6 +20,8 @@ public:
     data::data_source_base&             data_source     ()          { return data_source_; }
     const concepts::uri&                path            () const    { return path_; }
 
+    virtual void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
+
     // TODO: Make these pure virtual
     virtual widget_base_impl* impl() { return nullptr; }
     // virtual const widget_base_impl*     impl            () const { return nullptr; }

@@ -11,7 +11,7 @@ class app_impl : public QObject
 public:
     explicit app_impl(QObject* parent = nullptr);
 
-    void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
+    // void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
 
 signals:
 private:

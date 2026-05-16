@@ -13,10 +13,12 @@ public:
     explicit label_impl(QObject* parent = nullptr);
     ~label_impl() override;
 
-    void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path);
+    void            on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path) override;
 
+    void            text                (const std::string& text);
+    void            word_wrap           (bool wrap);
 
-    QWidget*    widget() override;
+    QWidget*        widget              () override;
 
 signals:
 private:
