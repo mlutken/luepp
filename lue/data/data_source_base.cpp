@@ -70,6 +70,10 @@ bool data_source_base::is_read_only() const
     return do_is_read_only();
 }
 
+bool data_source_base::is_valid() const {
+    return do_is_valid();
+}
+
 string data_source_base::to_string() const
 {
     return do_to_string();
@@ -86,6 +90,13 @@ void data_source_base::call_on_changed(const data_path& path) const
         cb(path);
     }
 }
+
+data_source_invalid data_source_invalid::instance()
+{
+    static data_source_invalid instance_;
+    return instance_;
+}
+
 
 
 } // namespace lue::data

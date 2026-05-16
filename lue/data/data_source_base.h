@@ -43,6 +43,7 @@ public:
     void                        connect             (data_changed_cb cb);
 
     bool                        is_read_only        () const;
+    bool                        is_valid            () const;
 
     const data_path&            path                () const    { return path_; }
     std::string                 to_string           () const;
@@ -55,7 +56,8 @@ protected:
     virtual void                do_set_data_source  (const data_path& path, data_source_base_sp val) = 0;
     virtual std::string         do_to_string        () const = 0;
 
-    virtual bool                do_is_read_only     () const { return false; }
+    virtual bool                do_is_read_only     () const { return false;    }
+    virtual bool                do_is_valid         () const { return true;     }
 
 private:
     using data_changed_cb_vec_t = std::vector<data_changed_cb>;
@@ -65,5 +67,28 @@ private:
     data_path                   path_                   {};
     data_changed_cb_vec_t       data_changed_cb_vec_    {};
 };
+
+
+class data_source_invalid : public data_source_base
+{
+public:
+    static data_source_invalid instance();
+private:
+    data_source_invalid() = default;
+    ~data_source_invalid() override = default;
+
+protected:
+    const data_value&   do_as_data_value    (const data_path&) const override                   { return data_value_; }
+    void                do_set              (const data_path&, data_value ) override            {};
+    void                do_set_data_vec     (const data_path&, data_value_vec) override         {};
+    void                do_set_data_source  (const data_path&, data_source_base_sp) override    {};
+    std::string         do_to_string        () const override                                   { return "data_source_invalid";  }
+
+    bool                do_is_read_only     () const override                                   { return true;      }
+    bool                do_is_valid         () const override                                   { return false;     }
+private:
+    data_value          data_value_{};
+};
+
 
 } // namespace lue::data
