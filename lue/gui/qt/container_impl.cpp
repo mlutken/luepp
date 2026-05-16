@@ -4,7 +4,8 @@
 namespace lue::gui {
 
 container_impl::container_impl(QObject* parent)
-    : QObject{parent},
+    : QObject{parent}
+    ,
     q_widget_ptr_{new QWidget{}}
 {
 }

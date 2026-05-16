@@ -9,7 +9,14 @@ public:
     explicit widget_base(data::data_source_base& data_source, const concepts::uri& path);
     virtual ~widget_base() = default;
 
+    widget_base(const widget_base&) = delete;
+    widget_base& operator=(const widget_base&) = delete;
+    widget_base(widget_base&&) = default;
+    widget_base& operator=(widget_base&&) = delete;
 
+    const data::data_source_base&       data_source     () const    { return data_source_; }
+    data::data_source_base&             data_source     ()          { return data_source_; }
+    const concepts::uri&                path            () const    { return path_; }
 // private:
 protected:
     data::data_source_base&         data_source_;

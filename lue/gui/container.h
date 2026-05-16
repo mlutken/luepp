@@ -1,17 +1,30 @@
 #pragma once
 
 #include <memory>
-// #include "gui/widget.h"
+#include <unordered_map>
+#include "gui/widget_base.h"
 
 namespace lue::gui {
 
-class container
+class container_impl;
+
+class container : public widget_base
 {
 public:
-    container();
+    explicit container(data::data_source_base& data_source, const concepts::uri& path);
+    ~container() override;
+
+    container(const container&) = delete;
+    container& operator=(const container&) = delete;
+    container(container&&) = default;
+    container& operator=(container&&) = delete;
+
+    void        add_widget          (const concepts::uri& path, std::unique_ptr<widget_base> w);
+
 private:
-    class impl;
-    std::unique_ptr<impl> pimpl_;
+    // std::unique_ptr<container_impl> pimpl_;
+    container_impl* pimpl_{nullptr};
+    std::unordered_map<concepts::uri, std::unique_ptr<widget_base>> widgets_;
 };
 
 } // namespace lue::gui

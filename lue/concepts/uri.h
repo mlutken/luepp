@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ostream>
 #include <optional>
 #include <map>
 #include <vector>
@@ -85,6 +86,15 @@ private:
     static fs::path normalize_path(const fs::path& path);
 };
 
+/** '<<' operator, Write uri to stream.
+    \param[in] os Output stream to write to.
+    \param[in] u Uri to write.
+    \return Reference to (modified) ostream. */
+inline std::ostream&	operator <<(std::ostream& os, const lue::concepts::uri& u)
+{
+    os << u.string();
+    return os;
+}
 
 
 } // namespace lue::concepts

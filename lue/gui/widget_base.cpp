@@ -9,4 +9,5 @@ widget_base::widget_base(data::data_source_base& data_source, const concepts::ur
 
 }
 
+
 } // namespace lue::gui
