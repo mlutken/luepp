@@ -19,6 +19,9 @@ public:
     label(label&&);
     label& operator=(label&&) = delete;
 
+    widget_base_impl* impl() override;
+    // const widget_base_impl* impl() const override;
+
 private:
     std::unique_ptr<label_impl>     pimpl_;
 };

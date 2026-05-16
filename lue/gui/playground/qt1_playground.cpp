@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     
     lue::data::data_source_memory ds1 = create_demo_1();
+    // cerr << "FIXMENM ds1.description: " << ds1.as_string("description"_uri) << "\n";
     test_page_a1 w(ds1);
 
     // auto c = create_demo_3(ds1);
@@ -51,8 +52,8 @@ std::unique_ptr<lue::gui::container> create_demo_2(lue::data::data_source_base& 
 {
     using namespace lue::gui;
     auto c = make_unique<container>(data_source, "/"_uri);
-    std::unique_ptr<label> l = std::make_unique<label>(data_source, "/description"_uri);
-    c->add_widget("/description"_uri, std::move(l));
+    std::unique_ptr<label> l = std::make_unique<label>(data_source, "description"_uri);
+    c->add_widget("description"_uri, std::move(l));
     return c;
 }
 

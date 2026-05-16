@@ -37,6 +37,8 @@ void container::show()
 void container::add_widget(const concepts::uri& path, std::unique_ptr<widget_base> w)
 {
     widgets_.emplace(path, std::move(w));
+    widget_base& widget = *widgets_.at(path);
+    pimpl_->add_widget(widget);
 }
 
 } // namespace lue::gui

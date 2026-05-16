@@ -3,6 +3,8 @@
 #include "data/data_source_base.h"
 
 namespace lue::gui {
+class widget_base_impl;
+
 class widget_base
 {
 public:
@@ -17,6 +19,10 @@ public:
     const data::data_source_base&       data_source     () const    { return data_source_; }
     data::data_source_base&             data_source     ()          { return data_source_; }
     const concepts::uri&                path            () const    { return path_; }
+
+    // TODO: Make these pure virtual
+    virtual widget_base_impl* impl() { return nullptr; }
+    // virtual const widget_base_impl*     impl            () const { return nullptr; }
 private:
     data::data_source_base&         data_source_;
     concepts::uri                   path_;

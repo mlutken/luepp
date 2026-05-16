@@ -4,9 +4,11 @@
 namespace lue::gui {
 
 widget_impl::widget_impl(QObject* parent)
-    : QObject{parent}
+    : widget_base_impl{parent}
 {
 }
+
+widget_impl::~widget_impl() = default;
 
 void widget_impl::on_data_changed(const data::data_source_base& /*data_source*/,
                                      const concepts::uri& /*path*/)
