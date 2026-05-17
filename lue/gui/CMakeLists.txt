@@ -11,6 +11,7 @@ add_library(${library_name} STATIC ""
     container.h container.cpp
     label.h label.cpp
     main_window.h main_window.cpp
+    page.h page.cpp
     widget_base.h widget_base.cpp
 
 
@@ -18,6 +19,7 @@ add_library(${library_name} STATIC ""
     platform_qt6widgets/container_impl.h platform_qt6widgets/container_impl.cpp
     platform_qt6widgets/label_impl.h platform_qt6widgets/label_impl.cpp
     platform_qt6widgets/main_window_impl.h platform_qt6widgets/main_window_impl.cpp
+    platform_qt6widgets/page_impl.h platform_qt6widgets/page_impl.cpp
     platform_qt6widgets/widget_base_impl.h platform_qt6widgets/widget_base_impl.cpp
     platform_qt6widgets/widget_impl.h platform_qt6widgets/widget_impl.cpp
     platform_qt6widgets/qt_utils.h platform_qt6widgets/qt_utils.cpp
