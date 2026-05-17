@@ -14,13 +14,13 @@ add_library(${library_name} STATIC ""
     widget_base.h widget_base.cpp
 
 
-    qt/app_impl.h qt/app_impl.cpp
-    qt/container_impl.h qt/container_impl.cpp
-    qt/label_impl.h qt/label_impl.cpp
-    qt/main_window_impl.h qt/main_window_impl.cpp
-    qt/widget_base_impl.h qt/widget_base_impl.cpp
-    qt/widget_impl.h qt/widget_impl.cpp
-    qt/qt_utils.h qt/qt_utils.cpp
+    platform_qt6widgets/app_impl.h platform_qt6widgets/app_impl.cpp
+    platform_qt6widgets/container_impl.h platform_qt6widgets/container_impl.cpp
+    platform_qt6widgets/label_impl.h platform_qt6widgets/label_impl.cpp
+    platform_qt6widgets/main_window_impl.h platform_qt6widgets/main_window_impl.cpp
+    platform_qt6widgets/widget_base_impl.h platform_qt6widgets/widget_base_impl.cpp
+    platform_qt6widgets/widget_impl.h platform_qt6widgets/widget_impl.cpp
+    platform_qt6widgets/qt_utils.h platform_qt6widgets/qt_utils.cpp
 
 
     sandbox/page_type_a.h sandbox/page_type_a.cpp

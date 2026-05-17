@@ -5,7 +5,7 @@
 
 
 // PLATFORM_CPP_INCLUDE_BEGIN
-#include "gui/qt/main_window_impl.h"
+#include "gui/platform_qt6widgets/main_window_impl.h"
 // PLATFORM_CPP_INCLUDE_END
 
 using namespace std;

@@ -2,7 +2,7 @@
 #include <iostream>
 
 // PLATFORM_CPP_INCLUDE_BEGIN
-#include "gui/qt/label_impl.h"
+#include "gui/platform_qt6widgets/label_impl.h"
 // PLATFORM_CPP_INCLUDE_END
 
 using namespace std;

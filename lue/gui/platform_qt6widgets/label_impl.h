@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QLabel>
-#include "gui/qt/widget_base_impl.h"
+#include "gui/platform_qt6widgets/widget_base_impl.h"
 #include "data/data_source_base.h"
 
 namespace lue::gui {

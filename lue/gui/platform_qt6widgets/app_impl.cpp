@@ -1,5 +1,4 @@
 #include "app_impl.h"
-// #include "gui/qt/qt_utils.h"
 
 namespace lue::gui {
 
