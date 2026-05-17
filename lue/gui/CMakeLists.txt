@@ -8,18 +8,23 @@ set(CMAKE_AUTOUIC ON)
 
 add_library(${library_name} STATIC ""
     app.h app.cpp
-    label.h label.cpp
-    widget_base.h widget_base.cpp
-    sandbox/page_type_a.h sandbox/page_type_a.cpp
-    sandbox/test_page_a1.h sandbox/test_page_a1.cpp
     container.h container.cpp
+    label.h label.cpp
+    main_window.h main_window.cpp
+    widget_base.h widget_base.cpp
+
 
     qt/app_impl.h qt/app_impl.cpp
     qt/container_impl.h qt/container_impl.cpp
     qt/label_impl.h qt/label_impl.cpp
+    qt/main_window_impl.h qt/main_window_impl.cpp
     qt/widget_base_impl.h qt/widget_base_impl.cpp
     qt/widget_impl.h qt/widget_impl.cpp
     qt/qt_utils.h qt/qt_utils.cpp
+
+
+    sandbox/page_type_a.h sandbox/page_type_a.cpp
+    sandbox/test_page_a1.h sandbox/test_page_a1.cpp
 )
 
 
