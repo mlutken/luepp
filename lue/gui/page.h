@@ -20,7 +20,6 @@ public:
     page& operator=(page&&) = delete;
 
     void        show();
-
     void        add_widget          (const concepts::uri& path, std::unique_ptr<widget_base> w);
 
 private:
@@ -29,3 +28,4 @@ private:
 };
 
 } // namespace lue::gui
+

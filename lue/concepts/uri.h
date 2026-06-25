@@ -13,6 +13,8 @@ namespace lue::concepts {
 
 /**
 A versatile C++ class for representing and manipulating both file system paths and URLs in a unified way. It extends the functionality of std::filesystem::path to support schemes (e.g., http, https, file, ftp), query parameters, fragments, and authentication, while maintaining compatibility with local file paths.
+
+@see https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3420.html
 */
 class uri {
 public:
