@@ -17,6 +17,7 @@ public:
     void show();
     void on_data_changed    (const data::data_source_base& data_source, const concepts::uri& path) override;
     void add_widget         (widget_base& w);
+    void remove_widget      (widget_base& w);
 
 signals:
 private:

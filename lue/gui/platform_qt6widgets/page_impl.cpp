@@ -38,4 +38,10 @@ void page_impl::add_widget(widget_base& w)
     q_widget_ptr_->layout()->addWidget(w.impl()->widget());
 }
 
+// TODO: Not tested yet!
+void page_impl::remove_widget(widget_base& w)
+{
+    q_widget_ptr_->layout()->removeWidget(w.impl()->widget());
+}
+
 } // namespace lue::gui
