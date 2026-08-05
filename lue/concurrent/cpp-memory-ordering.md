@@ -1,3 +1,9 @@
+# Links to articles
+ - https://www.modernescpp.com/index.php/category/blog/multithreading/multithreading-memory-model/
+ - (1) https://www.modernescpp.com/index.php/c-memory-model/
+ - https://www.modernescpp.com/index.php/fences-as-memory-barriers/
+ 
+
 # Memory ordering decision tree
 
     ┌─────────────────────────┐
@@ -51,3 +57,4 @@
 - **Order After** = Prevents reordering of operations *after* this one
 - **Global Order** = All threads see operations in a single total order
 
+ 
