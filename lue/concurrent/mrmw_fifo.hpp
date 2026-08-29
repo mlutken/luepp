@@ -267,9 +267,9 @@ public:
         }
     }
 
-    // ------------------------
+    // --------------------------------------
     // PUBLIC: Thread-safe pop operations ---
-    // ------------------------
+    // --------------------------------------
 
     /**
      Atomically pop a value from the queue.
@@ -326,9 +326,9 @@ public:
         return std::nullopt;
     }
 
-    // ------------------------
+    // ----------------------------------------------------------
     // PUBLIC: Compatibility interface (similar to srsw_fifo) ---
-    // ------------------------
+    // ----------------------------------------------------------
 
     /**
      Push a value to the queue.
@@ -396,9 +396,9 @@ public:
         m_claimed_read_index.store(m_read_index.load(std::memory_order_relaxed), std::memory_order_relaxed);
     }
 
-    // ------------------------
+    // --------------------------
     // PUBLIC: Status queries ---
-    // ------------------------
+    // --------------------------
 
     /**
      Check if the queue is empty.
