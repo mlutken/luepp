@@ -1,7 +1,9 @@
+set(QT_CREATOR_SKIP_CONAN_SETUP ON CACHE BOOL "" FORCE)
 cmake_minimum_required(VERSION 3.22)
 project(luepp)
 message ("(luepp)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
 set(CMAKE_CXX_STANDARD 23)
+set(LUEPP_WIDGETS_PLATFORM "qt6")
 
 if(PROJECT_IS_TOP_LEVEL)
     message ("INFO: luepp is top level project!")

@@ -1,3 +1,6 @@
+add_subdirectory(common)
+add_subdirectory(widgets)
+
 set (library_name luepp_gui)
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
@@ -7,7 +10,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 add_library(${library_name} STATIC ""
-    app.h app.cpp
     container.h container.cpp
     label.h label.cpp
     main_window.h main_window.cpp
@@ -31,6 +33,8 @@ add_library(${library_name} STATIC ""
 
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+target_link_libraries(${library_name} PUBLIC "luepp_gui_common")
+target_link_libraries(${library_name} PUBLIC "luepp_gui_widgets")
 target_link_libraries(${library_name} PUBLIC "luepp_system")
 target_link_libraries(${library_name} PUBLIC "luepp_data")
 target_link_libraries(${library_name} PUBLIC  Qt6::Widgets)

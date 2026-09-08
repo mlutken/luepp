@@ -1,19 +1,21 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
-#include <vector>
 #include <memory>
-#include <variant>
-
-#include "data/data_object_base.h"
 
 namespace lue::system {
 
+class app_impl;
+
 class app {
 public:
-    virtual ~app() = default;
-    
+    app();
+    app     (int argc, char *argv[]);
+    virtual ~app();
+
+    int start   ();
+
+private:
+    std::unique_ptr<app_impl>     pimpl_;
 };
 
-} // namespace lue::data
+} // namespace lue::system
