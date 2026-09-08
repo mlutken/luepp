@@ -12,8 +12,12 @@ class app_impl;
 
 class app : public core_app {
 public:
+    static app& i  ();
+
+    app();
+
+
     app     (int& argc, char *argv[]);
-    app() = delete;
     app(const app&) = delete;
     app& operator=(const app&) = delete;
     app(app&&);
@@ -21,9 +25,12 @@ public:
 
 
     virtual ~app();
-    // int start   ();
 
 
+protected:
+    void        do_initialize       (int& argc, char* argv[]) override;
+    void        do_run              () override;
+    void        do_cleanup          () override;
 
 private:
 

@@ -8,9 +8,19 @@ using namespace std::string_view_literals;
 
 namespace lue::system {
 
-app::app(int& argc, char* argv[]) :
-    core_app{argc, argv},
-    pimpl_{make_unique<app_impl>(argc, argv)}
+app& app::i()
+{
+    static app instance;
+    return instance;
+}
+
+app::app()
+    : core_app{}
+{}
+
+app::app(int& argc, char* argv[])
+    : core_app{argc, argv}
+// pimpl_{make_unique<app_impl>(argc, argv)}
 {
     cerr << "lue::system::app()\n";
 }
@@ -18,8 +28,14 @@ app::app(int& argc, char* argv[]) :
 
 app::~app() = default;
 
-// int app::start() {
-//     return pimpl_->exec();
-// }
+void app::do_initialize(int& /*argc*/, char* /*argv*/[])
+{
+}
+
+void app::do_run()
+{
+}
+
+void app::do_cleanup() {}
 
 } // namespace lue::system

@@ -12,10 +12,13 @@
 // Understanding QWindow vs. QWidget for Sizing: https://runebook.dev/en/docs/qt/qwindow/minimumHeight-prop
 using namespace std;
 using namespace lue::gui::widgets;
+using namespace lue::gui::common;
 
 
 #include <QApplication>
 #include <QDebug>
+
+
 
 
 int main(int argc, char *argv[])
@@ -23,7 +26,10 @@ int main(int argc, char *argv[])
     cerr << "--- NEW widgets1 playground ---\n";
 
 
-    lue::gui::common::app lue_app{argc, argv};
+    auto cleanup = lue::gui::common::app::i().initialize(argc, argv);
+    // auto& lue_app = lue::gui::common::app::i();
+    // lue::system::core_app::cleanup cleanup;
+    // auto lue_app = lue::gui::common::app(argc, argv);
 
     // c->show();
     QWidget w;
@@ -33,13 +39,11 @@ int main(int argc, char *argv[])
     w.show();
 
 
-    // QWidget w2;
-    // w2.setLayout(new QVBoxLayout{});
-    // auto button2 = new QPushButton("Hello world 2!");
-    // w2.layout()->addWidget(button2);
-    // w2.show();
 
-    // return a->start(); // .exec starts QApplication and related GUI, this line starts 'event loop'
-    return lue_app.start();
+    // lue_app.run();
+    app::i().run();
+    cerr << "EXIT main()\n";
+    // return lue_app.exit_code();
+    return app::i().exit_code();
 }
 
