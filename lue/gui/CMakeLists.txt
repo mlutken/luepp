@@ -10,25 +10,25 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 add_library(${library_name} STATIC ""
-    container.h container.cpp
-    label.h label.cpp
-    main_window.h main_window.cpp
-    page.h page.cpp
-    widget_base.h widget_base.cpp
+    # container.h container.cpp
+    # label.h label.cpp
+    # main_window.h main_window.cpp
+    # page.h page.cpp
+    # widget_base.h widget_base.cpp
 
 
-    platform_qt6widgets/app_impl.h platform_qt6widgets/app_impl.cpp
-    platform_qt6widgets/container_impl.h platform_qt6widgets/container_impl.cpp
-    platform_qt6widgets/label_impl.h platform_qt6widgets/label_impl.cpp
-    platform_qt6widgets/main_window_impl.h platform_qt6widgets/main_window_impl.cpp
-    platform_qt6widgets/page_impl.h platform_qt6widgets/page_impl.cpp
-    platform_qt6widgets/widget_base_impl.h platform_qt6widgets/widget_base_impl.cpp
-    platform_qt6widgets/widget_impl.h platform_qt6widgets/widget_impl.cpp
-    platform_qt6widgets/qt_utils.h platform_qt6widgets/qt_utils.cpp
+    # platform_qt6widgets/app_impl.h platform_qt6widgets/app_impl.cpp
+    # platform_qt6widgets/container_impl.h platform_qt6widgets/container_impl.cpp
+    # platform_qt6widgets/label_impl.h platform_qt6widgets/label_impl.cpp
+    # platform_qt6widgets/main_window_impl.h platform_qt6widgets/main_window_impl.cpp
+    # platform_qt6widgets/page_impl.h platform_qt6widgets/page_impl.cpp
+    # platform_qt6widgets/widget_base_impl.h platform_qt6widgets/widget_base_impl.cpp
+    # platform_qt6widgets/widget_impl.h platform_qt6widgets/widget_impl.cpp
+    # platform_qt6widgets/qt_utils.h platform_qt6widgets/qt_utils.cpp
 
 
-    sandbox/page_type_a.h sandbox/page_type_a.cpp
-    sandbox/test_page_a1.h sandbox/test_page_a1.cpp
+    # sandbox/page_type_a.h sandbox/page_type_a.cpp
+    # sandbox/test_page_a1.h sandbox/test_page_a1.cpp
 )
 
 
@@ -41,4 +41,4 @@ target_link_libraries(${library_name} PUBLIC  Qt6::Widgets)
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${library_name} PUBLIC ${PARENT_DIR})
 
-add_subdirectories_standard()
+# add_subdirectories_standard()

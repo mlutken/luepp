@@ -18,7 +18,7 @@ using namespace lue::gui::widgets;
 
 int main(int argc, char *argv[])
 {
-    cerr << "--- widgets1 playground ---\n";
+    cerr << "--- NEW widgets1 playground ---\n";
 
 
     // lue::gui::app lue_app;
