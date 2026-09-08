@@ -1,4 +1,4 @@
-#include "app.h"
+#include "core_app.h"
 
 #include <iostream>
 #include <system/platform_qt6/app_impl.h>
@@ -8,17 +8,15 @@ using namespace std::string_view_literals;
 
 namespace lue::system {
 
-app::app(int& argc, char* argv[]) :
-    core_app{argc, argv},
-    pimpl_{make_unique<app_impl>(argc, argv)}
+core_app::core_app(int& /*argc*/, char* /*argv*/[])
 {
-    cerr << "lue::system::app()\n";
+    cerr << "lue::system::core_app()\n";
 }
 
 
-app::~app() = default;
+core_app::~core_app() = default;
 
-// int app::start() {
+// int core_app::start() {
 //     return pimpl_->exec();
 // }
 

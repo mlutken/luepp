@@ -7,6 +7,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 add_library(${library_name} STATIC ""
+    core_app.h core_app.cpp
     app.h app.cpp
 
     platform_qt6/app_impl.h platform_qt6/app_impl.cpp

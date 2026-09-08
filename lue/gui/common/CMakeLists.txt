@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC ON)
 
 add_library(${library_name} STATIC ""
     app.h app.cpp
-    # platform_qt6/app_impl.h platform_qt6/app_impl.cpp
+    platform_qt6/app_impl.h platform_qt6/app_impl.cpp
 )
 
 

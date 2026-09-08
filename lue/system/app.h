@@ -2,19 +2,31 @@
 
 #include <memory>
 
+#include <system/core_app.h>
+
+// TODO: Not sure we really want to use Qt signal slot etc. in a lue::core application!
+
 namespace lue::system {
 
 class app_impl;
 
-class app {
+class app : public core_app {
 public:
-    app();
     app     (int& argc, char *argv[]);
-    virtual ~app();
+    app() = delete;
+    app(const app&) = delete;
+    app& operator=(const app&) = delete;
+    app(app&&);
+    app& operator=(app&&) = delete;
 
-    int start   ();
+
+    virtual ~app();
+    // int start   ();
+
+
 
 private:
+
     std::unique_ptr<app_impl>     pimpl_;
 };
 

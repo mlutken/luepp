@@ -33,11 +33,11 @@ int main(int argc, char *argv[])
     w.show();
 
 
-    QWidget w2;
-    w2.setLayout(new QVBoxLayout{});
-    auto button2 = new QPushButton("Hello world 2!");
-    w2.layout()->addWidget(button2);
-    w2.show();
+    // QWidget w2;
+    // w2.setLayout(new QVBoxLayout{});
+    // auto button2 = new QPushButton("Hello world 2!");
+    // w2.layout()->addWidget(button2);
+    // w2.show();
 
     // return a->start(); // .exec starts QApplication and related GUI, this line starts 'event loop'
     return lue_app.start();
