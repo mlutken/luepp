@@ -9,7 +9,7 @@ class app_impl;
 class app {
 public:
     app();
-    app     (int argc, char *argv[]);
+    app     (int& argc, char *argv[]);
     virtual ~app();
 
     int start   ();

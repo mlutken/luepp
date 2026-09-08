@@ -14,6 +14,8 @@ using namespace std;
 using namespace lue::gui::widgets;
 
 
+#include <QApplication>
+#include <QDebug>
 
 
 int main(int argc, char *argv[])
@@ -21,28 +23,23 @@ int main(int argc, char *argv[])
     cerr << "--- NEW widgets1 playground ---\n";
 
 
-    // lue::gui::app lue_app;
-    // lue::gui::common::hest lue_app{};
-    // lue::gui::app a(argc, argv);
-
-    QApplication a(argc, argv);
-    
-    // lue::data::data_source_memory ds1 = create_demo_1();
-    // // cerr << "FIXMENM ds1.description: " << ds1.as_string("description"_uri) << "\n";
-    // test_page_a1 w(ds1);
-
-    // // auto c = create_demo_3(ds1);
-    // auto c = create_demo_2(ds1);
+    lue::gui::common::app lue_app{argc, argv};
 
     // c->show();
     QWidget w;
     w.setLayout(new QVBoxLayout{});
     auto button = new QPushButton("Hello world!");
     w.layout()->addWidget(button);
-
     w.show();
 
-    return a.exec(); // .exec starts QApplication and related GUI, this line starts 'event loop'
-    // return a.start();
+
+    QWidget w2;
+    w2.setLayout(new QVBoxLayout{});
+    auto button2 = new QPushButton("Hello world 2!");
+    w2.layout()->addWidget(button2);
+    w2.show();
+
+    // return a->start(); // .exec starts QApplication and related GUI, this line starts 'event loop'
+    return lue_app.start();
 }
 

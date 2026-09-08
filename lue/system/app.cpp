@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include <iostream>
 #include <system/platform_qt6/app_impl.h>
 
 using namespace std;
@@ -9,9 +10,10 @@ namespace lue::system {
 
 app::app() = default;
 
-app::app(int /*argc*/, char* /*argv*/[])
-// pimpl_{make_unique<app_impl>(argc, argv)}
+app::app(int& argc, char* argv[])
+    : pimpl_{make_unique<app_impl>(argc, argv)}
 {
+    cerr << "lue::system::app()\n";
 }
 
 

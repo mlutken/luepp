@@ -7,14 +7,9 @@ namespace lue::system {
 
 class app_impl : public QApplication
 {
-    Q_OBJECT
 public:
-    app_impl(int argc, char *argv[]);
-    ~app_impl() override;
+    app_impl(int& argc, char *argv[]);
 
-
-
-signals:
 private:
 };
 

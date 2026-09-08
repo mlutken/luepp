@@ -1,23 +1,28 @@
 #include "app.h"
 
+
+
 namespace lue::gui::common {
 
-// app::app() : lue::system::app {} {}
-
-// app::app(int argc, char* argv[])
-//     : lue::system::app{argc, argv}
-// {}
+app::app(int& argc, char* argv[])
+    : lue::system::app{argc, argv}
+{}
 
 
 
+// -----------------------------------
+// --- Example overriding notify() ---
+// -----------------------------------
 
-// app::app() = default;
+// // Override the notify() method to customize event handling
+// bool notify(QObject *receiver, QEvent *event) override {
+//     // Example: Log all mouse press events
+//     if (event->type() == QEvent::MouseButtonPress) {
+//         qDebug() << "Mouse pressed on:" << receiver;
+//     }
+//     return QApplication::notify(receiver, event);
+// }
 
-// app::app(int /*argc*/, char* /*argv*/[])
-// {}
-
-
-hest::hest() = default;
 
 } // namespace lue::gui::common
 

@@ -2,6 +2,10 @@ set (library_name luepp_system)
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 add_library(${library_name} STATIC ""
     app.h app.cpp
 
