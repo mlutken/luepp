@@ -12,9 +12,11 @@
 #include <string>
 #include <cstdint>
 
-#include "lue_math.h"
-#include "stdmath.hpp"
-#include "lue_math_internal_utils.hpp"
+#include <math/base/lue_math.h>
+#include <math/base/stdmath.hpp>
+#include <math/base/lue_math_internal_utils.hpp>
+
+
 
 namespace lue::math {
 
@@ -42,7 +44,7 @@ public:
     typedef const value_type&	const_reference;
     typedef value_type*			pointer;
     typedef const value_type*	const_pointer;
-    typedef unsigned_int_t		index_type;
+    typedef size_t              index_type;
 
     // ----------------------------
     // --- Const Static Members ---
@@ -134,23 +136,23 @@ public:
     // --- Access elements ---
     // -----------------------
 
-    constexpr T*		data()          {return m_d[0];}
-    constexpr const T*	data() const	{return m_d[0];}
+    constexpr T*		data()              {return m_d[0];}
+    constexpr const T*	data() const        {return m_d[0];}
 
     /** Reference to x-coordinate.
         \return Reference to x-coordinate of vector. */
-    constexpr T&			x()			{return m_d[X];}
-    constexpr const T&	x() const	{return m_d[X];}
+    constexpr T&		x()                 {return m_d[X];}
+    constexpr const T&	x() const           {return m_d[X];}
 
-    constexpr T&		width()			{return m_d[X];}
-    constexpr const T&	width() const	{return m_d[X];}
+    constexpr T&		width()             {return m_d[X];}
+    constexpr const T&	width() const       {return m_d[X];}
 
     /** Reference to y-coordinate.
         \return Reference to y-coordinate of vector. */
     constexpr T&			y()             {return m_d[Y];}
-    constexpr const T&	y() const       {return m_d[Y];}
+    constexpr const T&      y() const       {return m_d[Y];}
     constexpr T&			height()		{return m_d[Y];}
-    constexpr const T&	height() const	{return m_d[Y];}
+    constexpr const T&      height() const	{return m_d[Y];}
 
     /** Set x-coordinate. */
     constexpr void		x(T x)          {m_d[X] = x;}
@@ -164,7 +166,7 @@ public:
         \return Reference to indexed element (coordinate) of vector. */
     constexpr T&					operator[](const index_type i)				///< [in] Index value. Should be in range 0..1 ~ X, Y.
     { return m_d[i]; }
-    constexpr const T&			operator[](const index_type i) const
+    constexpr const T&              operator[](const index_type i) const
     { return m_d[i]; }
 
 
@@ -450,10 +452,10 @@ public:
 //        otherwise false.
 //        \return True if vector has reached destination vector.
 //        \note NOT_IMPLEMENTED YET XXX. */
-//    bool_t				pull(const_reference vDest,	///< [in] Destination vector we are pulling towards.
+//    bool				pull(const_reference vDest,	///< [in] Destination vector we are pulling towards.
 //                             T fMaxMoveAng)			///< [in] Maximum angle to move the vector.
 //    {
-//        STATIC_CHECK(0, v2_pull_NOT_IMPLEMENTED_YET);
+//        static_assert(0, v2_pull_NOT_IMPLEMENTED_YET);
 //        return true;
 //    }
 
@@ -467,7 +469,7 @@ public:
         Use	the 'equal_exact' member function if exact comparision is required.
         \return True if all corresponding elements of the two vectors is no further,
         than constants<T>::epsilon() apart (absolute value), false otherwise. */
-    constexpr bool_t	operator ==(const_reference v		///< [in] Right operand.
+    constexpr bool	operator ==(const_reference v		///< [in] Right operand.
                         ) const
     {
         return	( Abs(x() - v.x()) < constants<T>::epsilon() ) &&
@@ -480,7 +482,7 @@ public:
         \return True if just one corresponding pair of elements of the two
         vectors is further than constants<T>::epsilon() apart (absolute value),
         false otherwise. */
-    constexpr bool_t	operator !=(const_reference v		///< [in] Right operand.
+    constexpr bool	operator !=(const_reference v		///< [in] Right operand.
                         ) const
     {
 
@@ -493,7 +495,7 @@ public:
         square of the length of the two vectors for speed optimization reasons. No
         epsilon value is used here, but see operator '<='.
         \return True if lenght of LHS is less than the length of RHS, false otherwise.*/
-    constexpr bool_t	operator <(const_reference v		///< [in] Right operand.
+    constexpr bool	operator <(const_reference v		///< [in] Right operand.
                       ) const
     {
         return len2() < v.len2();
@@ -504,7 +506,7 @@ public:
         the square of the length of the two vectors for speed optimization reasons. No
         epsilon value is used here, but see operator '>='.
         \return True if lenght of LHS is greater than the length of RHS, false otherwise.*/
-   constexpr  bool_t	operator >(const_reference v		///< [in] Right operand.
+   constexpr  bool	operator >(const_reference v		///< [in] Right operand.
                       ) const
     {
         return len2() > v.len2();
@@ -516,7 +518,7 @@ public:
         constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
         See also operator '<' for exact numeric comparision without epsilon value.
         \return Truth value of: ( v0.len2() - v1.len2() ) <= constants<T>::epsilon().*/
-    constexpr bool_t	operator <=(const_reference v		///< [in] Right operand.
+    constexpr bool	operator <=(const_reference v		///< [in] Right operand.
                         ) const
     {
         return ( len2() - v.len2() ) <= constants<T>::epsilon();
@@ -529,7 +531,7 @@ public:
         constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
         See also operator '>' for exact numeric comparision without epsilon value.
         \return Truth value of: ( v0.len2() - v1.len2() ) >= -constants<T>::epsilon().*/
-    constexpr bool_t	operator >=(const_reference v		///< [in] Right operand.
+    constexpr bool	operator >=(const_reference v		///< [in] Right operand.
                         ) const
     {
         return ( len2() - v.len2() ) >= -constants<T>::epsilon();
@@ -545,7 +547,7 @@ public:
         type values with this function.
         \return True if all corresponding elements of the two vectors are exactly
         equal, false otherwise. */
-    constexpr bool_t		equal_exact(const_reference v		///< [in] Vector to compare with
+    constexpr bool		equal_exact(const_reference v		///< [in] Vector to compare with
                            )const
     {
         return (x() == v.x()) && (y() == v.y());
@@ -555,7 +557,7 @@ public:
         Supplied epsilon value is used.
         \return True if all corresponding elements of the two vectors is no further,
         than epsilon apart (absolute value), false otherwise.. */
-    constexpr bool_t		equal_epsilon(const_reference v,	///< [in] Vector to compare with
+    constexpr bool		equal_epsilon(const_reference v,	///< [in] Vector to compare with
                               const T epsilon		///< [in] Epsilon value to use when comparing
                              )const
     {
@@ -575,7 +577,7 @@ public:
     // -----------------------
 
     /// Convert vector to a string for debug print.
-    std::string				str( int_t iDecimals= -1	///< [in] Number of decimals
+    std::string				str( int iDecimals= -1	///< [in] Number of decimals
                                ) const
     {
         char sz[30];
@@ -670,7 +672,7 @@ inline std::string to_string(const v2<T>& v)
 
 /// The general version of this would not work with integers.
 template<>
-constexpr inline v2<int_t>&	v2<int_t>::operator/=(int_t Val)
+constexpr inline v2<int>&	v2<int>::operator/=(int Val)
 {
     m_d[X] /= Val;
     m_d[Y] /= Val;
@@ -679,9 +681,9 @@ constexpr inline v2<int_t>&	v2<int_t>::operator/=(int_t Val)
 
 /// The general version of this would not work with integers.
 template<>
-constexpr inline v2<int_t>	v2<int_t>::operator/(int_t Val) const
+constexpr inline v2<int>	v2<int>::operator/(int Val) const
 {
-    return v2<int_t>( x() / Val, y() / Val );
+    return v2<int>( x() / Val, y() / Val );
 }
 
 using v2f = v2<float>;

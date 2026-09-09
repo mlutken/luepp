@@ -3,21 +3,21 @@ add_library(${library_name} INTERFACE)
 
 target_sources(${library_name}
     INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/base/lue_math_internal_utils.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/constants.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/g33.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/g44.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/lue_math.h
-    ${CMAKE_CURRENT_LIST_DIR}/base/m22.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/m33.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/m44.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/oct.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/quat.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/stdmath.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/utils.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/v2.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/v3.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/v4.hpp
+    base/lue_math_internal_utils.hpp
+    base/constants.hpp
+    base/g33.hpp
+    base/g44.hpp
+    base/lue_math.h
+    base/m22.hpp
+    base/m33.hpp
+    base/m44.hpp
+    base/oct.hpp
+    base/quat.hpp
+    base/stdmath.hpp
+    base/utils.hpp
+    base/v2.hpp
+    base/v3.hpp
+    base/v4.hpp
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)

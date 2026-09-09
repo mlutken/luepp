@@ -11,9 +11,9 @@
 #include <string>
 #include <cstdint>
 
-#include "lue_math.h"
+#include <math/base/lue_math.h>
 #include "stdmath.hpp"
-#include "lue_math_internal_utils.hpp"
+#include <math/base/lue_math_internal_utils.hpp>
 
 namespace lue::math {
 
@@ -41,7 +41,7 @@ public:
 	typedef const value_type&	const_reference;
 	typedef value_type*			pointer;
 	typedef const value_type*	const_pointer;
-	typedef unsigned_int_t		index_type;
+    typedef size_t		index_type;
 
 	// ----------------------------
 	// --- Const Static Members ---
@@ -368,7 +368,7 @@ public:
 		at a time. Returns true when the destination vector is reached 
 		otherwise false. 
 		\return True if vector has reached destination vector.*/
-	bool_t				pull(const_reference vDest,		///< [in] Destination vector we are pulling towards.
+    bool				pull(const_reference vDest,		///< [in] Destination vector we are pulling towards.
 							 const T fMaxMoveAng)	///< [in] Maximum angle to move the vector.
 	{
 		value_type v0(*this), v1(vDest);
@@ -411,7 +411,7 @@ public:
 		Use	the 'equal_exact' member function if exact comparision is required. 
 		\return True if all corresponding elements of the two vectors is no further,
 		than constants<T>::epsilon() apart (absolute value), false otherwise. */
-	bool_t	operator ==(const_reference v		///< [in] Right operand.    
+    bool	operator ==(const_reference v		///< [in] Right operand.
 						) const
 	{
 		return	( Abs(x() - v.x()) < constants<T>::epsilon() ) && 
@@ -425,7 +425,7 @@ public:
 		\return True if just one corresponding pair of elements of the two 
 		vectors is further than constants<T>::epsilon() apart (absolute value), 
 		false otherwise. */
-	bool_t	operator !=(const_reference v		///< [in] Right operand.    
+    bool	operator !=(const_reference v		///< [in] Right operand.
 						) const
 	{
 
@@ -439,7 +439,7 @@ public:
 		square of the length of the two vectors for speed optimization reasons. No 
 		epsilon value is used here, but see operator '<='.
 		\return True if lenght of LHS is less than the length of RHS, false otherwise.*/
-	bool_t	operator <(const_reference v		///< [in] Right operand.    
+    bool	operator <(const_reference v		///< [in] Right operand.
 					  ) const
 	{	
 		return len2() < v.len2();
@@ -450,7 +450,7 @@ public:
 		the square of the length of the two vectors for speed optimization reasons. No 
 		epsilon value is used here, but see operator '>='.
 		\return True if lenght of LHS is greater than the length of RHS, false otherwise.*/
-	bool_t	operator >(const_reference v		///< [in] Right operand.    
+    bool	operator >(const_reference v		///< [in] Right operand.
 					  ) const
 	{	
 		return len2() > v.len2();
@@ -462,7 +462,7 @@ public:
 		constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
 		See also operator '<' for exact numeric comparision without epsilon value.
 		\return Truth value of: ( v0.len2() - v1.len2() ) <= constants<T>::epsilon().*/
-	bool_t	operator <=(const_reference v		///< [in] Right operand.    
+    bool	operator <=(const_reference v		///< [in] Right operand.
 						) const
 	{	
 		return ( len2() - v.len2() ) <= constants<T>::epsilon();
@@ -475,7 +475,7 @@ public:
 		constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
 		See also operator '>' for exact numeric comparision without epsilon value.
 		\return Truth value of: ( v0.len2() - v1.len2() ) >= -constants<T>::epsilon().*/
-	bool_t	operator >=(const_reference v		///< [in] Right operand.    
+    bool	operator >=(const_reference v		///< [in] Right operand.
 						) const
 	{	
 		return ( len2() - v.len2() ) >= -constants<T>::epsilon();
@@ -491,7 +491,7 @@ public:
 		type values with this function.
 		\return True if all corresponding elements of the two vectors are exactly
 		equal, false otherwise. */
-	bool_t		equal_exact(const_reference v		///< [in] Vector to compare with
+    bool		equal_exact(const_reference v		///< [in] Vector to compare with
 						   )const
 	{
 		return (x() == v.x()) && (y() == v.y()) && (z() == v.z());
@@ -501,7 +501,7 @@ public:
 		Supplied epsilon value is used. 
 		\return True if all corresponding elements of the two vectors is no further,
 		than epsilon apart (absolute value), false otherwise.. */
-	bool_t		equal_epsilon(const_reference v,	///< [in] Vector to compare with
+    bool		equal_epsilon(const_reference v,	///< [in] Vector to compare with
 							  const T epsilon		///< [in] Epsilon value to use when comparing
 							 )const
 	{
@@ -516,7 +516,7 @@ public:
 	// -----------------------
 
 	/// Convert vector to a string for debug print.
-	std::string				str(int_t iDecimals= -1	///< [in] Number of decimals
+    std::string				str(int iDecimals= -1	///< [in] Number of decimals
 							   ) const
 	{
 		char sz[40];

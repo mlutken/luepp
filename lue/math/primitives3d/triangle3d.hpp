@@ -9,7 +9,7 @@ class triangle3d
 {
 public:    
 
-	bool_t                          point_inside(vec_const_reference p);
+	bool                          point_inside(vec_const_reference p);
 	
 
 };

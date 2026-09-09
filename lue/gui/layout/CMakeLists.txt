@@ -1,4 +1,4 @@
-set (library_name luepp_gui_widgets)
+set (library_name luepp_gui_layout)
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
@@ -7,19 +7,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 add_library(${library_name} STATIC ""
-    # app.h app.cpp
-    # container.h container.cpp
-    label.h label.cpp
-    # main_window.h main_window.cpp
-    widget_base.h widget_base.cpp
-
-
-    # platform_qt6/app_impl.h platform_qt6/app_impl.cpp
-    platform_qt6/label_impl.h platform_qt6/label_impl.cpp
-    # platform_qt6/main_window_impl.h platform_qt6/main_window_impl.cpp
-    platform_qt6/widget_base_impl.h platform_qt6/widget_base_impl.cpp
-    # platform_qt6/widget_impl.h platform_qt6/widget_impl.cpp
-    # platform_qt6/qt_utils.h platform_qt6/qt_utils.cpp
+    layoutable.h layoutable.cpp
 )
 
 

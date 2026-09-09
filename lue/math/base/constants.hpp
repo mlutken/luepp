@@ -7,7 +7,7 @@
 // ****************************************************************************
 
 // --- Include files ---
-#include "lue_math.h"
+#include <math/base/lue_math.h>
 
 namespace lue::math {
 
@@ -55,26 +55,26 @@ public:
 //--- Double precision specialization. ---
 //----------------------------------------
 template <>
-class constants<double_t>
+class constants<double>
 {
 public:
     //---------------------
     //--- Trigonometric ---
     //---------------------
-    static constexpr double_t	pi()
-    { return static_cast<double_t>(3.14159265358979323846264338327950288);}
+    static constexpr double	pi()
+    { return static_cast<double>(3.14159265358979323846264338327950288);}
 
-    static constexpr double_t	todeg()
-    { return static_cast<double_t>(180.0) / pi();}
+    static constexpr double	todeg()
+    { return static_cast<double>(180.0) / pi();}
 
-    static constexpr double_t	torad()
-    { return static_cast<double_t>( pi() / static_cast<double_t>(180.0));}
+    static constexpr double	torad()
+    { return static_cast<double>( pi() / static_cast<double>(180.0));}
 
     //------------
     //--- Misc ---
     //------------
-    static constexpr double_t	epsilon()
-    { return static_cast<double_t>(1.f / 8192.f);} // NOT_IMPL: Better (smaller) value needed XX
+    static constexpr double	epsilon()
+    { return static_cast<double>(1.f / 8192.f);} // NOT_IMPL: Better (smaller) value needed XX
 
 };
 

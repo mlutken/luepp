@@ -359,7 +359,7 @@ public:
 		type values with this function. 
 		\return True if all corresponding elements of the two matrices are exactly
 		equal, false otherwise. */
-	bool_t		equal_exact(const_reference m)		///< [in] Matrix to compare with
+	bool		equal_exact(const_reference m)		///< [in] Matrix to compare with
 	{
 		return	xcol_ref().equal_exact(m.xcol_ref()) && 
 				ycol_ref().equal_exact(m.ycol_ref()) && 
@@ -372,7 +372,7 @@ public:
 		type values with this function.
 		\return True if just one pair of corresponding elements of the two matrices 
 		are different, false otherwise. */
-	bool_t		not_equal_exact(const_reference m)		///< [in] Matrix to compare with
+	bool		not_equal_exact(const_reference m)		///< [in] Matrix to compare with
 	{
 		return	xcol_ref().not_equal_exact(m.xcol_ref()) || 
 				ycol_ref().not_equal_exact(m.ycol_ref()) || 
@@ -389,7 +389,7 @@ public:
 		the 'equal_exact' member function if exact comparision is required. 
 		\return True if all corresponding elements of the two matrices is no further,
 		than EPSILON<T>() apart (absolute value), false otherwise. */
-	friend bool_t	operator ==(const_reference m0,			///< [in] Left operand.
+	friend bool	operator ==(const_reference m0,			///< [in] Left operand.
 								const_reference m1)			///< [in] Right operand.    
 	{
 		return	(m0.xcol_ref() == m1.xcol_ref()) && 
@@ -404,7 +404,7 @@ public:
 		\return True if just one corresponding pair of elements of the two 
 		matrices is further than EPSILON<T>() apart (absolute value), 
 		false otherwise. */
-	friend bool_t	operator !=(const_reference m0,			///< [in] Left operand.
+	friend bool	operator !=(const_reference m0,			///< [in] Left operand.
 								const_reference m1)			///< [in] Right operand.    
 	{
 		return	(m0.xcol_ref() != m1.xcol_ref()) || 
@@ -477,7 +477,7 @@ public:
 	// ***********************
 
 	/// Convert matrix to a string for debug print.
-	std::string			str(const int_t iDecimals= -1) const	///< [in] Number of decimals
+	std::string			str(const int iDecimals= -1) const	///< [in] Number of decimals
 	{
 		std::string s = xrow().str(iDecimals);
 			s += "\n" + yrow().str(iDecimals);
@@ -657,16 +657,16 @@ private:
 // **********************************************
 
 template <class T>
-const int_t m44<T>::X		= 0;  
+const int m44<T>::X		= 0;  
 	
 template <class T>
-const int_t m44<T>::Y		= 1;  
+const int m44<T>::Y		= 1;  
 
 template <class T>
-const int_t m44<T>::Z		= 2;  
+const int m44<T>::Z		= 2;  
 
 template <class T>
-const int_t m44<T>::W		= 3;  
+const int m44<T>::W		= 3;  
 
 
 template <class T>

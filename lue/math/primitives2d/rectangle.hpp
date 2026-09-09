@@ -275,7 +275,7 @@ public:
 
    /** Test if point is inside rectangle.
    \return True if point given is inside the rectangle. */
-   bool_t			point_inside(v2_const_reference p0	///< [in] Point to test
+   bool			point_inside(v2_const_reference p0	///< [in] Point to test
                                ) const
    {
        v2_value_type p0T = p0 - center();	// Simulate that rectangle has center in origo.
@@ -292,7 +292,7 @@ public:
         the 'equal_exact' member function if exact comparision is required.
         \return True if all corresponding elements of the two rectangles is no further,
         than EPSILON<T>() apart (absolute value), false otherwise. */
-    bool_t	operator ==(const_reference r			///< [in] Right operand.
+    bool	operator ==(const_reference r			///< [in] Right operand.
                        ) const
     {
         return	(top_left() == r.top_left()) &&
@@ -305,7 +305,7 @@ public:
         \return True if just one corresponding pair of elements of the two
         rectangles is further than EPSILON<T>() apart (absolute value),
         false otherwise. */
-    bool_t	operator !=(const_reference r			///< [in] Right operand.
+    bool	operator !=(const_reference r			///< [in] Right operand.
                        ) const
     {
         return	(top_left() != r.top_left()) ||
@@ -323,7 +323,7 @@ public:
         type values with this function.
         \return True if all corresponding elements of the two rectangles are exactly
         equal, false otherwise. */
-    bool_t		equal_exact(const_reference r)		///< [in] Rectangle to compare with
+    bool		equal_exact(const_reference r)		///< [in] Rectangle to compare with
     {
         return	top_left().equal_exact(r.top_left()) &&
                 size().equal_exact(r.size());
@@ -334,7 +334,7 @@ public:
         Supplied epsilon value is used.
         \return True if all corresponding elements of the two vectors is no further,
         than epsilon apart (absolute value), false otherwise.. */
-    bool_t		equal_epsilon(const_reference r,	///< [in] Rectangle to compare with
+    bool		equal_epsilon(const_reference r,	///< [in] Rectangle to compare with
                               T epsilon				///< [in] Epsilon value to use when comparing
                              ) const
     {
@@ -348,7 +348,7 @@ public:
     // -----------------------
 
     /// Convert rectangle to a string for debug print.
-    std::string			str(int_t iDecimals= -1	///< [in] Number of decimals
+    std::string			str(int iDecimals= -1	///< [in] Number of decimals
                            ) const
     {
         std::string s = "UL: " + top_left().str(iDecimals);

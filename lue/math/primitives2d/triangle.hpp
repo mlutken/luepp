@@ -80,12 +80,12 @@ public:
 
 	/// Default constructor with no initialization. \important NOT supported !!!
 	PTriangleStoreByPointer() {
-		STATIC_CHECK(0, class_triangle_using_PTriangleStoreByPointer_policy_does_NOT_support_default_constructor);
+		static_assert(0, class_triangle_using_PTriangleStoreByPointer_policy_does_NOT_support_default_constructor);
 	}
 
 	/// Copy constructor. \important NOT supported !!!
 	PTriangleStoreByPointer(const PTriangleStoreByPointer& t) {
-		STATIC_CHECK(0, class_triangle_using_PTriangleStoreByPointer_policy_does_NOT_support_copy_constructor);
+		static_assert(0, class_triangle_using_PTriangleStoreByPointer_policy_does_NOT_support_copy_constructor);
 	}
 
 	/// Constructor with 3 points initialization. 
@@ -129,13 +129,13 @@ public:
 
 	/// Default constructor with no initialization. \important NOT supported !!!
 	PTriangleStoreByReference() {
-		STATIC_CHECK(0, class_triangle_using_PTriangleStoreByReference_policy_does_NOT_support_default_constructor);
+		static_assert(0, class_triangle_using_PTriangleStoreByReference_policy_does_NOT_support_default_constructor);
 	}
 
 	/// Copy constructor. \important NOT supported !!!
 	PTriangleStoreByReference(const PTriangleStoreByReference& t)
 	{
-		STATIC_CHECK(0, class_triangle_using_PTriangleStoreByReference_policy_does_NOT_support_copy_constructor);
+		static_assert(0, class_triangle_using_PTriangleStoreByReference_policy_does_NOT_support_copy_constructor);
 	}
 
 	/// Constructor with 3 points initialization. 
@@ -439,7 +439,7 @@ public:
 	/** Point inside. 
 	\todo Implement this function!!
 	\return True if point given is inside the triangle. */
-	bool_t				point_inside(v2_const_reference v	///< [in] Point to test
+	bool				point_inside(v2_const_reference v	///< [in] Point to test
 									) const
 	{
 		return false; 
@@ -454,7 +454,7 @@ public:
 		the 'equal_exact' member function if exact comparision is required. 
 		\return True if all corresponding elements of the two triangles is no further,
 		than EPSILON<T>() apart (absolute value), false otherwise. */
-	bool_t	operator ==(const_reference t			///< [in] Right operand.    
+	bool	operator ==(const_reference t			///< [in] Right operand.    
 					   ) const
 	{
 		return	(v0() == t.v0()) && 
@@ -468,7 +468,7 @@ public:
 		\return True if just one corresponding pair of elements of the two 
 		triangles is further than EPSILON<T>() apart (absolute value), 
 		false otherwise. */
-	bool_t	operator !=(const_reference t			///< [in] Right operand.    
+	bool	operator !=(const_reference t			///< [in] Right operand.    
 					   ) const
 	{
 		return	(v0() != t.v0()) ||
@@ -487,7 +487,7 @@ public:
 		type values with this function. 
 		\return True if all corresponding elements of the two triangles are exactly
 		equal, false otherwise. */
-	bool_t		equal_exact(const_reference t)		///< [in] Triangle to compare with
+	bool		equal_exact(const_reference t)		///< [in] Triangle to compare with
 	{
 		return	v0().equal_exact(t.v0()) && 
 				v1().equal_exact(t.v1()) &&
@@ -499,7 +499,7 @@ public:
 		Supplied epsilon value is used. 
 		\return True if all corresponding elements of the two vectors is no further,
 		than epsilon apart (absolute value), false otherwise.. */
-	bool_t		equal_epsilon(const_reference t,	///< [in] Triangle to compare with
+	bool		equal_epsilon(const_reference t,	///< [in] Triangle to compare with
 							  T epsilon				///< [in] Epsilon value to use when comparing
 							 ) const
 	{
@@ -514,7 +514,7 @@ public:
 	// -----------------------
 
 	/// Convert triangle to a string for debug print.
-	std::string			str( int_t iDecimals= -1	///< [in] Number of decimals
+	std::string			str( int iDecimals= -1	///< [in] Number of decimals
 						   ) const
 	{
 		std::string s = "V0: " + v0().str(iDecimals);

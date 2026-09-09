@@ -1,9 +1,9 @@
 #pragma once
 
-#include "math/base/lue_math_internal_utils.hpp"
+#include <math/base/lue_math_internal_utils.hpp>
 
-#include "math/base/v2.hpp"
-#include "math/base/g33.hpp"
+#include <math/base/v2.hpp>
+#include <math/base/g33.hpp>
 
 
 namespace lue::math::p2d {
@@ -62,12 +62,12 @@ public:
 
 	/// Default constructor with no initialization. \important NOT supported !!!
 	PCircleStoreByPointer() {
-		STATIC_CHECK(0, class_circle_using_PCircleStoreByPointer_policy_does_NOT_support_default_constructor);
+        static_assert(false, "class circle_using_PCircleStoreByPointer_policy_does_NOT_support_default_constructor");
 	}
 
 	/// Copy constructor. \important NOT supported !!!
 	PCircleStoreByPointer(const PCircleStoreByPointer& t) {
-		STATIC_CHECK(0, class_circle_using_PCircleStoreByPointer_policy_does_NOT_support_copy_constructor);
+        static_assert(0, class_circle_using_PCircleStoreByPointer_policy_does_NOT_support_copy_constructor);
 	}
 
 	/// Constructor with center initialization. 
@@ -101,12 +101,12 @@ public:
 
 	/// Default constructor with no initialization. \important NOT supported !!!
 	PCircleStoreByReference() {
-		STATIC_CHECK(0, class_circle_using_PCircleStoreByReference_policy_does_NOT_support_default_constructor);
+        static_assert(0, class_circle_using_PCircleStoreByReference_policy_does_NOT_support_default_constructor);
 	}
 
 	/// Copy constructor. \important NOT supported !!!
 	PCircleStoreByReference(const PCircleStoreByReference& t) {
-		STATIC_CHECK(0, class_circle_using_PCircleStoreByReference_policy_does_NOT_support_copy_constructor);
+        static_assert(0, class_circle_using_PCircleStoreByReference_policy_does_NOT_support_copy_constructor);
 	}
 
 	/// Constructor with center initialization. 

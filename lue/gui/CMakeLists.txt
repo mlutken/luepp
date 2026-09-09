@@ -1,4 +1,5 @@
 add_subdirectory(common)
+add_subdirectory(layout)
 add_subdirectory(widgets)
 
 set (library_name luepp_gui)
@@ -34,6 +35,7 @@ add_library(${library_name} STATIC ""
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 target_link_libraries(${library_name} PUBLIC "luepp_gui_common")
+target_link_libraries(${library_name} PUBLIC "luepp_gui_layout")
 target_link_libraries(${library_name} PUBLIC "luepp_gui_widgets")
 target_link_libraries(${library_name} PUBLIC "luepp_system")
 target_link_libraries(${library_name} PUBLIC "luepp_data")

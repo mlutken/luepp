@@ -1,9 +1,9 @@
 
-#include "math/base/lue_math_internal_utils.hpp"
+#include <math/base/lue_math_internal_utils.hpp>
 #include <cmath>
 
-#include "math/base/v2.hpp"
-#include "math/base/g33.hpp"
+#include <math/base/v2.hpp>
+#include <math/base/g33.hpp>
 #include "math/primitives2d/circle_storage_policies.hpp"
 
 namespace lue::math::p2d {
@@ -199,7 +199,7 @@ public:
 
     /** Point inside.
     \return True if point given is inside the circle. */
-    bool_t			point_inside(v2_const_reference p0	///< [in] Point to test
+    bool			point_inside(v2_const_reference p0	///< [in] Point to test
                                 ) const
     {
         v2_value_type p0T = p0 - center();	// Simulate that circle has center in origo.
@@ -225,7 +225,7 @@ public:
         the 'equal_exact' member function if exact comparision is required.
         \return True if all corresponding elements of the two circles is no further,
         than EPSILON<T>() apart (absolute value), false otherwise. */
-    bool_t	operator ==(const_reference c			///< [in] Right operand.
+    bool	operator ==(const_reference c			///< [in] Right operand.
                        ) const
     {
         return	( Abs(radius() - c.radius()) < constants<T>::epsilon() ) &&
@@ -238,7 +238,7 @@ public:
         \return True if just one corresponding pair of elements of the two
         circles is further than EPSILON<T>() apart (absolute value),
         false otherwise. */
-    bool_t	operator !=(const_reference c			///< [in] Right operand.
+    bool	operator !=(const_reference c			///< [in] Right operand.
                        ) const
     {
         return	( Abs(radius() - c.radius()) > constants<T>::epsilon() ) ||
@@ -256,7 +256,7 @@ public:
         type values with this function.
         \return True if all corresponding elements of the two circles are exactly
         equal, false otherwise. */
-    bool_t		equal_exact(const_reference c)		///< [in] Circle to compare with
+    bool		equal_exact(const_reference c)		///< [in] Circle to compare with
     {
         return	( radius() == c.radius() ) &&
                 center().equal_exact( c.center() );
@@ -268,7 +268,7 @@ public:
         Supplied epsilon value is used.
         \return True if all corresponding elements of the two vectors is no further,
         than epsilon apart (absolute value), false otherwise. */
-    bool_t		equal_epsilon(const_reference c,	///< [in] Circle to compare with
+    bool		equal_epsilon(const_reference c,	///< [in] Circle to compare with
                               T epsilon				///< [in] Epsilon value to use when comparing
                              ) const
     {
@@ -282,7 +282,7 @@ public:
     // -----------------------
 
     /// Convert circle to a string for debug print.
-    std::string			str(int_t iDecimals= -1	///< [in] Number of decimals
+    std::string			str(int iDecimals= -1	///< [in] Number of decimals
                            ) const
     {
         std::string s = "Center: " + center().str(iDecimals);

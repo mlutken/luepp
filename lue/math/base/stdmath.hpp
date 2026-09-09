@@ -9,8 +9,8 @@
 
 #include <math.h>
 #include <cmath>
-#include <cpaf_libs/math/base/lue_math.h>
-#include <cpaf_libs/math/base/constants.hpp>
+#include <math/base/lue_math.h>
+#include <math/base/constants.hpp>
 
 /** \unit
 All math functions from the standard C math.h file. Default implementation 
@@ -47,9 +47,9 @@ inline TYPE Ceil(const TYPE x				///< [in] Argument.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Ceil<double_t>(const double_t x)
+inline double Ceil<double>(const double x)
 {
-    return static_cast<double_t>(std::ceil( x ));
+    return static_cast<double>(std::ceil( x ));
 }
 
 
@@ -64,9 +64,9 @@ inline TYPE Floor(const TYPE x				///< [in] Argument.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Floor<double_t>(const double_t x)
+inline double Floor<double>(const double x)
 { 
-    return static_cast<double_t>(std::floor( x ));
+    return static_cast<double>(std::floor( x ));
 }
 
 
@@ -81,9 +81,9 @@ inline TYPE Sqrt(const TYPE x				///< [in] Value to find square root of.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Sqrt<double_t>(const double_t x)
+inline double Sqrt<double>(const double x)
 { 
-    return static_cast<double_t>(std::sqrt( x ));
+    return static_cast<double>(std::sqrt( x ));
 }
 
 
@@ -104,17 +104,17 @@ inline TYPE Mod(const TYPE y,				///< [in] Numerator.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Mod<double_t>(	const double_t y,
-								const double_t z)
+inline double Mod<double>(	const double y,
+                            const double z)
 { 
-	return static_cast<double_t>(fmod( y, z ));
+    return static_cast<double>(fmod( y, z ));
 }
 // Integer math specialization.
 template<>
-inline int_t Mod<int_t>(const int_t y,
-						const int_t z)
+inline int Mod<int>(const int y,
+                    const int z)
 { 
-	return static_cast<int_t>( y % z );
+    return static_cast<int>( y % z );
 }
 
 
@@ -133,9 +133,9 @@ inline TYPE Cos(const TYPE x				///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Cos<double_t>(const double_t x)
+inline double Cos<double>(const double x)
 { 
-	return static_cast<double_t>(cos( x ));
+    return static_cast<double>(cos( x ));
 }
 
 
@@ -150,9 +150,9 @@ inline TYPE Sin(const TYPE x				///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Sin<double_t>(const double_t x)
+inline double Sin<double>(const double x)
 { 
-	return static_cast<double_t>(sin( x ));
+    return static_cast<double>(sin( x ));
 }
 
 
@@ -167,9 +167,9 @@ inline TYPE Tan(const TYPE x				///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Tan<double_t>(const double_t x)
+inline double Tan<double>(const double x)
 { 
-	return static_cast<double_t>(tan( x ));
+    return static_cast<double>(tan( x ));
 }
 
 
@@ -191,11 +191,11 @@ inline TYPE Acos(const TYPE x					///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Acos<double_t>(const double_t x) 
+inline double Acos<double>(const double x)
 { 
 	if( x >  1.0f ) return 0;
-    if( x < -1.0f ) return constants<double_t>::pi();
-	return static_cast<double_t>(acos( x ));
+    if( x < -1.0f ) return constants<double>::pi();
+    return static_cast<double>(acos( x ));
 }
 
 
@@ -213,11 +213,11 @@ inline TYPE Asin(const TYPE x					///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Asin<double_t>(const double_t x) 
+inline double Asin<double>(const double x)
 { 
-    if( x >  1.0f ) return  constants<double_t>::pi()/2.0f;
-    if( x < -1.0f ) return -constants<double_t>::pi()/2.0f;
-	return static_cast<double_t>(asin( x ));
+    if( x >  1.0f ) return  constants<double>::pi()/2.0f;
+    if( x < -1.0f ) return -constants<double>::pi()/2.0f;
+    return static_cast<double>(asin( x ));
 }
 
 
@@ -232,9 +232,9 @@ inline TYPE Atan(const TYPE x				///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Atan<double_t>(const double_t x)
+inline double Atan<double>(const double x)
 { 
-	return static_cast<double_t>(atan( x ));
+    return static_cast<double>(atan( x ));
 }
 
 /** Atan(x,y), Arcus tangens of a quotient x/y.
@@ -256,10 +256,10 @@ inline TYPE Atan(const TYPE x,						///< [in] x (Numerator)
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Atan<double_t>(const double_t x,	///< [in] x (Numerator)
-							   const double_t y)	///< [in] y (Denominator). 
+inline double Atan<double>(const double x,	///< [in] x (Numerator)
+                               const double y)	///< [in] y (Denominator).
 { 
-	return static_cast<double_t>(atan2( x, y ));
+    return static_cast<double>(atan2( x, y ));
 }
 
 // ****************************
@@ -277,9 +277,9 @@ inline TYPE Cosh(const TYPE x						///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Cosh<double_t>(const double_t x)
+inline double Cosh<double>(const double x)
 { 
-	return static_cast<double_t>(cosh( x ));
+    return static_cast<double>(cosh( x ));
 }
 
 
@@ -294,9 +294,9 @@ inline TYPE Sinh(const TYPE x				///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Sinh<double_t>(const double_t x)
+inline double Sinh<double>(const double x)
 { 
-	return static_cast<double_t>(sinh( x ));
+    return static_cast<double>(sinh( x ));
 }
 
 
@@ -311,9 +311,9 @@ inline TYPE Tanh(const TYPE x				///< [in] Argument in radians.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Tanh<double_t>(const double_t x)
+inline double Tanh<double>(const double x)
 { 
-	return static_cast<double_t>(tanh( x ));
+    return static_cast<double>(tanh( x ));
 }
 
 // *********************************************
@@ -332,9 +332,9 @@ inline TYPE Exp(const TYPE x				///< [in] Argument.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Exp<double_t>(const double_t x)
+inline double Exp<double>(const double x)
 { 
-	return static_cast<double_t>(exp( x ));
+    return static_cast<double>(exp( x ));
 }
 
 
@@ -350,9 +350,9 @@ inline TYPE Log(const TYPE x				///< [in] Argument. Must be positive.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Log<double_t>(const double_t x)
+inline double Log<double>(const double x)
 { 
-	return static_cast<double_t>(log( x ));
+    return static_cast<double>(log( x ));
 }
 
 /** Base 10 logarithmic function. The log function calculates the base 10 logarithm. This 
@@ -367,9 +367,9 @@ inline TYPE Log10(const TYPE x				///< [in] Argument. Must be positive.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Log10<double_t>(const double_t x)
+inline double Log10<double>(const double x)
 { 
-	return static_cast<double_t>(log10( x ));
+    return static_cast<double>(log10( x ));
 }
 
 
@@ -388,11 +388,12 @@ inline TYPE Pow(const TYPE x,				///< [in] Argument.
 }
 // Double floating point precision math specialization.
 template<>
-inline double_t Pow<double_t>(const double_t x,			///< [in] Argument.
-							  const double_t y			///< [in] Exponent. 
+inline double Pow<double>(const double x,			///< [in] Argument.
+                              const double y			///< [in] Exponent.
 							  )
 { 
-	return static_cast<double_t>(pow( x, y ));
+    return static_cast<double>(pow( x, y ));
 }
 
 
+} // namespace lue::math

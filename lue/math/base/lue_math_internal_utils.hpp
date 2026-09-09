@@ -4,7 +4,7 @@
 // CREATED_BY	: Martin Lutken
 // ****************************************************************************
 
-#include "lue_math.h"
+#include <math/base/lue_math.h>
 #include <cstdio>
 #include <string>
 
@@ -18,8 +18,6 @@ Most of this is actually "stolen" from the loki-library!
 */
 
 namespace lue::math::utils {
-
-
 
 
 
@@ -42,8 +40,8 @@ namespace lue::math::utils {
     };
 
     /// Convert float number to string for debug print.
-inline std::string		str(float_t Number,		///< [in] number to turn into string.
-                            int_t iDecimals= -1	///< [in] Number of decimals
+inline std::string		str(float Number,		///< [in] number to turn into string.
+                            int   iDecimals= -1	///< [in] Number of decimals
                             )
 {
     using namespace std;
@@ -63,18 +61,8 @@ inline std::string		str(float_t Number,		///< [in] number to turn into string.
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Helper structure for the STATIC_CHECK macro
-////////////////////////////////////////////////////////////////////////////////
-    template<int> struct CompileTimeError;
-    template<> struct CompileTimeError<true> {};
 
 
 
-LUE_MATH_INTERNAL_UTILS_END_NAMESPACE
-
-
-#define STATIC_CHECK(expr, msg) \
-{ LUE_MATH::_UTILS::CompileTimeError<((expr) != 0)> ERROR_##msg; (void)ERROR_##msg; }
-
+} //lue::math::utils
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <gui/widgets/layoutable.h>
+#include <gui/layout/layoutable.h>
 
 namespace lue::gui::widgets {
 class widget_base_impl;
 
-class widget_base : public layoutable
+class widget_base : public layout::layoutable
 {
 public:
     widget_base () = default;

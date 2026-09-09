@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 //gmath headers
-#include "lue_math.h"
+#include <math/base/lue_math.h>
 
 
 
@@ -24,15 +24,15 @@ namespace lue::math {
 
     /// Get integer random number between 0 and an upper limit.
     /// \return Random number in interval [0..iUpperLimit]
-    inline int_t random(int_t iUpperLimit)	///< Upper limit. Ie. number returned is in [0..iUpperLimit]
+    inline int random(int iUpperLimit)	///< Upper limit. Ie. number returned is in [0..iUpperLimit]
 {
     return rand() % (iUpperLimit+1);
 }
 
 /// Get integer random number in interval.
 /// \return Random number in interval [iLowerLimit..iUpperLimit]
-inline int_t random(int_t iLowerLimit,	///< lower limit. Ie. number returned is in [iLowerLimit..iUpperLimit]
-                    int_t iUpperLimit)	///< Upper limit. Ie. number returned is in [iLowerLimit..iUpperLimit]
+inline int random(int iLowerLimit,	///< lower limit. Ie. number returned is in [iLowerLimit..iUpperLimit]
+                    int iUpperLimit)	///< Upper limit. Ie. number returned is in [iLowerLimit..iUpperLimit]
 {
     return (rand() % (iUpperLimit+1)) + iLowerLimit;
 }

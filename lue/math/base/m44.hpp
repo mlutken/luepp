@@ -10,9 +10,9 @@
 #include <iostream>
 #include <math.h>
 
-#include "lue_math.h"
+#include <math/base/lue_math.h>
 #include "stdmath.hpp"
-#include "lue_math_internal_utils.hpp"
+#include <math/base/lue_math_internal_utils.hpp>
 
 #include "m33.hpp"
 #include "v4.hpp"
@@ -563,7 +563,7 @@ public:
 		the 'equal_exact' member function if exact comparision is required. 
 		\return True if all corresponding elements of the two matrices is no further,
 		than EPSILON<T>() apart (absolute value), false otherwise. */
-	bool_t	operator ==(const_reference m			///< [in] Right operand.    
+	bool	operator ==(const_reference m			///< [in] Right operand.    
 					   ) const
 	{
 		return	(xcol() == m.xcol()) && 
@@ -578,7 +578,7 @@ public:
 		\return True if just one corresponding pair of elements of the two 
 		matrices is further than EPSILON<T>() apart (absolute value), 
 		false otherwise. */
-	bool_t	operator !=(const_reference m			///< [in] Right operand.    
+	bool	operator !=(const_reference m			///< [in] Right operand.    
 					   ) const
 	{
 		return	(xcol() != m.xcol()) || 
@@ -598,7 +598,7 @@ public:
 		type values with this function. 
 		\return True if all corresponding elements of the two matrices are exactly
 		equal, false otherwise. */
-	bool_t		equal_exact(const_reference m)		///< [in] Matrix to compare with
+	bool		equal_exact(const_reference m)		///< [in] Matrix to compare with
 	{
 		return	xcol().equal_exact(m.xcol()) && 
 				ycol().equal_exact(m.ycol()) &&
@@ -611,7 +611,7 @@ public:
 		Supplied epsilon value is used. 
 		\return True if all corresponding elements of the two vectors is no further,
 		than epsilon apart (absolute value), false otherwise.. */
-	bool_t		equal_epsilon(const_reference m,	///< [in] Matrix to compare with
+	bool		equal_epsilon(const_reference m,	///< [in] Matrix to compare with
 							  const T epsilon		///< [in] Epsilon value to use when comparing
 							 ) const
 	{
@@ -628,7 +628,7 @@ public:
 	// -----------------------
 
 	/// Convert matrix to a string for debug print.
-	std::string			str(const int_t iDecimals= -1	///< [in] Number of decimals
+	std::string			str(const int iDecimals= -1	///< [in] Number of decimals
 						   ) const
 	{
 		std::string s = get_xrow().str(iDecimals);
