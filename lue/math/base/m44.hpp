@@ -45,7 +45,7 @@ public:
 	typedef const value_type&		const_reference;
 	typedef value_type*				pointer;
 	typedef const value_type*		const_pointer;
-	typedef unsigned_int_t			index_type;
+	typedef size_t			index_type;
 
 	// *** vector typedefs ***
 	typedef v4<T>					vec_value_type;
