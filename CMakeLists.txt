@@ -4,6 +4,7 @@ project(luepp)
 message ("(luepp)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
 set(CMAKE_CXX_STANDARD 23)
 set(LUEPP_WIDGETS_PLATFORM "qt6")
+set (QT_CREATOR_SKIP_VCPKG_SETUP ON)
 
 if(PROJECT_IS_TOP_LEVEL)
     message ("INFO: luepp is top level project!")
