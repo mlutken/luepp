@@ -1,5 +1,15 @@
-C++ library for async / multithreaded C++
+C++ application framework
 ==========================================
+I am currently expanding the scope. Originally this was "only" meant as a relatively small 
+library aimed at games and embedded development.
+
+Now the plan has gotten much more ambitious. I will write much more, when I have something 
+concrete to show. For now I can say this:
+A new and very ambitious cross platform approach to writing apps. It’s in C++26 and involves Qt, Unreal
+Engine, ffmpeg video processing, embedded script languages and lots more.
+
+Original description
+--------------------
 The current most "cool" part is the asynchronous signals library "lue::asig".
 
 For example:
